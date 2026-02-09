@@ -7,12 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\application\application.csproj" />
-    <ProjectReference Include="..\Domain\Domain.csproj" />
+    <Compile Remove="Repositorio\**" />
+    <EmbeddedResource Remove="Repositorio\**" />
+    <None Remove="Repositorio\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Repositorio\" />
+    <ProjectReference Include="..\application\application.csproj" />
+    <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
