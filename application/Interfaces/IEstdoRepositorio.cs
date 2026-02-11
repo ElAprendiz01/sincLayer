@@ -10,10 +10,10 @@ namespace application.Interfaces
     public interface IEstdoRepositorio
     {
         Task<IEnumerable<Estado_domain>> ListarEstadosAsync();
-        Task<IEnumerable<Estado_domain>> ListarEstadospornombreAsync();
-        Task NuevoEstado<estado_domain>(Estado_domain oestado);
-        Task ActualizarEstado<estado_domain>(Estado_domain oestado);
-        Task EliminarEstado<estado_domain>(int idestado);
+        Task<IEnumerable<Estado_domain>> ListarEstadospornombreAsync(string filtronombre);
+        Task NuevoEstadoasync(Estado_domain oestado);
+        Task ActualizarEstadoasync(Estado_domain oestado);
+        Task EliminarEstadoasyc(int idestado);
 
 
 

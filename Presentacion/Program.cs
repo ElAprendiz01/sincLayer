@@ -20,6 +20,8 @@ builder.Services.AddSingleton(new DBconexionfactory(connectionString!));
 
 builder.Services.AddScoped<ITipo_Catalogo_Repository, Cls_Tipo_Catalogo_Repository>();
 builder.Services.AddScoped<Cls_Tipo_Catalogo_Services>();
+builder.Services.AddScoped<IEstdoRepositorio, EstatdoRepository>();
+builder.Services.AddScoped<EsatdosServices>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
