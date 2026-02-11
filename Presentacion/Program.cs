@@ -20,9 +20,13 @@ builder.Services.AddSingleton(new DBconexionfactory(connectionString!));
 // Cls_Tipo_Catalogo
 builder.Services.AddScoped<ITipo_Catalogo_Repository, Cls_Tipo_Catalogo_Repository>();
 builder.Services.AddScoped<Cls_Tipo_Catalogo_Services>();
-// Datos_Personales
+
+builder.Services.AddScoped<IEstdoRepositorio, EstatdoRepository>();
+builder.Services.AddScoped<EsatdosServices>();
+
 builder.Services.AddScoped<IDatos_Personales_Repository, Datos_Personales_Repository>();
 builder.Services.AddScoped<Datos_Personales_Services>();
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

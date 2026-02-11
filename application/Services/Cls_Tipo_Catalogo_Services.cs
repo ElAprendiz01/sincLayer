@@ -14,7 +14,7 @@ namespace application.Services
         private ITipo_Catalogo_Repository _repository; 
         public Cls_Tipo_Catalogo_Services(ITipo_Catalogo_Repository repository)
         {
-            _repository = repository;
+            _repository = repository; 
         }
 
         //Metodo Listar
