@@ -23,7 +23,7 @@ namespace infrastructure.Repository
             _DBconectioFactory = connectionString;
         }
      
-        public async Task ActualizarEstadoasync(Estado_domain oestado)
+        public async Task ActualizarEstadoasync(Estado_Dom oestado)
         {
             using var con = _DBconectioFactory.CreateConnection();
             await con.OpenAsync();
@@ -52,11 +52,11 @@ namespace infrastructure.Repository
             }
         }
 
-        public async Task<IEnumerable<Estado_domain>> ListarEstadosAsync()
+        public async Task<IEnumerable<Estado_Dom>> ListarEstadosAsync()
         {
            // vamos a crear el meto para listar 
            // creamos la variable para la lista 
-           var olista = new List<Estado_domain>(); //  vine del donmain
+           var olista = new List<Estado_Dom>(); //  vine del donmain
             // creamos la conexion a la base de datos
             using var con = _DBconectioFactory.CreateConnection();
             await con.OpenAsync();
@@ -67,7 +67,7 @@ namespace infrastructure.Repository
                 {
                     while (await dr.ReadAsync())
                     {
-                        olista.Add(new Estado_domain
+                        olista.Add(new Estado_Dom
                         {
                             Id_Estado = Convert.ToInt32(dr["Id_Estado"]),
                             Estado = dr["Estado"].ToString(),
@@ -85,9 +85,9 @@ namespace infrastructure.Repository
 
         }
 
-        public async Task<IEnumerable<Estado_domain>> ListarEstadospornombreAsync(string filtronombre)
+        public async Task<IEnumerable<Estado_Dom>> ListarEstadospornombreAsync(string filtronombre)
         {
-            var olista = new List<Estado_domain>();
+            var olista = new List<Estado_Dom>();
 
             using var con = _DBconectioFactory.CreateConnection();
             await con.OpenAsync();
@@ -99,7 +99,7 @@ namespace infrastructure.Repository
                 {
                     while (await dr.ReadAsync())
                     {
-                        olista.Add(new Estado_domain
+                        olista.Add(new Estado_Dom
                         {
                             Id_Estado = Convert.ToInt32(dr["Id_Estado"]),
                             Estado = dr["Estado"].ToString(),
@@ -116,7 +116,7 @@ namespace infrastructure.Repository
 
         }
 
-        public async Task NuevoEstadoasync(Estado_domain oestado)
+        public async Task NuevoEstadoasync(Estado_Dom oestado)
         {
             using var con = _DBconectioFactory.CreateConnection();
             await con.OpenAsync();

@@ -27,6 +27,9 @@ builder.Services.AddScoped<EsatdosServices>();
 builder.Services.AddScoped<IDatos_Personales_Repository, Datos_Personales_Repository>();
 builder.Services.AddScoped<Datos_Personales_Services>();
 
+builder.Services.AddScoped<ICatalogoRepositorio, CatalogoRepository>();
+builder.Services.AddScoped<CatalogoServices>();
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

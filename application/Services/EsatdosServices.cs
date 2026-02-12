@@ -55,7 +55,7 @@ namespace application.Services
         // creo el metodo de insertar
         public async Task NuevoEstado(EstadosDTOs dto)
         {
-            var onuevoEstado = new Estado_domain
+            var onuevoEstado = new Estado_Dom
             {
 
                 Estado = dto.Estado,
@@ -72,7 +72,7 @@ namespace application.Services
         // creo el metodo de actualizar
         public async Task ActualizarEstado(EstadosDTOs dto)
         {
-            var oActualizarEstado = new Estado_domain
+            var oActualizarEstado = new Estado_Dom
             {
                 Id_Estado = dto.Id_Estado,
                 Estado = dto.Estado,

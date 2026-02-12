@@ -36,7 +36,7 @@ namespace Presentacion.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest(new { msj = "El ,odelo no es valido" });
+                    return BadRequest(new { msj = "El modelo no es valido" });
                 }
                 await _service.NuevoCls_Tipo_Catalogo(dto);
                 return StatusCode(201, "Cls_Tipo_Catalogo agregado Correctamente");
