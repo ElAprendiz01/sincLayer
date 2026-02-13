@@ -8,7 +8,7 @@ CREATE OR ALTER PROCEDURE SP_FiltrarCatalogosPorNombre
 AS
 BEGIN
     SET NOCOUNT ON;
-
+		
     SELECT 
         c.Id_Catalogo,
         c.Id_Tipo_Catalogo,

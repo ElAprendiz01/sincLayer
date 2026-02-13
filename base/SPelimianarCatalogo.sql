@@ -12,7 +12,15 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    -- Validación: ID obligatorio
+      IF @Id_Catalogo IS NULL OR @Id_Catalogo !=4
+    BEGIN
+        SET @O_Numero = -1;
+        SET @O_Msg = 'El Id_Estado de eliminado debe ser 4.' 
+             + CHAR(13) + CHAR(10) +
+             'Verifique el valor nviado.';
+
+        RETURN;
+    END;
     IF @Id_Catalogo IS NULL OR @Id_Catalogo = 0
     BEGIN
         SET @O_Numero = -1;

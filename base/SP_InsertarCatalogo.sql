@@ -65,7 +65,7 @@ BEGIN
 
         COMMIT;
 
-        SET @O_Numero = 0;
+        SET @O_Numero = 200;
         SET @O_Msg = 'Catálogo insertado correctamente.';
     END TRY
     BEGIN CATCH

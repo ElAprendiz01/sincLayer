@@ -15,7 +15,7 @@ CREATE TABLE Cls_Estado (
 );
 GO
 
---he ejecutado hasta esta tablaMaycol
+
 CREATE TABLE Cls_Tipo_Catalogo (
     Id_Tipo_Catalogo INT PRIMARY KEY IDENTITY(1,1),
     Nombre NVARCHAR(50) NOT NULL,
@@ -75,6 +75,20 @@ CREATE TABLE Tbl_Contacto (
 );
 GO
 
+--ejecutado hasta esta tabla maycol
+ CREATE TABLE Tbl_direcciones(
+	Id_direccion INT PRIMARY KEY IDENTITY(1,1),
+	Ciudad NVARCHAR(20) NOT NULL,
+	Barrio NVARCHAR(40),
+	Calle NVARCHAR(30),
+	Fecha_Creacion DATE DEFAULT GETDATE(),
+    Fecha_Modificacion DATETIME ,
+    Id_Creador INT NOT NULL,
+    Id_Modificador INT ,
+	Id_Persona INT REFERENCES Tbl_Datos_Personales(Id_Persona), 
+	Id_Estado INT REFERENCES Cls_Estado(Id_Estado)
+ );
+ GO
 
 CREATE TABLE Tbl_Roles (
     Id_Rol INT PRIMARY KEY IDENTITY(1,1),
