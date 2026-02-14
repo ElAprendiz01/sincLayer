@@ -30,6 +30,14 @@ builder.Services.AddScoped<Datos_Personales_Services>();
 builder.Services.AddScoped<ICatalogoRepositorio, CatalogoRepository>();
 builder.Services.AddScoped<CatalogoServices>();
 
+builder.Services.AddScoped<IContacto_Repository, Contacto_Repository>();
+builder.Services.AddScoped<Contacto_Services>();
+
+
+
+
+
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
