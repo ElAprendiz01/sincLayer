@@ -64,24 +64,28 @@ namespace Presentacion.Controllers
 
                     await _service.EditarCatalogo(dto);
 
-                    return NoContent();
+                     return NoContent();
                 }
                 catch (Exception ex)
                 {
-                    return StatusCode(500, "Error al editar catálogo: " + ex.Message);
+                    return BadRequest(new { msj = ex.Message }); // con este return podriamos mostrar las exceppciones desde el sp
+                   // consultarlor con el docente lovo pa ver si es permitodo 
                 }
             }
 
             
             [HttpDelete("DesactivarEliminar/{id}")]
-            public async Task<IActionResult> Eliminar(int id, [FromQuery] int idModificador)
+            public async Task<IActionResult> Eliminar(int id, [FromQuery] int idModificador )
             {
                 try
                 {
-                    await _service.EliminarCatalogo(id, idModificador);
-                    return NoContent();
-                }
-                catch (Exception ex)
+                        await _service.EliminarCatalogo(id, idModificador);
+
+                        return NoContent();
+
+
+            }
+            catch (Exception ex)
                 {
                     return StatusCode(500, "Error al eliminar catálogo: " + ex.Message);
                 }
@@ -94,13 +98,29 @@ namespace Presentacion.Controllers
                 try
                 {
                     var lista = await _service.ListarCatalogoPornombre(nombre);
-                    return Ok(lista);
-                }
-                catch (Exception ex)
+                    if (lista == null || !lista.Any())
+                    {
+                        return NotFound(new
+                        {
+                            codigo = 404,
+                            msj = "No se encontro el catalogo especificado."
+                        });
+                    }
+                    return Ok(new
+                    {
+                        codigo = 200,
+                        msj = "Consulta exitosa",
+                        data = lista
+                    });
+                // nota preguntar si esta validacion es aceptada 
+                // nota no tengo validaciones de que si no encuentra anda ¿, entonces me retrna una lista avcia ver como validar eso de que si no lo encuentra mostrar un print
+
+            }
+            catch (Exception ex)
                 {
                     return StatusCode(500, "Error al filtrar catálogo: " + ex.Message);
                 }
-            }
+              }
         
     }
 }

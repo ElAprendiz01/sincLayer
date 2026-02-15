@@ -14,8 +14,14 @@ BEGIN
     SET NOCOUNT ON;
 
 
+	
+	IF EXISTS (SELECT 1 FROM Cls_Tipo_Catalogo WHERE Id_Tipo_Catalogo = @Id_Tipo_Catalogo AND Activo = 0)
+	BEGIN
+		SET @O_Numero = -1;
+		SET @O_Msg = 'El tipo Catalogo esta eliminado o deshabilitado.';
+		RETURN;
+	END;
 
-    -- VALIDACIONES BÁSICAS Y NECESARIAS
     IF @Id_Tipo_Catalogo IS NULL OR @Id_Tipo_Catalogo = 0
     BEGIN
         SET @O_Numero = -1;

@@ -49,7 +49,7 @@ namespace infrastructure.Repository
                 int codigo = (int)oNumero.Value;
                 string mensaje = oMsg.Value.ToString();
 
-                if (codigo != 0)
+                if (codigo <= 0)
                     throw new Exception(mensaje);
 
             }
@@ -84,7 +84,7 @@ namespace infrastructure.Repository
                 int codigo = (int)oNumero.Value;
                 string mensaje = oMsg.Value.ToString();
 
-                if (codigo != 0)
+                if (codigo <= 0)
                     throw new Exception(mensaje);
             }
         }
@@ -192,7 +192,7 @@ namespace infrastructure.Repository
                 int codigo = (int)oNumero.Value;
                 string mensaje = oMsg.Value.ToString();
 
-                if (codigo != 0)
+                if (codigo <= 0)
                     throw new Exception(mensaje);
 
 

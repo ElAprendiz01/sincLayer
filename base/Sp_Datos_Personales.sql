@@ -2,7 +2,7 @@ USE SYNCLAYER;
 GO
 
 --Listar Tabla de Datos personales
-Create Proc Listar_Tbl_Datos_Personales
+Create or alter Proc Listar_Tbl_Datos_Personales
 As 
 begin
 begin try 
@@ -48,7 +48,7 @@ end
 
 
 --Editar Tipo de catalogo
-Create Proc Editar_Tbl_Datos_Personales
+Create or alter  Proc Editar_Tbl_Datos_Personales
 (
     @Id_Persona INT,
     @Genero INT,
@@ -80,7 +80,7 @@ end
 
 
 --Eliminar
-Create proc Eliminar_Tbl_Datos_Personales
+Create or alter proc Eliminar_Tbl_Datos_Personales
 (
 @Id_Persona int
 )
@@ -98,7 +98,7 @@ end
 
 
 --Buscar Por Nombre
-Create Proc Buscar_Tbl_Datos_Personales_Fecha_Nacimiento
+Create or alter Proc Buscar_Tbl_Datos_Personales_Fecha_Nacimiento
 (
 @Buscar Varchar(50)
 )

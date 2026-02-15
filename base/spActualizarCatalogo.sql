@@ -15,7 +15,13 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    -- VALIDACIÓN: ID obligatorio
+    IF EXISTS (SELECT 1 FROM Cls_Tipo_Catalogo WHERE Id_Tipo_Catalogo = @Id_Tipo_Catalogo AND Activo = 0)
+	BEGIN
+		SET @O_Numero = -1;
+		SET @O_Msg = 'El tipo Catalogo esta eliminado o deshabilitado.';
+		RETURN;
+	END;
+
     IF @Id_Catalogo IS NULL OR @Id_Catalogo = 0
     BEGIN
         SET @O_Numero = -1;

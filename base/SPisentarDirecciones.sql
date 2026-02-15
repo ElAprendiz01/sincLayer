@@ -17,7 +17,6 @@ BEGIN
 
 
 
-    -- VALIDACIONES BÁSICAS Y NECESARIAS
     IF @Id_Persona IS NULL OR @Id_Persona = 0
     BEGIN
         SET @O_Numero = -1;
@@ -30,20 +29,23 @@ BEGIN
 		SET @O_Msg = 'El id persona no existe.';
 		RETURN;
 	END;
-	DECLARE @EstadoPersona INT;
-	-- aqui quiero validar que si la pesona esat con su eatdo eliminado entonces  no permitirle el registro 
-	SELECT @EstadoPersona = Id_Estado
-	FROM Tbl_Datos_Personales
-	WHERE Id_Persona = @Id_Persona;
 
-	IF @EstadoPersona = 4
+	-- VALIDACIÓN: No permitir inserción si el estado de la persona es "Eliminado", "Desactivado", este puntoe me parece mas vialeble que de
+	-- que depender de un solo 1 ya que los sistemas podrian variar 
+
+	IF EXISTS (
+		SELECT 1 
+		FROM Tbl_Datos_Personales p
+		INNER JOIN Cls_Estado e ON p.Id_Estado = e.Id_Estado
+		WHERE p.Id_Persona = @Id_Persona 
+		  AND e.Estado IN ('Eliminado', 'Desactivado', 'Inactivo', 'Suspendido')
+	)
 	BEGIN
 		SET @O_Numero = -1;
-		SET @O_Msg = 'No se puede insertar una dirección porque la persona está eliminada.'
-					 + CHAR(13) + CHAR(10) +
-					 'Comuníquese con administración si considera que es un error.';
+		SET @O_Msg = 'No se puede registrar la dirección: La cuenta de la persona no está vigente o ha sido eliminada.';
 		RETURN;
 	END;
+
 	  IF @Id_Estado IS NULL OR @Id_Estado = 0
     BEGIN
         SET @O_Numero = -1;
@@ -96,7 +98,7 @@ EXEC SpInsertarDireccion
     'LasJAguitas',
     'los toros',
     1,
-    1,
+    2,
     3,
     @Num OUTPUT,
     @Msg OUTPUT;
