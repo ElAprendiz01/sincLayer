@@ -15,6 +15,7 @@ namespace application.Interfaces
         Task NuevoCatalogoAsyn(Catalogo_Dom oCatalogo);
         Task EditarCatalogoAsync(Catalogo_Dom oCatalogo);
         Task EliminarCatalogoAsync(int id, int idModificador ); 
+        //cabio
 
     }
 }
