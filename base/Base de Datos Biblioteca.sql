@@ -152,7 +152,7 @@ GO
 
 
 
-
+-- He ejecutado hasya la tabla de libnros  rebeca 
 CREATE TABLE Tbl_Prestamos (
     Id_Prestamo INT PRIMARY KEY IDENTITY(1,1),
     Id_Usuario_Cliente INT REFERENCES Tbl_Usuarios(Id_Usuario), 
