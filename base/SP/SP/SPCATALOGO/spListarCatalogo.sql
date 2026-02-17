@@ -19,6 +19,9 @@ BEGIN
     FROM Cls_Catalogo c
     INNER JOIN Cls_Tipo_Catalogo tc
         ON c.Id_Tipo_Catalogo = tc.Id_Tipo_Catalogo
+	 where c.Activo =1
     ORDER BY c.Id_Catalogo DESC;
 END;
 GO
+
+exec SP_ListarCatalogos

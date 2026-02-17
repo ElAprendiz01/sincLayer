@@ -15,9 +15,9 @@ begin
     begin try
         begin tran
         update Cls_Estado
-        set Estado = @Estado,
+        set Estado =trim(coalesce( @Estado, Estado)),
            Id_Modificador = @Id_Modificador,
-           Activo = @Activo,
+           Activo = TRIM(COALESCE(@Activo, Activo)),
            Fecha_Modificacion = GETDATE()
 
         where Id_Estado = @Id_Estado

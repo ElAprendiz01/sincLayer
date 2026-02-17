@@ -29,30 +29,25 @@ BEGIN
         RETURN;
     END;
 
-    -- VALIDACIÓN: catálogo debe existir
-    IF NOT EXISTS (SELECT 1 FROM Cls_Catalogo WHERE Id_Catalogo = @Id_Catalogo)
-    BEGIN
-        SET @O_Numero = -1;
-        SET @O_Msg = 'El catálogo especificado no existe.';
-        RETURN;
-    END;
+		-- VALIDACIÓN: catálogo debe existir (solo si se envió un valor)
+	IF @Id_Catalogo IS NOT NULL
+	   AND NOT EXISTS (SELECT 1 FROM Cls_Catalogo WHERE Id_Catalogo = @Id_Catalogo)
+	BEGIN
+		SET @O_Numero = -1;
+		SET @O_Msg = 'El catálogo especificado no existe.';
+		RETURN;
+	END;
 
-    -- VALIDACIÓN: si se envía un tipo de catálogo, debe existir
-    IF @Id_Tipo_Catalogo IS NOT NULL
-       AND NOT EXISTS (SELECT 1 FROM Cls_Tipo_Catalogo WHERE Id_Tipo_Catalogo = @Id_Tipo_Catalogo)
-    BEGIN
-        SET @O_Numero = -1;
-        SET @O_Msg = 'El tipo de catálogo especificado no existe.';
-        RETURN;
-    END;
+	-- VALIDACIÓN: tipo de catálogo debe existir (solo si se envió un valor)
+	IF @Id_Tipo_Catalogo IS NOT NULL
+	   AND NOT EXISTS (SELECT 1 FROM Cls_Tipo_Catalogo WHERE Id_Tipo_Catalogo = @Id_Tipo_Catalogo)
+	BEGIN
+		SET @O_Numero = -1;
+		SET @O_Msg = 'El tipo de catálogo especificado no existe.';
+		RETURN;
+	END;
 
-    -- VALIDACIÓN: si se envía nombre, no puede ser vacío
-    IF @Nombre IS NOT NULL AND LTRIM(RTRIM(@Nombre)) = ''
-    BEGIN
-        SET @O_Numero = -1;
-        SET @O_Msg = 'El nombre no puede estar vacío.';
-        RETURN;
-    END;
+   
 
     BEGIN TRY
         BEGIN TRAN;
@@ -79,3 +74,19 @@ BEGIN
     END CATCH;
 END;
 GO
+
+DECLARE @Num INT, @Msg VARCHAR(255);
+
+
+EXEC SP_ActualizarCatalogo
+    @Id_Catalogo = 6,
+    @Nombre = null,
+    @Id_Modificador = 1,
+	@Activo=1,
+    @O_Numero = @Num OUTPUT,
+    @O_Msg = @Msg OUTPUT;
+
+SELECT @Num AS Numero, @Msg AS Mensaje;
+
+select * from Cls_Catalogo
+

@@ -15,17 +15,6 @@ AS
 BEGIN 
  SET NOCOUNT ON;
 
-	 IF NOT EXISTS (
-		SELECT 1 
-		FROM Cls_Estado 
-		WHERE Id_Estado = @Id_Estado
-		  AND Activo = 1
-	)
-	BEGIN
-		SET @O_Numero = -1;
-		SET @O_Msg = 'El estado no existe o está desactivado.';
-		RETURN;
-	END;
 
 
     IF @Id_Persona IS NULL OR @Id_Persona = 0
@@ -42,8 +31,7 @@ BEGIN
 	END;
 
 	-- VALIDACIÓN: No permitir inserción si el estado de la persona es "Eliminado", "Desactivado", este puntoe me parece mas vialeble que de
-	-- que depender de un solo 1 ya que los sistemas podrian variar, de como les comentaba en clases.
-	-- y aqui ya no son bit sino que van con el nombre de eatdo para ams dinamicos vean esta diferncia los demas apartir de esta tabla llevarian esta validacion porque usan tbl 
+	-- que depender de un solo 1 ya que los sistemas podrian variar 
 
 	IF EXISTS (
 		SELECT 1 
@@ -54,7 +42,7 @@ BEGIN
 	)
 	BEGIN
 		SET @O_Numero = -1;
-		SET @O_Msg = 'No se puede registrar la dirección: la persona no está vigente o ha sido eliminada.';
+		SET @O_Msg = 'No se puede registrar la dirección: La cuenta de la persona no está vigente o ha sido eliminada.';
 		RETURN;
 	END;
 
@@ -70,16 +58,6 @@ BEGIN
 		SET @O_Msg = 'El id  estado no existe.';
 		RETURN;
 	END;
-	IF NOT EXISTS (SELECT 1 
-               FROM Cls_Estado 
-               WHERE Id_Estado = @Id_Estado
-                 AND Activo = 1) 
-BEGIN
-    SET @O_Numero = -1;
-    SET @O_Msg = 'El id estado no existe o está inactivo.';
-    RETURN;
-END;
-
 	BEGIN TRY 
 		BEGIN TRAN 
 		INSERT INTO Tbl_direcciones( 

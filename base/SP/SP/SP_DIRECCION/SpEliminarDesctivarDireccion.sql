@@ -1,11 +1,10 @@
-USE SYNCLAYER
+USE SYNCLAYER;
 GO
 
-CREATE OR ALTER PROCEDURE SpDesactivarEliinarDireccion
+CREATE OR ALTER PROCEDURE SpDesactivarDireccionAutomatico
 (
     @Id_direccion INT,
     @Id_Modificador INT,
-	@Id_Estado int,
     @O_Numero INT OUTPUT,
     @O_Msg VARCHAR(255) OUTPUT
 )
@@ -13,7 +12,6 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-   
     IF @Id_direccion IS NULL OR @Id_direccion = 0
     BEGIN
         SET @O_Numero = -1;
@@ -21,20 +19,36 @@ BEGIN
         RETURN;
     END;
 
-	  IF @Id_Estado IS NULL OR @Id_Estado !=4
+    -- Buscar la dirección que aún NO esté desactivada/eliminada
+    DECLARE @ExisteDireccion INT;
+
+    SELECT @ExisteDireccion = 1
+    FROM Tbl_direcciones d
+    INNER JOIN Cls_Estado e ON d.Id_Estado = e.Id_Estado
+    WHERE d.Id_direccion = @Id_direccion
+      AND e.Estado NOT IN ('Desactivado', 'Inactivo', 'Eliminado')
+      AND e.Activo = 1;
+
+    IF @ExisteDireccion IS NULL
     BEGIN
         SET @O_Numero = -1;
-        SET @O_Msg = 'El Id_Estado de eliminado debe ser 4.' 
-             + CHAR(13) + CHAR(10) +
-             'Verifique el valor nviado.';
-
+        SET @O_Msg = 'La dirección no existe o ya está desactivada o eliminada.';
         RETURN;
     END;
-   
-    IF NOT EXISTS (SELECT 1 FROM Tbl_direcciones WHERE Id_direccion = @Id_direccion)
+
+    -- Buscar el Id_Estado de desactivación
+    DECLARE @Id_Estado INT;
+
+    SELECT TOP 1 @Id_Estado = Id_Estado
+    FROM Cls_Estado
+    WHERE Estado IN ('Desactivado', 'Inactivo', 'Eliminado')
+      AND Activo = 1
+    ORDER BY Id_Estado;
+
+    IF @Id_Estado IS NULL
     BEGIN
         SET @O_Numero = -1;
-        SET @O_Msg = 'La dirección no existe.';
+        SET @O_Msg = 'No se encontró un estado activo de desactivación.';
         RETURN;
     END;
 
@@ -64,14 +78,10 @@ GO
 
 DECLARE @Num INT, @Msg VARCHAR(255);
 
-EXEC SpDesactivarEliinarDireccion
-    @Id_direccion = 1,       
-    @Id_Modificador = 1,     
-    @Id_Estado = 4,          
+EXEC SpDesactivarDireccionAutomatico
+    @Id_direccion = 3,
+    @Id_Modificador = 1,
     @O_Numero = @Num OUTPUT,
     @O_Msg = @Msg OUTPUT;
 
 SELECT @Num AS Numero, @Msg AS Mensaje;
-
-
-exec spListardireccines

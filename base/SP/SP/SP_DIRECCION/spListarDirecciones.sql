@@ -20,10 +20,12 @@ BEGIN
         d.Fecha_Modificacion,
         d.Id_Creador,
         d.Id_Modificador,
-        d.Id_Estado
+		e.Estado
     FROM Tbl_direcciones d
 	inner join Tbl_Datos_Personales dt
 		on d.Id_Persona = dt.Id_Persona
+		join Cls_Estado e on e.Id_Estado = d.Id_Estado
+		where e.Estado IN ('Activo', '')
 	order by d.Id_direccion desc;
 END;
 GO

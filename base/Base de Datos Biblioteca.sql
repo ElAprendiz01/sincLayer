@@ -15,6 +15,8 @@ CREATE TABLE Cls_Estado (
 );
 GO
 
+
+
 CREATE TABLE Cls_Tipo_Catalogo (
     Id_Tipo_Catalogo INT PRIMARY KEY IDENTITY(1,1),
     Nombre NVARCHAR(50) NOT NULL,

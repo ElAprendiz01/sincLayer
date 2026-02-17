@@ -17,6 +17,10 @@ builder.Services.AddControllers();
 
 var connectionString = builder.Configuration.GetConnectionString("Default");
 builder.Services.AddSingleton(new DBconexionfactory(connectionString!));
+
+
+
+
 // Cls_Tipo_Catalogo
 builder.Services.AddScoped<ITipo_Catalogo_Repository, Cls_Tipo_Catalogo_Repository>();
 builder.Services.AddScoped<Cls_Tipo_Catalogo_Services>();
@@ -81,3 +85,14 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+//para examene
+// crear la 4 capas 
+// relacionrlo,
+// crear todas las caprtsa 
+// crear las conexion  el metodo completo 
+// trabajar el json de conexion
+//dbCadenaconexion crear en el metodo de conexion en el programn
+// crear en la database la clase de conexion
+// hacer todo lo que esta en indraestructura  qque seria el metodo de listar 
+// hacer el metodo listar  de la interfaz hacer los 4 metodos 
+// en repositrio  en repositio el metodo listar dejar  el olist vacio
