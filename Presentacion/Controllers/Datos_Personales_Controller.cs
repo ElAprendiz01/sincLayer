@@ -61,7 +61,12 @@ namespace Presentacion.Controllers
                     return BadRequest(new { msj = "el id no coincide" });
                 }
                 dto.Id_Persona = id;
-                await _service.EditarDatos_Personales(dto);
+
+
+                bool esAdmin = User.IsInRole("Admin");
+
+
+                await _service.EditarDatos_Personales(dto, esAdmin);
                 return NoContent();
             }
             catch (Exception ex)
@@ -72,11 +77,38 @@ namespace Presentacion.Controllers
         }
 
         [HttpDelete("Eliminar/{id}")]
-        public async Task<IActionResult> EliminarDatos_Personales(int id)
+        public async Task<IActionResult> EliminarDatos_Personales(int id, int idModificador, int Id_Estado)
         {
-            await _service.EliminarDatos_Personales(id);
+            await _service.EliminarDatos_Personales(id,  idModificador,  Id_Estado);
             return NoContent();
         }
 
+        [HttpGet("buscarPErsonaPorFechaNacimiento")]
+        public async Task<IActionResult> Filtrar([FromQuery] string buscar)
+        {
+            try
+            {
+                var lista = await _service.Listar_Datos_PersonalesPorFecha(buscar);
+
+                if (lista == null || !lista.Any())
+                {
+                    return NotFound(new
+                    {
+                        codigo = 404,
+                        msj = "No se encontraron perosnas con ea fecha especificada."
+                    });
+                }
+                return Ok(new
+                {
+                    codigo = 200,
+                    msj = "Consulta exitosa",
+                    data = lista
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error al filtrar DTP: " + ex.Message);
+            }
+        }
     }
 }

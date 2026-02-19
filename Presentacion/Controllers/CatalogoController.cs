@@ -19,7 +19,7 @@ namespace Presentacion.Controllers
             
             [HttpGet ("listarCatalogo")]
             public async Task<IActionResult> Listar()
-            {
+            {   
                 try
                 {
                     var lista = await _service.ListarCatalogo();

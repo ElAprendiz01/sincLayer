@@ -37,7 +37,7 @@ namespace application.Services
                 Fecha_Modificacion = p.Fecha_Modificacion,
                 Id_Creador = p.Id_Creador,
                 Id_Modificador = p.Id_Modificador,
-                Id_Estado = p.Id_Estado
+                Estado = p.Estado
 
             });
         }
@@ -65,7 +65,7 @@ namespace application.Services
                 Fecha_Modificacion = p.Fecha_Modificacion,
                 Id_Creador = p.Id_Creador,
                 Id_Modificador = p.Id_Modificador,
-                Id_Estado = p.Id_Estado
+                Estado = p.Estado
 
             });
         }
@@ -83,10 +83,7 @@ namespace application.Services
                 Fecha_Nacimiento = dto.Fecha_Nacimiento,
                 Tipo_DNI = dto.Tipo_DNI,
                 DNI = dto.DNI,
-                Fecha_Creacion = dto.Fecha_Creacion,
-                Fecha_Modificacion = dto.Fecha_Modificacion,
                 Id_Creador = dto.Id_Creador,
-                Id_Modificador = dto.Id_Modificador,
                 Id_Estado = dto.Id_Estado
 
 
@@ -95,8 +92,14 @@ namespace application.Services
         }
 
         //METODO EDITAR
-        public async Task EditarDatos_Personales(Datos_Personales_DTOs dto)
+        public async Task EditarDatos_Personales(Datos_Personales_DTOs dto, bool esAdmin)
         {
+            if (!esAdmin)
+            {
+                // Usuario normal NO puede forzar recuperación
+                dto.ForzarRecuperacion = false;
+            }
+
             var oDatos_Personales = new Datos_Personales
             {
                 Id_Persona = dto.Id_Persona,
@@ -108,20 +111,19 @@ namespace application.Services
                 Fecha_Nacimiento = dto.Fecha_Nacimiento,
                 Tipo_DNI = dto.Tipo_DNI,
                 DNI = dto.DNI,
-                Fecha_Creacion = dto.Fecha_Creacion,
-                Fecha_Modificacion = dto.Fecha_Modificacion,
-                Id_Creador = dto.Id_Creador,
                 Id_Modificador = dto.Id_Modificador,
-                Id_Estado = dto.Id_Estado
+                Id_Estado = dto.Id_Estado,
+                ForzarRecuperacion = dto.ForzarRecuperacion
+
 
             };
             await _repository.EditarDatos_PersonalesAsync(oDatos_Personales);
         }
 
         //METODO ELIMINAR
-        public async Task EliminarDatos_Personales(int id)
+        public async Task EliminarDatos_Personales(int id ,int idModificador, int Id_Estado)
         {
-            await _repository.EliminarDatos_PersonalesAsync(id);
+            await _repository.EliminarDatos_PersonalesAsync(id,  idModificador,  Id_Estado);
         }
 
     }

@@ -4,17 +4,50 @@ GO
 
 CREATE OR ALTER PROCEDURE SpActualizarDireccion(
     @Id_direccion INT,
-    @Ciudad NVARCHAR(20),
-    @Barrio NVARCHAR(40),
-    @Calle NVARCHAR(30),
-    @Id_Modificador INT,
-    @Id_Estado INT,
+    @Ciudad NVARCHAR(20) =null,
+    @Barrio NVARCHAR(40)=null,
+    @Calle NVARCHAR(30)=null,
+    @Id_Modificador INT ,
+    @Id_Estado INT = null,
+	@ForzarRecuperacion bit = 0,
     @O_Numero INT OUTPUT,
     @O_Msg VARCHAR(255) OUTPUT
 )
 AS
 BEGIN
     SET NOCOUNT ON;
+
+-- Validar solo si se envió un Id_Estado para hacer uso  del coalasce
+	IF @Id_Estado IS NOT NULL
+	BEGIN
+		IF NOT EXISTS (
+			SELECT 1 
+			FROM Cls_Estado 
+			WHERE Id_Estado = @Id_Estado
+			  AND Activo = 1
+		)
+		BEGIN
+			SET @O_Numero = -1;
+			SET @O_Msg = 'El estado no existe o está desactivado.';
+			RETURN;
+		END
+	END
+	    IF @ForzarRecuperacion = 0
+        AND EXISTS (
+            SELECT 1
+            FROM Tbl_direcciones p
+            INNER JOIN Cls_Estado e ON p.Id_Estado = e.Id_Estado
+            WHERE p.Id_direccion = @Id_direccion
+              AND e.Estado IN ('Eliminado', 'Desactivado', 'Inactivo', 'Suspendido')
+        )
+    BEGIN
+        SET @O_Numero = -1;
+        SET @O_Msg = 'El estado del registro indica que está eliminado o desactivado.'
+                     + CHAR(13) + CHAR(10) +
+                     'Si cree que es un error, comuníquese con administración.';
+        RETURN;
+    END;
+
 
    
     IF NOT EXISTS (SELECT 1 FROM Tbl_direcciones WHERE Id_direccion = @Id_direccion)
@@ -23,28 +56,10 @@ BEGIN
         SET @O_Msg = 'La dirección no existe.';
         RETURN;
     END;
-	IF @Id_Estado IS NULL OR @Id_Estado = 4
-	 BEGIN
-	     SET @O_Numero = -1;
-	     SET @O_Msg = 'El estado del registro indica que está eliminado o desactivado.'
-	                  + CHAR(13) + CHAR(10) +
-                 'Si cree que es un error, comuníquese con administración.';
-		RETURN;
-	END;
+	
 
-    IF @Id_Estado IS NULL OR @Id_Estado = 0
-    BEGIN
-        SET @O_Numero = -1;
-        SET @O_Msg = 'El id estado es obligatorio.';
-        RETURN;
-    END;
 
-    IF NOT EXISTS (SELECT 1 FROM Cls_Estado WHERE Id_Estado = @Id_Estado)
-    BEGIN
-        SET @O_Numero = -1;
-        SET @O_Msg = 'El id estado no existe.';
-        RETURN;
-    END;
+ 
 
     BEGIN TRY
         BEGIN TRAN;
@@ -72,19 +87,29 @@ BEGIN
     END CATCH;
 END;
 GO
-
+-- si ejecutan esto para una direccioneiliminada no les da jajaj
 DECLARE @Num INT, @Msg VARCHAR(255);
 
 EXEC SpActualizarDireccion
-    1,
-    'metrp', 
-    'LasJAguitas',
-    'los toros',
-    1,
-    3,
-    @Num OUTPUT,
-    @Msg OUTPUT;
+    @Id_direccion= 1,
+    @Id_Modificador = 1,
+    @Id_Estado = 4,            -- nuevo estado   
+    @O_Numero = @Num OUTPUT,
+    @O_Msg = @Msg OUTPUT;
 
 SELECT @Num AS Numero, @Msg AS Mensaje;
 
-exec spListardireccines
+select * from Tbl_direcciones
+
+--pero con este si  simpre y cuando @ForzarRecuperacion est en 1
+DECLARE @Num INT, @Msg VARCHAR(255);
+
+EXEC SpActualizarDireccion
+    @Id_direccion= 1,
+    @Id_Modificador = 1,
+    @Id_Estado = 3,            -- nuevo estado
+    @ForzarRecuperacion = 1,   -- permite actualizar aunque esté eliminado
+    @O_Numero = @Num OUTPUT,
+    @O_Msg = @Msg OUTPUT;
+
+SELECT @Num AS Numero, @Msg AS Mensaje;

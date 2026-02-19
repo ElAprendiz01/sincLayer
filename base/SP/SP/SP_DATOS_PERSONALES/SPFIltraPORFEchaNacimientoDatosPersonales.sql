@@ -11,6 +11,7 @@ BEGIN
 
     SELECT 
         dp.Id_Persona,
+		dp.Genero,
         dp.Primer_Nombre,
         dp.Segundo_Nombre,
         dp.Primer_Apellido,
@@ -36,6 +37,3 @@ GO
 exec Buscar_Tbl_Datos_Personales_Fecha_Nacimiento '1902'
 
 select * from Tbl_Datos_Personales
-
-select * from Cls_catalogo
-select * from Cls_Estado

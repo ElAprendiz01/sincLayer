@@ -8,6 +8,7 @@ BEGIN
 
     SELECT 
         dp.Id_Persona,
+		dp.Genero,
         dp.Primer_Nombre,
         dp.Segundo_Nombre,
         dp.Primer_Apellido,

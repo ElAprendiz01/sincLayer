@@ -117,9 +117,10 @@ GO
 DECLARE @Num INT, @Msg VARCHAR(255);
 
 EXEC Editar_Tbl_Datos_Personales
-    @Id_Persona = 1,
+    @Id_Persona = 4,
     @Id_Modificador = 1,
-    @Id_Estado = 4,            -- nuevo estado
+    @Id_Estado = 3, 
+	@Fecha_Nacimiento= '1902/10/23',
     @ForzarRecuperacion = 1,   -- permite actualizar aunque esté eliminado
     @O_Numero = @Num OUTPUT,
     @O_Msg = @Msg OUTPUT;
@@ -133,7 +134,7 @@ SELECT @Num AS Numero, @Msg AS Mensaje;
 DECLARE @Num INT, @Msg VARCHAR(255);
 
 EXEC Editar_Tbl_Datos_Personales
-    @Id_Persona = 1,
+    @Id_Persona = 4,
     @Id_Modificador = 1,
     @Id_Estado = 2,            
     @O_Numero = @Num OUTPUT,
