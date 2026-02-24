@@ -20,7 +20,7 @@ BEGIN
         dp.Fecha_Modificacion,
         dp.Id_Creador,
         dp.Id_Modificador,
-        e.Estado
+        e.Estado as Estado
     FROM Tbl_Datos_Personales dp
     INNER JOIN Cls_Estado e
         ON dp.Id_Estado = e.Id_Estado

@@ -22,5 +22,7 @@ BEGIN
 END; 
 GO
 
+EXEC Listar_Cls_Tipo_Catalogo
+
 	
 

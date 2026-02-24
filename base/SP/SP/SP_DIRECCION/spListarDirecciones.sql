@@ -20,7 +20,7 @@ BEGIN
         d.Fecha_Modificacion,
         d.Id_Creador,
         d.Id_Modificador,
-		e.Estado
+		e.Estado as Estado
     FROM Tbl_direcciones d
 	inner join Tbl_Datos_Personales dt
 		on d.Id_Persona = dt.Id_Persona

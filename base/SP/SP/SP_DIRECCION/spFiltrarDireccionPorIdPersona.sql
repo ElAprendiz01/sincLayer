@@ -10,7 +10,7 @@ BEGIN
 
     SELECT 
         d.Id_Persona,
-        dt.Primer_Nombre AS Nombre_Persona,
+        dt.Primer_Nombre AS nombre_persona,
         dt.Primer_Apellido AS Apellido,
         d.Id_direccion,
         d.Ciudad,

@@ -27,3 +27,6 @@ BEGIN
     END CATCH
 END;
 GO
+
+exec Eliminar_Cls_Tipo_Catalogo 5
+select * from Cls_Tipo_Catalogo

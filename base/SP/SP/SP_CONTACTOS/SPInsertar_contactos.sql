@@ -104,7 +104,7 @@ DECLARE @Num INT, @Msg VARCHAR(255);
 EXEC Insertar_Tbl_Contacto
     4,       
     5,       
-    'correo@ejemplo.com',
+    'correo@gmail.com',
     1,     
     3,     
     @Num OUTPUT,
