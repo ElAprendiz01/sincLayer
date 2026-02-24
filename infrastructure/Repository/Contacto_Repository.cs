@@ -37,15 +37,20 @@ namespace infrastructure.Repository
                     {
                         olist.Add(new Contacto_Domai
                         {
-                            Id_Contacto = Convert.ToInt32(dr["Id_Contacto"]),
-                            Id_Persona = Convert.ToInt32(dr["Id_Persona "]),
-                            Tipo_Contacto = Convert.ToInt32(dr["Tipo_Contacto "]),
-                            Contacto = dr["Contacto"].ToString(),
-                            Fecha_Creacion = Convert.ToDateTime(dr["Fecha_Creacion"]),
-                            Fecha_Modificacion = Convert.ToDateTime(dr["Fecha_Modicacion"]),
-                            Id_Creador = Convert.ToInt32(dr["Id_Creador"]),
-                            Id_Modificador = Convert.ToInt32(dr["Id_Modificador"]),
-                            Id_Estado = Convert.ToInt32(dr["Id_Estado"]),
+                            Id_Contacto = dr.GetInt32(dr.GetOrdinal("Id_Contacto")),
+                            Id_Persona = dr.GetInt32(dr.GetOrdinal("Id_Persona")),
+                            Nombre_Persona = dr.GetString(dr.GetOrdinal("Nombre_Persona")),
+                            Apellido = dr.GetString(dr.GetOrdinal("Apellido")),
+                            Tipo_Contacto = dr.GetInt32(dr.GetOrdinal("Tipo_Contacto")),
+                            Tipo_Contacto_Nombre = dr.GetString(dr.GetOrdinal("Tipo_Contacto_Nombre")),
+                            Contacto = dr.IsDBNull(dr.GetOrdinal("Contacto")) ? null : dr.GetString(dr.GetOrdinal("Contacto")),
+                            Fecha_Creacion = dr.GetDateTime(dr.GetOrdinal("Fecha_Creacion")),
+                            Fecha_Modificacion = dr.IsDBNull(dr.GetOrdinal("Fecha_Modificacion")) ? (DateTime?)null : dr.GetDateTime(dr.GetOrdinal("Fecha_Modificacion")),
+                            Id_Creador = dr.GetInt32(dr.GetOrdinal("Id_Creador")),
+                            Id_Modificador = dr.IsDBNull(dr.GetOrdinal("Id_Modificador")) ? (int?)null : dr.GetInt32(dr.GetOrdinal("Id_Modificador")),
+                            Estado = dr.IsDBNull(dr.GetOrdinal("Estado")) ? null : dr.GetString(dr.GetOrdinal("Estado"))
+
+
                         });
                     }
 
@@ -74,15 +79,20 @@ namespace infrastructure.Repository
                     {
                         olist.Add(new Contacto_Domai
                         {
-                            Id_Contacto = Convert.ToInt32(dr["Id_Contacto"]),
-                            Id_Persona = Convert.ToInt32(dr["Id_Persona "]),
-                            Tipo_Contacto = Convert.ToInt32(dr["Tipo_Contacto "]),
-                            Contacto = dr["Contacto"].ToString(),
-                            Fecha_Creacion = Convert.ToDateTime(dr["Fecha_Creacion"]),
-                            Fecha_Modificacion = Convert.ToDateTime(dr["Fecha_Modicacion"]),
-                            Id_Creador = Convert.ToInt32(dr["Id_Creador"]),
-                            Id_Modificador = Convert.ToInt32(dr["Id_Modificador"]),
-                            Id_Estado = Convert.ToInt32(dr["Id_Estado"]),
+                            Id_Contacto = dr.GetInt32(dr.GetOrdinal("Id_Contacto")),
+                            Id_Persona = dr.GetInt32(dr.GetOrdinal("Id_Persona")),
+                            Nombre_Persona = dr.GetString(dr.GetOrdinal("Nombre_Persona")),
+                            Apellido = dr.GetString(dr.GetOrdinal("Apellido")),
+                            Tipo_Contacto = dr.GetInt32(dr.GetOrdinal("Tipo_Contacto")),
+                            Tipo_Contacto_Nombre = dr.GetString(dr.GetOrdinal("Tipo_Contacto_Nombre")),
+                            Contacto = dr.IsDBNull(dr.GetOrdinal("Contacto")) ? null : dr.GetString(dr.GetOrdinal("Contacto")),
+                            Fecha_Creacion = dr.GetDateTime(dr.GetOrdinal("Fecha_Creacion")),
+                            Fecha_Modificacion = dr.IsDBNull(dr.GetOrdinal("Fecha_Modificacion")) ? (DateTime?)null : dr.GetDateTime(dr.GetOrdinal("Fecha_Modificacion")),
+                            Id_Creador = dr.GetInt32(dr.GetOrdinal("Id_Creador")),
+                            Id_Modificador = dr.IsDBNull(dr.GetOrdinal("Id_Modificador")) ? (int?)null : dr.GetInt32(dr.GetOrdinal("Id_Modificador")),
+                            Estado = dr.IsDBNull(dr.GetOrdinal("Estado")) ? null : dr.GetString(dr.GetOrdinal("Estado"))
+
+
                         });
                     }
 
@@ -104,11 +114,26 @@ namespace infrastructure.Repository
                 cmd.Parameters.Add(new SqlParameter("@Id_Persona", oContacto_Domai.Id_Persona));
                 cmd.Parameters.Add(new SqlParameter("@Tipo_Contacto", oContacto_Domai.Tipo_Contacto));
                 cmd.Parameters.Add(new SqlParameter("@Contacto", oContacto_Domai.Contacto));
-                cmd.Parameters.Add(new SqlParameter("@Fecha_Creacion", oContacto_Domai.Fecha_Creacion));
-                cmd.Parameters.Add(new SqlParameter("@Id_Creador", oContacto_Domai.Id_Creador));
-                cmd.Parameters.Add(new SqlParameter("@Id_Modificador", oContacto_Domai.Id_Modificador));                
-                cmd.Parameters.Add(new SqlParameter("@Estado", oContacto_Domai.Id_Estado));                
+                cmd.Parameters.Add(new SqlParameter("@Id_Creador", oContacto_Domai.Id_Creador));                
+                cmd.Parameters.Add(new SqlParameter("@Id_Estado", oContacto_Domai.Id_Estado));
+
+
+                var oNumero = new SqlParameter("@O_Numero", SqlDbType.Int)
+                { Direction = ParameterDirection.Output };
+                var oMsg = new SqlParameter("@O_Msg", SqlDbType.VarChar, 255)
+                { Direction = ParameterDirection.Output };
+
+                cmd.Parameters.Add(oNumero);
+                cmd.Parameters.Add(oMsg);
+
                 await cmd.ExecuteNonQueryAsync();
+
+                // Captura de errores del SP
+                int codigo = (int)oNumero.Value;
+                string mensaje = oMsg.Value.ToString();
+
+                if (codigo <= 0)
+                    throw new Exception(mensaje);
 
 
             }
@@ -126,23 +151,36 @@ namespace infrastructure.Repository
 
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Add(new SqlParameter("@Id_Contacto", oContacto_Domai.Id_Contacto));
-                cmd.Parameters.Add(new SqlParameter("@Id_Persona", oContacto_Domai.Id_Persona));
                 cmd.Parameters.Add(new SqlParameter("@Tipo_Contacto", oContacto_Domai.Tipo_Contacto));
                 cmd.Parameters.Add(new SqlParameter("@Contacto", oContacto_Domai.Contacto));
-                cmd.Parameters.Add(new SqlParameter("@Fecha_Creacion", oContacto_Domai.Fecha_Creacion));
-                cmd.Parameters.Add(new SqlParameter("@Id_Creador", oContacto_Domai.Id_Creador));
                 cmd.Parameters.Add(new SqlParameter("@Id_Modificador", oContacto_Domai.Id_Modificador));
-                cmd.Parameters.Add(new SqlParameter("@Estado", oContacto_Domai.Id_Estado));
+                cmd.Parameters.Add(new SqlParameter("@Id_Estado", oContacto_Domai.Id_Estado));
 
+                cmd.Parameters.Add(new SqlParameter("@ForzarRecuperacion", oContacto_Domai.ForzarRecuperacion));
+
+                var oNumero = new SqlParameter("@O_Numero", SqlDbType.Int)
+                { Direction = ParameterDirection.Output };
+                var oMsg = new SqlParameter("@O_Msg", SqlDbType.VarChar, 255)
+                { Direction = ParameterDirection.Output };
+
+                cmd.Parameters.Add(oNumero);
+                cmd.Parameters.Add(oMsg);
 
                 await cmd.ExecuteNonQueryAsync();
+
+                // Captura de errores del SP
+                int codigo = (int)oNumero.Value;
+                string mensaje = oMsg.Value.ToString();
+
+                if (codigo <= 0)
+                    throw new Exception(mensaje);
 
             }
         }
 
         //Eliminar Contacto
 
-        public async Task EliminarContactoAsync(int id)
+        public async Task EliminarContactoAsync(int id, int idModificador)
         {
             using var con = _dBConectionFactory.CreateConnection();
             await con.OpenAsync();
@@ -153,8 +191,25 @@ namespace infrastructure.Repository
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Add(new SqlParameter("@Id_Contacto", id));
 
+                cmd.Parameters.Add(new SqlParameter("@Id_Modificador", idModificador));
+
+
+                var oNumero = new SqlParameter("@O_Numero", SqlDbType.Int)
+                { Direction = ParameterDirection.Output };
+                var oMsg = new SqlParameter("@O_Msg", SqlDbType.VarChar, 255)
+                { Direction = ParameterDirection.Output };
+
+                cmd.Parameters.Add(oNumero);
+                cmd.Parameters.Add(oMsg);
 
                 await cmd.ExecuteNonQueryAsync();
+
+                // Captura de errores del SP
+                int codigo = (int)oNumero.Value;
+                string mensaje = oMsg.Value.ToString();
+
+                if (codigo <= 0)
+                    throw new Exception(mensaje);
 
             }
         }

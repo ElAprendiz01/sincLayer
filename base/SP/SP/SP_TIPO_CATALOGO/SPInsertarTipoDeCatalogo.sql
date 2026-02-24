@@ -3,7 +3,7 @@ GO
 
 CREATE OR ALTER PROC Insertar_Cls_Tipo_Catalogo
 (
-	 @Nombre NVARCHAR,
+	 @Nombre NVARCHAR (50),
 	 @Id_Creador INT,
     @O_Numero INT OUTPUT,
     @O_Msg VARCHAR(255) OUTPUT

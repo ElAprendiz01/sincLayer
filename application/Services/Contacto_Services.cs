@@ -26,13 +26,16 @@ namespace application.Services
             {
                 Id_Contacto = p.Id_Contacto,
                 Id_Persona = p.Id_Persona,
+                Nombre_Persona = p.Nombre_Persona,
+                Apellido = p.Apellido,
                 Tipo_Contacto = p.Tipo_Contacto,
                 Contacto = p.Contacto,
+                Tipo_Contacto_Nombre = p.Tipo_Contacto_Nombre,
                 Fecha_Creacion = p.Fecha_Creacion,
                 Fecha_Modificacion = p.Fecha_Modificacion,
                 Id_Creador = p.Id_Creador,
                 Id_Modificador = p.Id_Modificador,
-                Id_Estado = p.Id_Estado,
+                Estado = p.Estado,
             });
         }
 
@@ -48,13 +51,16 @@ namespace application.Services
             {
                 Id_Contacto = p.Id_Contacto,
                 Id_Persona = p.Id_Persona,
-                Tipo_Contacto = p.Tipo_Contacto,
+                Nombre_Persona = p.Nombre_Persona,
+                Apellido = p.Apellido,
                 Contacto = p.Contacto,
+                Tipo_Contacto_Nombre = p.Tipo_Contacto_Nombre,
+                Tipo_Contacto = p.Tipo_Contacto,
                 Fecha_Creacion = p.Fecha_Creacion,
                 Fecha_Modificacion = p.Fecha_Modificacion,
                 Id_Creador = p.Id_Creador,
                 Id_Modificador = p.Id_Modificador,
-                Id_Estado = p.Id_Estado,
+                Estado = p.Estado,
             });
         }
 
@@ -76,8 +82,13 @@ namespace application.Services
         }
 
         //METODO EDITAR
-        public async Task EditarContacto(ContactoDTOs dto)
+        public async Task EditarContacto(ContactoDTOs dto, bool esAdmin)
         {
+            if (!esAdmin)
+            {
+                // Usuario normal NO puede forzar recuperación
+                dto.ForzarRecuperacion = false;
+            }
             var oContacto_Domai = new Contacto_Domai
             {
                 Id_Contacto = dto.Id_Contacto,
@@ -89,15 +100,16 @@ namespace application.Services
                 Id_Creador = dto.Id_Creador,
                 Id_Modificador = dto.Id_Modificador,
                 Id_Estado = dto.Id_Estado,
+                ForzarRecuperacion = dto.ForzarRecuperacion
 
             };
             await _repository.EditarContactoAsync(oContacto_Domai);
         }
 
         //METODO ELIMINAR
-        public async Task EliminarContacto(int id)
+        public async Task EliminarContacto(int id,int idModificador)
         {
-            await _repository.EliminarContactoAsync(id);
+            await _repository.EliminarContactoAsync(id,idModificador);
         }
 
     }

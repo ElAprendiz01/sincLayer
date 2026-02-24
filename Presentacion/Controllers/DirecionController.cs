@@ -9,7 +9,6 @@ namespace Presentacion.Controllers
     [ApiController]
     public class DirecionController : ControllerBase
     {
-
         private readonly DireccionServices _service;
 
         public DirecionController(DireccionServices service)
@@ -17,21 +16,34 @@ namespace Presentacion.Controllers
             _service = service;
         }
 
-
         [HttpGet("listarDireccion")]
         public async Task<IActionResult> Listar()
         {
             try
             {
                 var lista = await _service.ListarDireccion();
-                return Ok(lista);
+
+                if (lista == null || !lista.Any())
+                {
+                    return NotFound(new
+                    {
+                        codigo = 404,
+                        msj = "No se encontraron direcciones registradas."
+                    });
+                }
+
+                return Ok(new
+                {
+                    codigo = 200,
+                    msj = "Consulta exitosa",
+                    data = lista
+                });
             }
             catch (Exception ex)
             {
                 return StatusCode(500, "Internal server error: " + ex.Message);
             }
         }
-
 
         [HttpPost("insertarDireccion")]
         public async Task<IActionResult> Nuevo([FromBody] DIreccionDTOs dto)
@@ -43,14 +55,13 @@ namespace Presentacion.Controllers
 
                 await _service.NuevaDireccion(dto);
 
-                return StatusCode(201, "Dirección agregado correctamente");
+                return StatusCode(201, "Dirección agregada correctamente");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Error al insertar direccion: " + ex.Message);
+                return StatusCode(500, "Error al insertar dirección: " + ex.Message);
             }
         }
-
 
         [HttpPut("EditarDireccion/{id}")]
         public async Task<IActionResult> Editar(int id, [FromBody] DIreccionDTOs dto)
@@ -63,40 +74,42 @@ namespace Presentacion.Controllers
                 if (id != dto.Id_direccion)
                     return BadRequest(new { msj = "El id no coincide" });
 
-                await _service.EditarDireccion(dto);
+                dto.Id_direccion = id;
+
+                bool esAdmin = User.IsInRole("Admin");
+
+                await _service.EditarDireccion(dto, esAdmin);
 
                 return NoContent();
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Error al editar direccion: " + ex.Message);
+                return StatusCode(500, "Error al editar dirección: " + ex.Message);
             }
         }
 
-
         [HttpDelete("DesactivarEliminarDireccion/{id}")]
-        public async Task<IActionResult> Eliminar(int id, [FromQuery] int idModificador, [FromQuery] int Id_Estado)
+        public async Task<IActionResult> Eliminar(int id, [FromQuery] int idModificador)
         {
             try
             {
-                await _service.EliminarDireccion(id, idModificador, Id_Estado);
+                await _service.EliminarDireccion(id, idModificador);
                 return NoContent();
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Error al eliminar Dirección: " + ex.Message);
+                return StatusCode(500, "Error al eliminar dirección: " + ex.Message);
             }
         }
 
-
-        [HttpGet("FiltrarDireccionIDPErsona")]
+        [HttpGet("FiltrarDireccionIDPersona")]
         public async Task<IActionResult> Filtrar([FromQuery] int Id_Persona)
         {
             try
             {
                 var lista = await _service.ListarPorIdPersona(Id_Persona);
 
-               if (lista == null || !lista.Any())
+                if (lista == null || !lista.Any())
                 {
                     return NotFound(new
                     {
@@ -104,6 +117,7 @@ namespace Presentacion.Controllers
                         msj = "No se encontraron direcciones para la persona especificada."
                     });
                 }
+
                 return Ok(new
                 {
                     codigo = 200,
@@ -113,9 +127,8 @@ namespace Presentacion.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Error al filtrar Dirección: " + ex.Message);
+                return StatusCode(500, "Error al filtrar dirección: " + ex.Message);
             }
         }
-
     }
 }

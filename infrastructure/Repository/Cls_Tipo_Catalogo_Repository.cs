@@ -38,13 +38,14 @@ namespace infrastructure.Repository
                     {
                         olist.Add(new Cls_Tipo_Catalogo
                         {
-                            Id_Tipo_Catalogo = Convert.ToInt32(dr["Id_Tipo_Catalogo"]),
-                            Nombre = dr["Nombre"].ToString(),
-                            Fecha_Creacion = Convert.ToDateTime(dr["Fecha_Creacion"]),
-                            Fecha_Modificacion = Convert.ToDateTime(dr["Fecha_Modificacion"]),
-                            Id_Creador = Convert.ToInt32(dr["Id_Creador"]),
-                            Id_Modificador = Convert.ToInt32(dr["Id_Modificador"]),
-                            Activo = Convert.ToBoolean(dr["Activo"]),
+                            Id_Tipo_Catalogo = dr.GetInt32(dr.GetOrdinal("Id_Tipo_Catalogo")),
+                            Nombre = dr.IsDBNull(dr.GetOrdinal("Nombre")) ? null : dr.GetString(dr.GetOrdinal("Nombre")),
+                            Fecha_Creacion = dr.GetDateTime(dr.GetOrdinal("Fecha_Creacion")),
+                            Fecha_Modificacion = dr.IsDBNull(dr.GetOrdinal("Fecha_Modificacion")) ? (DateTime?)null : dr.GetDateTime(dr.GetOrdinal("Fecha_Modificacion")),
+                            Id_Creador = dr.GetInt32(dr.GetOrdinal("Id_Creador")),
+                            Id_Modificador = dr.IsDBNull(dr.GetOrdinal("Id_Modificador")) ? (int?)null : dr.GetInt32(dr.GetOrdinal("Id_Modificador")),
+                            Activo = dr.IsDBNull(dr.GetOrdinal("Activo")) ? (bool?)null : dr.GetBoolean(dr.GetOrdinal("Activo"))
+
 
                         });
                     }
@@ -74,13 +75,14 @@ namespace infrastructure.Repository
                     {
                         olist.Add(new Cls_Tipo_Catalogo
                         {
-                            Id_Tipo_Catalogo = Convert.ToInt32(dr["Id_Tipo_Catalogo"]),
-                            Nombre = dr["Nombre"].ToString(),
-                            Fecha_Creacion = Convert.ToDateTime(dr["Fecha_Creacion"]),
-                            Fecha_Modificacion = Convert.ToDateTime(dr["Fecha_Modificacion"]),
-                            Id_Creador = Convert.ToInt32(dr["Id_Creador"]),
-                            Id_Modificador = Convert.ToInt32(dr["Id_Modificador"]),
-                            Activo = Convert.ToBoolean(dr["Activo"]),
+                            Id_Tipo_Catalogo = dr.GetInt32(dr.GetOrdinal("Id_Tipo_Catalogo")),
+                            Nombre = dr.IsDBNull(dr.GetOrdinal("Nombre")) ? null : dr.GetString(dr.GetOrdinal("Nombre")),
+                            Fecha_Creacion = dr.GetDateTime(dr.GetOrdinal("Fecha_Creacion")),
+                            Fecha_Modificacion = dr.IsDBNull(dr.GetOrdinal("Fecha_Modificacion")) ? (DateTime?)null : dr.GetDateTime(dr.GetOrdinal("Fecha_Modificacion")),
+                            Id_Creador = dr.GetInt32(dr.GetOrdinal("Id_Creador")),
+                            Id_Modificador = dr.IsDBNull(dr.GetOrdinal("Id_Modificador")) ? (int?)null : dr.GetInt32(dr.GetOrdinal("Id_Modificador")),
+                            Activo = dr.IsDBNull(dr.GetOrdinal("Activo")) ? (bool?)null : dr.GetBoolean(dr.GetOrdinal("Activo"))
+
                         });
                     }
 
@@ -101,12 +103,22 @@ namespace infrastructure.Repository
             {
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Add(new SqlParameter("@Nombre", oCls_Tipo_Catalogo.Nombre));
-                cmd.Parameters.Add(new SqlParameter("@Fecha_Creacion", oCls_Tipo_Catalogo.Fecha_Creacion));
-                cmd.Parameters.Add(new SqlParameter("@Fecha_Modificacion", oCls_Tipo_Catalogo.Fecha_Modificacion));
                 cmd.Parameters.Add(new SqlParameter("@Id_Creador", oCls_Tipo_Catalogo.Id_Creador));
-                cmd.Parameters.Add(new SqlParameter("@Id_Modificador", oCls_Tipo_Catalogo.Id_Modificador));
-                cmd.Parameters.Add(new SqlParameter("@Activo", oCls_Tipo_Catalogo.Activo));
-                
+
+
+                var oNumero = new SqlParameter("@O_Numero", SqlDbType.Int)
+                { Direction = ParameterDirection.Output };
+                var oMsg = new SqlParameter("@O_Msg", SqlDbType.VarChar, 255)
+                { Direction = ParameterDirection.Output };
+                cmd.Parameters.Add(oNumero);
+                cmd.Parameters.Add(oMsg);
+                await cmd.ExecuteNonQueryAsync();
+                // Captura de errores del SP
+                int codigo = (int)oNumero.Value;
+                string mensaje = oMsg.Value.ToString();
+                if (codigo <= 0)
+                    throw new Exception(mensaje);
+
 
                 await cmd.ExecuteNonQueryAsync();
 
@@ -127,11 +139,22 @@ namespace infrastructure.Repository
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Add(new SqlParameter("@Id_Tipo_Catalogo", oCls_Tipo_Catalogo.Id_Tipo_Catalogo));
                 cmd.Parameters.Add(new SqlParameter("@Nombre", oCls_Tipo_Catalogo.Nombre));
-                cmd.Parameters.Add(new SqlParameter("@Fecha_Creacion", oCls_Tipo_Catalogo.Fecha_Creacion));
-                cmd.Parameters.Add(new SqlParameter("@Fecha_Modificacion", oCls_Tipo_Catalogo.Fecha_Modificacion));
-                cmd.Parameters.Add(new SqlParameter("@Id_Creador", oCls_Tipo_Catalogo.Id_Creador));
                 cmd.Parameters.Add(new SqlParameter("@Id_Modificador", oCls_Tipo_Catalogo.Id_Modificador));
                 cmd.Parameters.Add(new SqlParameter("@Activo", oCls_Tipo_Catalogo.Activo));
+
+                var oNumero = new SqlParameter("@O_Numero", SqlDbType.Int)
+                { Direction = ParameterDirection.Output };
+                var oMsg = new SqlParameter("@O_Msg", SqlDbType.VarChar, 255)
+                { Direction = ParameterDirection.Output };
+                cmd.Parameters.Add(oNumero);
+                cmd.Parameters.Add(oMsg);
+                await cmd.ExecuteNonQueryAsync();
+                // Captura de errores del SP
+                int codigo = (int)oNumero.Value;
+                string mensaje = oMsg.Value.ToString();
+                if (codigo <= 0)
+                    throw new Exception(mensaje);
+
 
                 await cmd.ExecuteNonQueryAsync();
 
@@ -153,6 +176,7 @@ namespace infrastructure.Repository
 
 
                 await cmd.ExecuteNonQueryAsync();
+
 
             }
         }

@@ -21,7 +21,21 @@ namespace Presentacion.Controllers
             try
             {
                 var lista = await _service.Listar_Datos_Personales();
-                return Ok(lista);
+               
+                if (lista == null || !lista.Any())
+                {
+                    return NotFound(new
+                    {
+                        codigo = 404,
+                        msj = "No se encontraron datos perosnales de la persona especificada."
+                    });
+                }
+                return Ok(new
+                {
+                    codigo = 200,
+                    msj = "Consulta exitosa",
+                    data = lista
+                });
             }
             catch (Exception ex)
             {
@@ -77,9 +91,9 @@ namespace Presentacion.Controllers
         }
 
         [HttpDelete("Eliminar/{id}")]
-        public async Task<IActionResult> EliminarDatos_Personales(int id, int idModificador, int Id_Estado)
+        public async Task<IActionResult> EliminarDatos_Personales(int id, int idModificador)
         {
-            await _service.EliminarDatos_Personales(id,  idModificador,  Id_Estado);
+            await _service.EliminarDatos_Personales(id,  idModificador);
             return NoContent();
         }
 

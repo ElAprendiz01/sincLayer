@@ -20,6 +20,8 @@ namespace Domain
         public int? Id_Creador { get; set; }
         public int? Id_Modificador { get; set; }
         public int? Id_Estado { get; set; }
+        public string? Estado { get; set; }
+        public bool? ForzarRecuperacion { get; set; }
 
     }
 }

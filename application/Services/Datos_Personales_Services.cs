@@ -121,9 +121,9 @@ namespace application.Services
         }
 
         //METODO ELIMINAR
-        public async Task EliminarDatos_Personales(int id ,int idModificador, int Id_Estado)
+        public async Task EliminarDatos_Personales(int id ,int idModificador)
         {
-            await _repository.EliminarDatos_PersonalesAsync(id,  idModificador,  Id_Estado);
+            await _repository.EliminarDatos_PersonalesAsync(id,  idModificador);
         }
 
     }

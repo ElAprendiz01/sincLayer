@@ -189,7 +189,7 @@ namespace infrastructure.Repository
 
         //Eliminar Datos Personales
 
-        public async Task EliminarDatos_PersonalesAsync(int id, int idModificador, int Id_Estado)
+        public async Task EliminarDatos_PersonalesAsync(int id, int idModificador)
         {
             using var con = _dBConectionFactory.CreateConnection();
             await con.OpenAsync();
@@ -201,8 +201,6 @@ namespace infrastructure.Repository
                 cmd.Parameters.Add(new SqlParameter("@Id_Persona", id));
 
                 cmd.Parameters.Add(new SqlParameter("@Id_Modificador", idModificador));
-                cmd.Parameters.Add(new SqlParameter("@Id_Estado", Id_Estado));
-
 
                 var oNumero = new SqlParameter("@O_Numero", SqlDbType.Int)
                 { Direction = ParameterDirection.Output };

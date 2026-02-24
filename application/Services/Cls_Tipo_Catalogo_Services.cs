@@ -62,11 +62,7 @@ namespace application.Services
             var oCls_Tipo_Catalogo = new Cls_Tipo_Catalogo
             {
                 Nombre = dto.Nombre,
-                Fecha_Creacion = dto.Fecha_Creacion,
-                Fecha_Modificacion = dto.Fecha_Modificacion,
-                Id_Creador = dto.Id_Creador,
-                Id_Modificador = dto.Id_Modificador,
-                Activo = dto.Activo,
+                Id_Creador = dto.Id_Creador
             };
             await _repository.NuevoCls_Tipo_CatalogoAsyn(oCls_Tipo_Catalogo);
         }
@@ -78,9 +74,6 @@ namespace application.Services
             {
                 Id_Tipo_Catalogo = dto.Id_Tipo_Catalogo,
                 Nombre = dto.Nombre,
-                Fecha_Creacion = dto.Fecha_Creacion,
-                Fecha_Modificacion = dto.Fecha_Modificacion,
-                Id_Creador = dto.Id_Creador,
                 Id_Modificador = dto.Id_Modificador,
                 Activo = dto.Activo,
             };

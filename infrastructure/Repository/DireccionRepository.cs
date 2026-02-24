@@ -34,6 +34,7 @@ namespace infrastructure.Repository
                 cmd.Parameters.Add(new SqlParameter("@Id_Modificador", (object?)oDireccion_Dom.Id_Modificador ?? DBNull.Value));
                 cmd.Parameters.Add(new SqlParameter("@Id_Estado", (object?)oDireccion_Dom.Id_Estado ?? DBNull.Value));
 
+                cmd.Parameters.Add(new SqlParameter("@ForzarRecuperacion", oDireccion_Dom.ForzarRecuperacion));
 
                 var oNumero = new SqlParameter("@O_Numero", SqlDbType.Int)
                 { Direction = ParameterDirection.Output };
@@ -55,7 +56,7 @@ namespace infrastructure.Repository
             }
         }
 
-        public async  Task EliminarDireccionAsync(int id, int idModificador, int Id_Estado)
+        public async  Task EliminarDireccionAsync(int id, int idModificador)
         {
             using var con = _dBConectionFactory.CreateConnection();
             await con.OpenAsync();
@@ -64,7 +65,6 @@ namespace infrastructure.Repository
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Add(new SqlParameter("@Id_direccion", id));
                 cmd.Parameters.Add(new SqlParameter("@Id_Modificador", idModificador));
-                cmd.Parameters.Add(new SqlParameter("@Id_Estado", Id_Estado));
 
 
                 var oNumero = new SqlParameter("@O_Numero", SqlDbType.Int)
@@ -110,7 +110,8 @@ namespace infrastructure.Repository
                             Fecha_Modificacion = dr.IsDBNull(dr.GetOrdinal("Fecha_Modificacion")) ? null : dr.GetDateTime(dr.GetOrdinal("Fecha_Modificacion")),
                             Id_Creador = dr.IsDBNull(dr.GetOrdinal("Id_Creador")) ? null : dr.GetInt32(dr.GetOrdinal("Id_Creador")),
                             Id_Modificador = dr.IsDBNull(dr.GetOrdinal("Id_Modificador")) ? null : dr.GetInt32(dr.GetOrdinal("Id_Modificador")),
-                            Id_Estado = dr.GetInt32(dr.GetOrdinal("Id_Estado"))
+                            Estado = dr.IsDBNull(dr.GetOrdinal("Estado")) ? null : dr.GetString(dr.GetOrdinal("Estado"))
+
                         });
 
                     }
@@ -126,7 +127,7 @@ namespace infrastructure.Repository
 
             using var con = _dBConectionFactory.CreateConnection();
             await con.OpenAsync();
-            using var cmd = new SqlCommand("SpFiltrarDireccionesPorPersona", con);
+            using var cmd = new SqlCommand("SpFiltrarDireccionesPorPersonaActivas", con);
             {
                 cmd.CommandType = CommandType.StoredProcedure;
 
@@ -148,7 +149,8 @@ namespace infrastructure.Repository
                             Fecha_Modificacion = dr.IsDBNull(dr.GetOrdinal("Fecha_Modificacion")) ? null : dr.GetDateTime(dr.GetOrdinal("Fecha_Modificacion")),
                             Id_Creador = dr.IsDBNull(dr.GetOrdinal("Id_Creador")) ? null : dr.GetInt32(dr.GetOrdinal("Id_Creador")),
                             Id_Modificador = dr.IsDBNull(dr.GetOrdinal("Id_Modificador")) ? null : dr.GetInt32(dr.GetOrdinal("Id_Modificador")),
-                            Id_Estado = dr.GetInt32(dr.GetOrdinal("Id_Estado"))
+                            Estado = dr.IsDBNull(dr.GetOrdinal("Estado")) ? null : dr.GetString(dr.GetOrdinal("Estado"))
+
                         });
 
                     }

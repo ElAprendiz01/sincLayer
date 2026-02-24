@@ -1,9 +1,9 @@
 USE SYNCLAYER
 GO 
-Create Proc Editar_Cls_Tipo_Catalogo
+Create OR ALTER  Proc Editar_Cls_Tipo_Catalogo
 (
 	@Id_Tipo_Catalogo int,
-	@Nombre NVARCHAR,
+	@Nombre NVARCHAR(50),
     @Id_Modificador INT,
 	@Activo BIT,
 	@O_Numero INT OUTPUT,

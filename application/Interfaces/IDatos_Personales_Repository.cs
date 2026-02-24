@@ -13,6 +13,6 @@ namespace application.Interfaces
         Task<IEnumerable<Datos_Personales>> Listar_Datos_PersonalesPorFechaAsync(string Buscar);
         Task NuevoDatos_PersonalesAsyn(Datos_Personales oDatos_Personales);
         Task EditarDatos_PersonalesAsync(Datos_Personales oDatos_Personales);
-        Task EliminarDatos_PersonalesAsync(int id, int idModificador, int Id_Estado);
+        Task EliminarDatos_PersonalesAsync(int id, int idModificador);
     }
 }

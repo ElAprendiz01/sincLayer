@@ -21,11 +21,26 @@ namespace Presentacion.Controllers
             try
             {
                 var lista = await _service.Listar_Contacto();
-                return Ok(lista);
+
+                if (lista == null || !lista.Any())
+                {
+                    return NotFound(new
+                    {
+                        codigo = 404,
+                        msj = "No se encontraron contactos registrados."
+                    });
+                }
+
+                return Ok(new
+                {
+                    codigo = 200,
+                    msj = "Consulta exitosa",
+                    data = lista
+                });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Internal serve error" + ex.Message);
+                return StatusCode(500, "Internal server error: " + ex.Message);
             }
         }
 
@@ -36,14 +51,16 @@ namespace Presentacion.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest(new { msj = "El Modelo no es valido" });
+                    return BadRequest(new { msj = "El modelo no es válido" });
                 }
+
                 await _service.NuevoContacto(dto);
-                return StatusCode(201, "Contacto agregado Correctamente");
+
+                return StatusCode(201, "Contacto agregado correctamente");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "internal server error" + ex.Message);
+                return StatusCode(500, "Error al insertar contacto: " + ex.Message);
             }
         }
 
@@ -54,28 +71,40 @@ namespace Presentacion.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest(new { msj = "el modelo no es valido" });
+                    return BadRequest(new { msj = "El modelo no es válido" });
                 }
-                if (id != dto.Id_Persona)
+
+                if (id != dto.Id_Contacto)
                 {
-                    return BadRequest(new { msj = "el id no coincide" });
+                    return BadRequest(new { msj = "El id no coincide" });
                 }
-                dto.Id_Persona = id;
-                await _service.EditarContacto(dto);
+
+                dto.Id_Contacto = id;
+
+                bool esAdmin = User.IsInRole("Admin");
+
+                await _service.EditarContacto(dto, esAdmin);
+
                 return NoContent();
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "internal server error" + ex.Message);
+                return StatusCode(500, "Error al editar contacto: " + ex.Message);
             }
-
         }
 
         [HttpDelete("Eliminar/{id}")]
-        public async Task<IActionResult> EliminarContacto(int id)
+        public async Task<IActionResult> EliminarContacto(int id, [FromQuery] int idModificador)
         {
-            await _service.EliminarContacto(id);
-            return NoContent();
+            try
+            {
+                await _service.EliminarContacto(id, idModificador);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error al eliminar contacto: " + ex.Message);
+            }
         }
     }
 }

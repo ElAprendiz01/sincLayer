@@ -13,6 +13,6 @@ namespace application.Interfaces
         Task<IEnumerable<Contacto_Domai>> Listar_ContactoPorContactoAsync(string Buscar);
         Task NuevoContactoAsyn(Contacto_Domai oContacto_Domai);
         Task EditarContactoAsync(Contacto_Domai oContacto_Domai);
-        Task EliminarContactoAsync(int id);
+        Task EliminarContactoAsync(int id, int idModificador);
     }
 }

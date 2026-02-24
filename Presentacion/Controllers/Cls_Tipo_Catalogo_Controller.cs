@@ -73,8 +73,17 @@ namespace Presentacion.Controllers
         [HttpDelete("Eliminar/{id}")]
         public async Task<IActionResult> EliminarCls_Tipo_Catalogo(int id)
         {
-            await _service.EliminarCls_Tipo_Catalogo(id);
-            return NoContent();
+           
+            try
+            {
+                await _service.EliminarCls_Tipo_Catalogo(id);
+              
+                return StatusCode(201, "Se ha eliminado  Correctamente");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "internal server error" + ex.Message);
+            }
         }
     }
 }

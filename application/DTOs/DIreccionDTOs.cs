@@ -19,6 +19,10 @@ namespace application.DTOs
         public DateTime? Fecha_Modificacion { get; set; }
         public int? Id_Creador { get; set; }
         public int? Id_Modificador { get; set; }
+
+        public string? Estado { get; set; }
         public int? Id_Estado { get; set; }
+
+        public bool? ForzarRecuperacion { get; set; }
     }
 }

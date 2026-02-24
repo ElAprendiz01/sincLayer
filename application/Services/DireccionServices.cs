@@ -33,7 +33,7 @@ namespace application.Services
                 Fecha_Modificacion = d.Fecha_Modificacion,
                 Id_Creador = d.Id_Creador,
                 Id_Modificador = d.Id_Modificador,
-                Id_Estado = d.Id_Estado,
+                Estado = d.Estado
             });
         }
         //metodo listar por idPersona
@@ -57,7 +57,7 @@ namespace application.Services
                 Fecha_Modificacion = d.Fecha_Modificacion,
                 Id_Creador = d.Id_Creador,
                 Id_Modificador = d.Id_Modificador,
-                Id_Estado = d.Id_Estado,
+                Estado = d.Estado
             });
         }
         //metodo insertar
@@ -78,8 +78,13 @@ namespace application.Services
 
         }
         //metodo editar
-        public async Task EditarDireccion(DIreccionDTOs dto)
+        public async Task EditarDireccion(DIreccionDTOs dto , bool esAdmin)
         {
+            if (!esAdmin)
+            {
+                // Usuario normal NO puede forzar recuperación
+                dto.ForzarRecuperacion = false;
+            }
             var direccion = new Direccion_Dom
             {
 
@@ -88,14 +93,15 @@ namespace application.Services
                 Barrio = dto.Barrio,
                 Calle = dto.Calle,
                 Id_Modificador = dto.Id_Modificador,
-                Id_Estado = dto.Id_Estado
+                Id_Estado = dto.Id_Estado,
+                ForzarRecuperacion = dto.ForzarRecuperacion
             };
             await _repository.EditarDireccionAsync(direccion);
         }
         //metodo eliminar
-        public async Task EliminarDireccion(int id, int idModificador, int Id_Estado)
+        public async Task EliminarDireccion(int id, int idModificador)
         {
-            await _repository.EliminarDireccionAsync(id, idModificador, Id_Estado);
+            await _repository.EliminarDireccionAsync(id, idModificador);
         }
 
 
