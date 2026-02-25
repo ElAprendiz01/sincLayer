@@ -124,8 +124,7 @@ GO
 
 CREATE TABLE Tbl_Autores (
     Id_Autor INT PRIMARY KEY IDENTITY(1,1),
-    Nombre_Completo NVARCHAR(150) NOT NULL,
-    Nacionalidad INT REFERENCES Cls_Catalogo(Id_Catalogo),
+    Id_persona INT REFERENCES Tbl_Datos_Personales(Id_Persona),
     Fecha_Creacion DATE DEFAULT GETDATE(),
     Fecha_Modificacion DATETIME ,
     Id_Creador INT NOT NULL,
@@ -177,12 +176,13 @@ CREATE TABLE Tbl_Multas (
     Id_Prestamo INT REFERENCES Tbl_Prestamos(Id_Prestamo),
     Monto_Multa DECIMAL(10,2) NOT NULL,
     Id_Motivo_Multa INT REFERENCES Cls_Catalogo(Id_Catalogo), 
-    Pagada BIT DEFAULT 0,
+    Pagada BIT,
     Fecha_Creacion DATE DEFAULT GETDATE(),
     Fecha_Modificacion DATETIME ,
     Id_Creador INT NOT NULL,
     Id_Modificador INT,
-    Id_Estado INT REFERENCES Cls_Estado(Id_Estado)
+    Id_Estado INT REFERENCES Cls_Estado(Id_Estado),
+	Saldo_Pendiente DECIMAL(10,2) NULL
 );
 GO
 
