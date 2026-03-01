@@ -7,33 +7,32 @@ namespace Presentacion.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class Datos_Personales_Controller : ControllerBase
+    public class PrestamosController : ControllerBase
     {
-        private readonly Datos_Personales_Services _service;
-        public Datos_Personales_Controller(Datos_Personales_Services service)
+        private readonly PrestamosServices _service;
+        public PrestamosController(PrestamosServices service)
         {
             _service = service;
         }
 
-        [HttpGet("Listar_Datos_Personales")]
-        public async Task<IActionResult> Listar_Datos_Personales()
+        [HttpGet("LISTAR_PRESTAMOS")]
+        public async Task<IActionResult> listarPrestamos()
         {
             try
             {
-                var lista = await _service.Listar_Datos_Personales();
-               
+                var lista = await _service.Listar_Prestamos();
+
                 if (lista == null || !lista.Any())
                 {
                     return NotFound(new
                     {
                         codigo = 404,
-                        msj = "No se encontraron datos perosnales de la persona especificada."
+                        msj = "No se encontraron prestamos ."
                     });
                 }
                 return Ok(new
                 {
-                    codigo = 200,
-                    msj = "Consulta exitosa",
+                    
                     data = lista
                 });
             }
@@ -43,8 +42,8 @@ namespace Presentacion.Controllers
             }
         }
 
-        [HttpPost("Insertar_Datos_Personales")]
-        public async Task<IActionResult> NuevoDatos_Personales(Datos_Personales_DTOs dto)
+        [HttpPost("Insertar_prestamos")]
+        public async Task<IActionResult> NuevoPrestamos(PrestamosDTOs dto)
         {
             try
             {
@@ -52,8 +51,8 @@ namespace Presentacion.Controllers
                 {
                     return BadRequest(new { msj = "El Modelo no es valido" });
                 }
-                await _service.NuevoDatos_Personales(dto);
-                return StatusCode(201, "Datos personal agregado Correctamente");
+                await _service.nuevoPrestamos(dto);
+                return StatusCode(201, "prestamos agregado Correctamente");
             }
             catch (Exception ex)
             {
@@ -62,7 +61,7 @@ namespace Presentacion.Controllers
         }
 
         [HttpPut("Editar/{id}")]
-        public async Task<IActionResult> EditarDatos_Personales(int id, [FromBody] Datos_Personales_DTOs dto)
+        public async Task<IActionResult> EditarPrestamos(int id, [FromBody] PrestamosDTOs dto)
         {
             try
             {
@@ -70,17 +69,17 @@ namespace Presentacion.Controllers
                 {
                     return BadRequest(new { msj = "el modelo no es valido" });
                 }
-                if (id != dto.Id_Persona)
+                if (id != dto.Id_Prestamo)
                 {
                     return BadRequest(new { msj = "el id no coincide" });
                 }
-                dto.Id_Persona = id;
+                dto.Id_Prestamo = id;
 
 
                 bool esAdmin = User.IsInRole("Admin");
 
 
-                await _service.EditarDatos_Personales(dto, esAdmin);
+                await _service.EditarPrestamos(dto, esAdmin);
                 return NoContent();
             }
             catch (Exception ex)
@@ -93,23 +92,23 @@ namespace Presentacion.Controllers
         [HttpDelete("Eliminar/{id}")]
         public async Task<IActionResult> EliminarDatos_Personales(int id, int idModificador)
         {
-            await _service.EliminarDatos_Personales(id,  idModificador);
+            await _service.EliminaPrestamos(id, idModificador);
             return NoContent();
         }
 
-        [HttpGet("buscarPErsonaPorFechaNacimiento")]
-        public async Task<IActionResult> Filtrar([FromQuery] string buscar)
+        [HttpGet("buscarPorIdUsuario")]
+        public async Task<IActionResult> Filtrar([FromQuery] int Id_Usuario_Cliente)
         {
             try
             {
-                var lista = await _service.Listar_Datos_PersonalesPorFecha(buscar);
+                var lista = await _service.FiltrarporIdUSuario(Id_Usuario_Cliente);
 
                 if (lista == null || !lista.Any())
                 {
                     return NotFound(new
                     {
                         codigo = 404,
-                        msj = "No se encontraron perosnas con ea fecha especificada."
+                        msj = "No se encontraron prestamos con el id especificado."
                     });
                 }
                 return Ok(new

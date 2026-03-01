@@ -7,27 +7,28 @@ namespace Presentacion.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class Datos_Personales_Controller : ControllerBase
+    public class AutorController : ControllerBase
     {
-        private readonly Datos_Personales_Services _service;
-        public Datos_Personales_Controller(Datos_Personales_Services service)
+
+        private readonly AutoresServices _service;
+        public AutorController(AutoresServices service)
         {
             _service = service;
         }
 
-        [HttpGet("Listar_Datos_Personales")]
-        public async Task<IActionResult> Listar_Datos_Personales()
+        [HttpGet("ListarAutores")]
+        public async Task<IActionResult> ListarAutores()
         {
             try
-            {
-                var lista = await _service.Listar_Datos_Personales();
-               
+             {
+                var lista = await _service.Listar_autores();
+
                 if (lista == null || !lista.Any())
                 {
                     return NotFound(new
                     {
                         codigo = 404,
-                        msj = "No se encontraron datos perosnales de la persona especificada."
+                        msj = "No se encontraron  el autor especificado."
                     });
                 }
                 return Ok(new
@@ -43,8 +44,8 @@ namespace Presentacion.Controllers
             }
         }
 
-        [HttpPost("Insertar_Datos_Personales")]
-        public async Task<IActionResult> NuevoDatos_Personales(Datos_Personales_DTOs dto)
+        [HttpPost("IinseratrAutor")]
+        public async Task<IActionResult> NuevoAutor(AutoresDTOs dto)
         {
             try
             {
@@ -52,8 +53,8 @@ namespace Presentacion.Controllers
                 {
                     return BadRequest(new { msj = "El Modelo no es valido" });
                 }
-                await _service.NuevoDatos_Personales(dto);
-                return StatusCode(201, "Datos personal agregado Correctamente");
+                await _service.nuevoAutor(dto);
+                return StatusCode(201, "autor agregado Correctamente");
             }
             catch (Exception ex)
             {
@@ -62,7 +63,7 @@ namespace Presentacion.Controllers
         }
 
         [HttpPut("Editar/{id}")]
-        public async Task<IActionResult> EditarDatos_Personales(int id, [FromBody] Datos_Personales_DTOs dto)
+        public async Task<IActionResult> editarfAutor(int id, [FromBody] AutoresDTOs dto)
         {
             try
             {
@@ -80,7 +81,7 @@ namespace Presentacion.Controllers
                 bool esAdmin = User.IsInRole("Admin");
 
 
-                await _service.EditarDatos_Personales(dto, esAdmin);
+                await _service.EditarAutor(dto, esAdmin);
                 return NoContent();
             }
             catch (Exception ex)
@@ -91,25 +92,25 @@ namespace Presentacion.Controllers
         }
 
         [HttpDelete("Eliminar/{id}")]
-        public async Task<IActionResult> EliminarDatos_Personales(int id, int idModificador)
+        public async Task<IActionResult> EliminarAutor(int id, int idModificador)
         {
-            await _service.EliminarDatos_Personales(id,  idModificador);
+            await _service.EliminarAutor(id, idModificador);
             return NoContent();
         }
 
-        [HttpGet("buscarPErsonaPorFechaNacimiento")]
-        public async Task<IActionResult> Filtrar([FromQuery] string buscar)
+        [HttpGet("FiltroPorIdPersona")]
+        public async Task<IActionResult> Filtrar([FromQuery] int id_persona)
         {
             try
             {
-                var lista = await _service.Listar_Datos_PersonalesPorFecha(buscar);
+                var lista = await _service.FiltrarAutoPorIdPersoan(id_persona);
 
                 if (lista == null || !lista.Any())
                 {
                     return NotFound(new
                     {
                         codigo = 404,
-                        msj = "No se encontraron perosnas con ea fecha especificada."
+                        msj = "No se encontro autor  con ea Id especificado."
                     });
                 }
                 return Ok(new

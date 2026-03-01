@@ -167,7 +167,7 @@ namespace infrastructure.Repository
             {
                 cmd.CommandType = CommandType.StoredProcedure;
 
-                cmd.Parameters.Add(new SqlParameter("Id_Persona", oDireccion_Dom.Id_Persona));
+                cmd.Parameters.Add(new SqlParameter("@Id_Persona", oDireccion_Dom.Id_Persona));
                 cmd.Parameters.Add(new SqlParameter("@Ciudad", (object?)oDireccion_Dom.Ciudad ?? DBNull.Value));
                 cmd.Parameters.Add(new SqlParameter("@Barrio", (object?)oDireccion_Dom.Barrio ?? DBNull.Value));
                 cmd.Parameters.Add(new SqlParameter("@Calle", (object?)oDireccion_Dom.Calle ?? DBNull.Value));

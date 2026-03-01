@@ -22,8 +22,16 @@ builder.Services.AddSingleton(new DBconexionfactory(connectionString!));
 
 
 // Cls_Tipo_Catalogo
+builder.Services.AddScoped<IautoresRepository, AutoresRepository>();
+builder.Services.AddScoped<AutoresServices>();
+
 builder.Services.AddScoped<ITipo_Catalogo_Repository, Cls_Tipo_Catalogo_Repository>();
 builder.Services.AddScoped<Cls_Tipo_Catalogo_Services>();
+
+
+builder.Services.AddScoped<IPrestamosRepository, PrestamosRepository>();
+
+builder.Services.AddScoped<PrestamosServices>();
 
 builder.Services.AddScoped<IEstdoRepositorio, EstatdoRepository>();
 builder.Services.AddScoped<EsatdosServices>();

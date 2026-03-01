@@ -10,6 +10,7 @@ CREATE OR ALTER PROCEDURE SpInsertarPrestamo(
     @O_Numero INT OUTPUT,
     @O_Msg VARCHAR(255) OUTPUT
 )
+v
 AS
 BEGIN
     SET NOCOUNT ON;
