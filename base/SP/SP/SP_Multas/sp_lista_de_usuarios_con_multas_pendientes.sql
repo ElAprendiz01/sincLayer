@@ -19,7 +19,7 @@ BEGIN
     INNER JOIN Cls_Estado e
         ON m.Id_Estado = e.Id_Estado
     WHERE (m.Pagada = 0 OR ISNULL(m.Saldo_Pendiente, m.Monto_Multa) > 0)
-      AND e.Estado = 'Activo'
+      AND e.Estado in ( 'Activo', 'Parcial')
     GROUP BY u.Id_Usuario, u.Usuario
     ORDER BY TotalPendiente DESC;
 END;

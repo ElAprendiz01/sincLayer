@@ -28,6 +28,13 @@ builder.Services.AddScoped<AutoresServices>();
 builder.Services.AddScoped<ITipo_Catalogo_Repository, Cls_Tipo_Catalogo_Repository>();
 builder.Services.AddScoped<Cls_Tipo_Catalogo_Services>();
 
+builder.Services.AddScoped<ImultasRepository, MultasRepository>();
+builder.Services.AddScoped<MultasServices>();
+
+
+builder.Services.AddScoped<IDevolucionesRepository, DevolucionesRepository>();
+builder.Services.AddScoped<DevolucionesServices>();
+
 
 builder.Services.AddScoped<IPrestamosRepository, PrestamosRepository>();
 

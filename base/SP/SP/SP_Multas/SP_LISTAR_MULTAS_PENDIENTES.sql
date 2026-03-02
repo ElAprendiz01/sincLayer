@@ -30,8 +30,9 @@ BEGIN
         ON m.Id_Motivo_Multa = c.Id_Catalogo
     INNER JOIN Cls_Estado e
         ON m.Id_Estado = e.Id_Estado
-    WHERE m.Pagada = 0
-       OR ISNULL(m.Saldo_Pendiente, m.Monto_Multa) > 0
+    WHERE m.Pagada = 0 OR ISNULL(m.Saldo_Pendiente, m.Monto_Multa) > 0
+	and e.Estado='Activo'
+      
     ORDER BY m.Id_Multa DESC;
 END;
 GO

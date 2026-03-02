@@ -182,7 +182,7 @@ CREATE TABLE Tbl_Multas (
     Id_Creador INT NOT NULL,
     Id_Modificador INT,
     Id_Estado INT REFERENCES Cls_Estado(Id_Estado),
-	Saldo_Pendiente DECIMAL(10,2) NULL
+	Saldo_Pendiente DECIMAL(10,2) NULL	
 );
 GO
 
