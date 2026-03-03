@@ -37,7 +37,7 @@ IF @Id_Autor IS NULL OR @Id_Autor = 0
         RETURN;
     END;
     ------------
-    --para evitar registros de libros asociados a autores que esten en estado eliminado, etc
+    --para evitar registros de libros asociados a autores que esten en estado eliminuado
 
     IF EXISTS (
 		SELECT 1 
