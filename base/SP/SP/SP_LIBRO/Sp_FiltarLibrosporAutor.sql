@@ -1,7 +1,7 @@
-use BD_Facturaccion
+use SYNCLAYER
 go
 
-CREATE OR ALTER PROCEDURE SpFiltrarLibrosPorAutor
+CREATE PROCEDURE SPFiltrarLibrosPorAutor
     @Id_Autor INT
 AS
 BEGIN
@@ -12,11 +12,11 @@ BEGIN
         l.Titulo,
         l.ISBN,
         l.Id_Autor,
-        a.Id_Persona,
+        a.Id_persona,
         dp.Primer_Nombre AS Nombre_Autor,
         dp.Primer_Apellido AS Apellido_Autor,
         l.Id_Categoria,
-        c.Nombre_Catalogo AS Categoria,
+        c.Nombre AS Categoria,
         l.Editorial,
         l.Año_Publicacion,
         l.Stock,
@@ -29,7 +29,7 @@ BEGIN
     INNER JOIN Tbl_Autores a
         ON l.Id_Autor = a.Id_Autor
     INNER JOIN Tbl_Datos_Personales dp
-        ON a.Id_Persona = dp.Id_Persona
+        ON a.Id_persona = dp.Id_Persona
     INNER JOIN Cls_Catalogo c
         ON l.Id_Categoria = c.Id_Catalogo
     INNER JOIN Cls_Estado e
@@ -40,4 +40,4 @@ BEGIN
 END;
 GO
 
-EXEC SpFiltrarLibrosPorAutor 3;
+
