@@ -178,3 +178,6 @@ exec SpListar_Cls_Estado
 exec SpListarPrestamos
 
 exec SpListarMultasPendientes
+
+Select * from Cls_Catalogo
+

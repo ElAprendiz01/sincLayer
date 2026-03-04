@@ -29,7 +29,7 @@ BEGIN
         ON d.Id_Estado_Libro = c.Id_Catalogo
     INNER JOIN Cls_Estado e
         ON d.Id_Estado = e.Id_Estado
-    ORDER BY d.Id_Devolucion DESC;
+    ORDER BY d.Id_Devolucion asc;
 END;
 GO
 
