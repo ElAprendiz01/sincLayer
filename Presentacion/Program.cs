@@ -55,6 +55,9 @@ builder.Services.AddScoped<Contacto_Services>();
 builder.Services.AddScoped<IDireccionRepository, DireccionRepository>();
 builder.Services.AddScoped<DireccionServices>();
 
+builder.Services.AddScoped<IRolRepository, RolRepository>();
+builder.Services.AddScoped<rolservice>();
+
 
 
 
