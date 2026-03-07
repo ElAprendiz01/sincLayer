@@ -65,6 +65,16 @@ namespace application.Services
                 });
             }
 
+
+             //me falta añadir filtar por categoria
+
+
+
+
+
+
+
+
             // Insertar nuevo libro
             public async Task NuevoLibro(LibrosDTO olibro)
             {
@@ -84,9 +94,15 @@ namespace application.Services
             }
 
             // Editar libro
-            public async Task EditarLibro(LibrosDTO olibro)
+            public async Task EditarLibro(LibrosDTO olibro , bool esAdmin)
             {
-                var libroDom = new LibroDomain
+            if (!esAdmin)
+            {
+                // Usuario normal NO puede forzar recuperación
+                olibro.ForzarRecuperacion = false;
+            }
+
+            var libroDom = new LibroDomain
                 {
                     Id_Libro = olibro.Id_Libro ?? 0,
                     Titulo = olibro.Titulo,
