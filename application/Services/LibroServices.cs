@@ -66,7 +66,7 @@ namespace application.Services
             }
 
 
-             //me falta añadir filtar por categoria
+             // filtar por categoria
 
 
 
