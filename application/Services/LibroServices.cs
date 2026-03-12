@@ -66,17 +66,39 @@ namespace application.Services
             }
 
 
-             // filtar por categoria
+        // filtar por categoria
+
+
+        public async Task<IEnumerable<LibroDomain>> FiltrarLibrosPorCategoria(int idCategoria)
+        {
+            if (idCategoria <= 0)
+                return Enumerable.Empty<LibroDomain>();
+
+            var listar = await _repository.Listar_Libros_Por_CategoriaAsync(idCategoria);
+            return listar.Select(l => new LibroDomain
+            {
+                Id_Libro = l.Id_Libro,
+                Titulo = l.Titulo,
+                ISBN = l.ISBN,
+                Id_Autor = l.Id_Autor,
+                Id_Categoria = l.Id_Categoria,
+                Editorial = l.Editorial,
+                Año_Publicacion = l.Año_Publicacion,
+                Stock = l.Stock,
+                Fecha_Creacion = l.Fecha_Creacion,
+                Fecha_Modificacion = l.Fecha_Modificacion,
+                Id_Creador = l.Id_Creador,
+                Id_Modificador = l.Id_Modificador,
+                Estado = l.Estado
+            });
+        }
 
 
 
 
 
-
-
-
-            // Insertar nuevo libro
-            public async Task NuevoLibro(LibrosDTO olibro)
+        // Insertar nuevo libro
+        public async Task NuevoLibro(LibrosDTO olibro)
             {
                 var libroDom = new LibroDomain
                 {

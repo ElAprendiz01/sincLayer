@@ -85,6 +85,8 @@ builder.Services.AddScoped<rolservice>();
 builder.Services.AddScoped<IUsuarioRepository, UsarioRepositoy>();
 builder.Services.AddScoped<UsuarioServices>();
 
+builder.Services.AddScoped<ILibroRepository, LibrosRepository>();
+builder.Services.AddScoped<LibrosService>();
 
 
 
