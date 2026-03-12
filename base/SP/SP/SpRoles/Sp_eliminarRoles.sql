@@ -1,3 +1,8 @@
+
+use SYNCLAYER
+GO
+
+
 CREATE OR ALTER PROCEDURE Sp_EliminarRol
 (
     @Id_Rol INT,
@@ -16,3 +21,19 @@ BEGIN
     SET @O_Numero = 200;
     SET @O_Msg = 'Rol eliminado correctamente.';
 END
+
+
+DECLARE @Num INT, @Msg VARCHAR(255);
+
+EXEC Sp_EliminarRol
+    @Id_Rol = 4,
+    @Id_Modificador = 1,
+    @O_Numero = @Num OUTPUT,
+    @O_Msg = @Msg OUTPUT;
+
+SELECT @Num AS Numero, @Msg AS Mensaje;
+
+
+select * from Tbl_Roles
+
+select * from Cls_Estado

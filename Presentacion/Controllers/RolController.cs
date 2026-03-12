@@ -24,18 +24,19 @@ namespace Presentacion.Controllers
         }
 
         [HttpPut("Actualizar_rol")]
-        public async Task<IActionResult> Actualizar( [FromBody] RolDTO dto)
+        public async Task<IActionResult> Actualizar([FromBody] RolDTO dto)
         {
             bool esAdmin = User.IsInRole("Admin");
             await _service.ActualizarRol(dto, esAdmin);
             return Ok("Rol actualizado correctamente");
+
         }
 
-        [HttpDelete("eliminar rol/{id}")]
-        public async Task<IActionResult> Eliminar( int idRol,[FromQuery] int idModificador)
+        [HttpDelete("Eliminar/{id}")]
+        public async Task<IActionResult> EliminarRol(int id, int idModificador)
         {
-            await _service.EliminarRol(idRol, idModificador);
-            return Ok("Rol eliminado correctamente");
-        }//pendiendte veridicar 
+            await _service.EliminarRol(id, idModificador);
+            return NoContent();
+        }
     }
 }
