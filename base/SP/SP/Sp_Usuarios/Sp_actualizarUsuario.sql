@@ -1,3 +1,7 @@
+use SYNCLAYER
+go
+
+
 CREATE OR ALTER PROCEDURE SpActualizarUsuario
 (
     @Id_Usuario INT,
@@ -72,3 +76,10 @@ BEGIN
         SET @O_Msg = ERROR_MESSAGE();
     END CATCH
 END
+
+
+
+select * from Tbl_Roles
+select * from Tbl_Datos_Personales
+
+select * from Tbl_Usuarios
