@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="11.0.0-preview.2.26159.112" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
   </ItemGroup>
 
   <ItemGroup>

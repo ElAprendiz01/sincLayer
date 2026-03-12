@@ -4,6 +4,9 @@ using infrastructure.DB;
 using application.Interfaces;
 using infrastructure.Repository;
 using application.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 
 
@@ -18,7 +21,27 @@ builder.Services.AddControllers();
 var connectionString = builder.Configuration.GetConnectionString("Default");
 builder.Services.AddSingleton(new DBconexionfactory(connectionString!));
 
+//para el JWT
 
+var jwtKey = builder.Configuration["Jwt:Key"];
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+
+        IssuerSigningKey =
+            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+    };
+});
 
 
 // Cls_Tipo_Catalogo
@@ -59,7 +82,8 @@ builder.Services.AddScoped<IRolRepository, RolRepository>();
 builder.Services.AddScoped<rolservice>();
 
 
-
+builder.Services.AddScoped<IUsuarioRepository, UsarioRepositoy>();
+builder.Services.AddScoped<UsuarioServices>();
 
 
 
@@ -96,6 +120,9 @@ if (app.Environment.IsDevelopment())
 {
     app.MapSwagger();
 }
+//para el uso del jwt
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseCors("AllowAll");
 app.UseAuthorization();

@@ -9,10 +9,12 @@ namespace application.Interfaces
 {
     public interface IUsuarioRepository
     {
-        Task<UsuarioDomain?> ObtenerUsuarioAsync(string usuario);
+        Task CrearUsuarioAsync(UsuarioDomain usuario);
 
-        Task ActualizarRolAsync(RolesDomain rol, bool forzarRecuperacion);
-        Task InsertarRol(RolesDomain rol, bool forzarRecuperacion);
-        Task EliminarRolAsync(int idRol, int idModificador);
+        Task ActualizarUsuarioAsync(UsuarioDomain usuario);
+
+        Task EliminarUsuarioAsync(int idUsuario, int idModificador);
+
+        Task<UsuarioDomain?> ObtenerUsuarioAsync(string usuario);
     }
 }
