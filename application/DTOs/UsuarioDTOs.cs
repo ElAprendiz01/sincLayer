@@ -12,7 +12,7 @@ namespace application.DTOs
 
         public string Usuario { get; set; }
 
-        public string Contraseña { get; set; }
+        public string Contrasena { get; set; }
 
         public string Rol { get; set; }
         public int? Id_Persona          {get;  set;}          

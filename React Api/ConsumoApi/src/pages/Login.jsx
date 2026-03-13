@@ -10,13 +10,12 @@ export default function Login() {
     e.preventDefault()
 
     const data = {
-      usuario,
-      contraseña
+      Usuario: usuario,
+      Contrasena: contraseña // enviar contraseña en texto plano
     }
 
     try {
-
-      const response = await fetch("https://localhost:5001/api/Auth/login", {
+      const response = await fetch("http://localhost:5082/api/Usuario/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -26,26 +25,24 @@ export default function Login() {
 
       const result = await response.json()
 
-      if (!response.ok) {
+      // ✅ Evaluar token en la respuesta
+      if (!result.token) {
         alert("Usuario o contraseña incorrecta")
         return
       }
 
       localStorage.setItem("token", result.token)
-
       alert("Login correcto")
 
     } catch (error) {
-      console.error(error)
+      console.error("Error en el login:", error)
+      alert("Error de conexión con el servidor")
     }
   }
 
   return (
-
     <div className="login-container">
-
       <form className="login-card" onSubmit={handleSubmit}>
-
         <h2>Iniciar sesión</h2>
 
         <input
@@ -67,9 +64,7 @@ export default function Login() {
         <button type="submit">
           Entrar
         </button>
-
       </form>
-
     </div>
   )
 }

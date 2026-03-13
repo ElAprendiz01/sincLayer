@@ -30,7 +30,7 @@ namespace application.Services
             var usuario = new UsuarioDomain
             {
                 Usuario = dto.Usuario,
-                PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Contraseña),
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Contrasena),
                 Id_Persona = dto.Id_Persona,
                 Id_Rol = dto.Id_Rol,
                 Id_Creador = dto.Id_Creador
@@ -47,7 +47,7 @@ namespace application.Services
                 return null;
 
             bool passwordValida =
-                BCrypt.Net.BCrypt.Verify(dto.Contraseña, usuario.PasswordHash);
+                BCrypt.Net.BCrypt.Verify(dto.Contrasena, usuario.PasswordHash);
 
             if (!passwordValida)
                 return null;

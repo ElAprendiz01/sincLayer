@@ -1,47 +1,96 @@
-body{
-  margin:0;
-  font-family: Arial, Helvetica, sans-serif;
+body {
+  margin: 0;
+  font-family: 'Poppins', Arial, Helvetica, sans-serif;
+  background: radial-gradient(circle at top left, #0f0c29, #302b63, #24243e);
+  color: #fff;
 }
 
-.login-container{
-  height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background: linear-gradient(135deg,#4facfe,#00f2fe);
+/* Contenedor con efecto de luces */
+.login-container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  animation: backgroundShift 10s infinite alternate;
 }
 
-.login-card{
-  background:white;
-  padding:40px;
-  border-radius:12px;
-  width:320px;
-  display:flex;
-  flex-direction:column;
-  gap:15px;
-  box-shadow:0 10px 25px rgba(0,0,0,0.2);
+@keyframes backgroundShift {
+  0% { background-position: left top; }
+  100% { background-position: right bottom; }
 }
 
-.login-card h2{
-  text-align:center;
+/* Tarjeta con efecto glassmorphism */
+.login-card {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 40px;
+  border-radius: 16px;
+  width: 350px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.6);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.login-card input{
-  padding:12px;
-  border-radius:8px;
-  border:1px solid #ccc;
+.login-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 40px rgba(0, 255, 255, 0.9);
 }
 
-.login-card button{
-  padding:12px;
-  border:none;
-  border-radius:8px;
-  background:#4facfe;
-  color:white;
-  font-weight:bold;
-  cursor:pointer;
+.login-card h2 {
+  text-align: center;
+  color: #00f2fe;
+  text-shadow: 0 0 10px #00f2fe;
 }
 
-.login-card button:hover{
-  background:#3793ff;
+/* Inputs con glow */
+.login-card input {
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  transition: box-shadow 0.3s ease;
+}
+
+.login-card input:focus {
+  box-shadow: 0 0 15px #4facfe;
+}
+
+/* Botón con animación neón */
+.login-card button {
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #4facfe, #00f2fe);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.login-card button::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.3) 10%, transparent 70%);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.8); opacity: 0.7; }
+  100% { transform: scale(1.2); opacity: 0; }
+}
+
+.login-card button:hover {
+  transform: translateY(-3px);
+  background: linear-gradient(90deg, #00f2fe, #4facfe);
 }

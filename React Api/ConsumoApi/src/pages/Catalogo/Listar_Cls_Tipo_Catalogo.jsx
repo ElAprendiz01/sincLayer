@@ -1,4 +1,4 @@
-import'./App.css'
+import"../../App.css";
 import { useState, useEffect } from 'react';
 function Listar_Cls_Tipo_Catalogo(){
     const[VariableTipo_Catalogo, setfunccionTipo_Catalogo] = useState([]);
