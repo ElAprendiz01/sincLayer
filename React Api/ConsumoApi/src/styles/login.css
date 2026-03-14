@@ -3,6 +3,7 @@ body {
   font-family: 'Poppins', Arial, Helvetica, sans-serif;
   background: radial-gradient(circle at top left, #0f0c29, #302b63, #24243e);
   color: #fff;
+  overflow: hidden;
 }
 
 /* Contenedor con efecto de luces */
@@ -13,12 +14,47 @@ body {
   align-items: center;
   background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
   animation: backgroundShift 10s infinite alternate;
+  position: relative;
+
 }
 
-@keyframes backgroundShift {
-  0% { background-position: left top; }
-  100% { background-position: right bottom; }
+
+
+/* Líneas animadas tipo serpiente */
+.line {
+  position: absolute;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, #00f2fe, transparent);
+  animation: snakeMove 4s linear infinite;
+  opacity: 0.8;
 }
+
+.line:nth-child(1) {
+  top: 20%;
+  animation-delay: 0s;
+  background: linear-gradient(90deg, transparent, #ff00ff, transparent);
+}
+
+.line:nth-child(2) {
+  top: 50%;
+  animation-delay: 1s;
+  background: linear-gradient(90deg, transparent, #39ff14, transparent);
+}
+
+.line:nth-child(3) {
+  top: 80%;
+  animation-delay: 2s;
+  background: linear-gradient(90deg, transparent, #00f2fe, transparent);
+}
+
+@keyframes snakeMove {
+  0% { background-position: -200px 0; }
+  100% { background-position: 200px 0; }
+}
+
+
+
 
 /* Tarjeta con efecto glassmorphism */
 .login-card {
@@ -32,6 +68,7 @@ body {
   backdrop-filter: blur(12px);
   box-shadow: 0 0 25px rgba(0, 255, 255, 0.6);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  z-index: 1;
 }
 
 .login-card:hover {
@@ -72,6 +109,9 @@ body {
   position: relative;
   overflow: hidden;
   transition: background 0.3s ease, transform 0.2s ease;
+  transition: transform 0.2s ease;
+  animation: neonShift 6s ease infinite;
+
 }
 
 .login-card button::before {

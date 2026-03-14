@@ -1,6 +1,9 @@
 import { useState } from "react"
 import "../styles/login.css"
 
+
+
+
 export default function Login() {
 
   const [usuario, setUsuario] = useState("")
@@ -42,6 +45,9 @@ export default function Login() {
 
   return (
     <div className="login-container">
+      <div className="line"></div>
+      <div className="line"></div>
+
       <form className="login-card" onSubmit={handleSubmit}>
         <h2>Iniciar sesión</h2>
 
