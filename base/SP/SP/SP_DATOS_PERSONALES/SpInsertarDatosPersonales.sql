@@ -48,6 +48,24 @@ BEGIN
         SET @O_Msg = 'El valor de Genero no existe o está inactivo.';
         RETURN;
     END
+	IF @Fecha_Nacimiento IS NOT NULL
+    BEGIN
+        -- Validar que no sea del año 1925 o anterior
+        IF YEAR(@Fecha_Nacimiento) <= 1925
+        BEGIN
+            SET @O_Numero = -1;
+            SET @O_Msg = 'La fecha de nacimiento no es válida. El año debe ser mayor a 1925.';
+            RETURN;
+        END
+
+        -- Validar que tenga al menos 12 años (Fecha actual menos 12 años)
+        IF @Fecha_Nacimiento > DATEADD(YEAR, -12, GETDATE())
+        BEGIN
+            SET @O_Numero = -1;
+            SET @O_Msg = 'La persona debe tener al menos 12 años de edad para ser registrada.';
+            RETURN;
+        END
+    END
 
     IF NOT EXISTS (SELECT 1 FROM Cls_Catalogo WHERE Id_Catalogo = @Tipo_DNI AND Activo = 1)
     BEGIN
@@ -114,3 +132,57 @@ BEGIN
     END CATCH
 END;
 GO
+
+DECLARE @O_Numero INT;
+DECLARE @O_Msg VARCHAR(255);
+
+-- 1. CASO DE ÉXITO: Registro válido
+EXEC Insertar_Tbl_Datos_Personales 
+    @Genero = 9,
+    @Primer_Nombre = 'Juan',
+    @Segundo_Nombre = 'Alberto',
+    @Primer_Apellido = 'Pérez',
+    @Segundo_Apellido = 'García',
+    @Fecha_Nacimiento = '1995-05-15',
+    @Tipo_DNI = 12, 
+    @DNI = '123456789-0', 
+    @Id_Creador = 1,
+    @Id_Estado = 3, 
+    @O_Numero = @O_Numero OUTPUT,
+    @O_Msg = @O_Msg OUTPUT;
+
+SELECT @O_Numero AS Codigo, @O_Msg AS Mensaje;
+
+-- 2. CASO FALLIDO: Menor de 12 años
+DECLARE @O_Numero INT;
+DECLARE @O_Msg VARCHAR(255);
+
+EXEC Insertar_Tbl_Datos_Personales 
+    @Genero = 9,
+    @Primer_Nombre = 'Luis',
+    @Primer_Apellido = 'Mora',
+    @Fecha_Nacimiento = '2020-01-01', -- Muy joven
+    @Tipo_DNI = 12,
+    @DNI = '987654321-0',
+    @Id_Creador = 1,
+    @Id_Estado = 3,
+    @O_Numero = @O_Numero OUTPUT,
+    @O_Msg = @O_Msg OUTPUT;
+
+SELECT @O_Numero AS Codigo_Error, @O_Msg AS Mensaje_Error;
+
+-- 3. CASO FALLIDO: DNI Duplicado
+-- Ejecuta esto dos veces con el mismo DNI para ver el error
+EXEC Insertar_Tbl_Datos_Personales 
+    @Genero = 1,
+    @Primer_Nombre = 'Ana',
+    @Primer_Apellido = 'Rojas',
+    @Fecha_Nacimiento = '1990-10-10',
+    @Tipo_DNI = 2,
+    @DNI = '123456789-0', -- Mismo que el caso 1
+    @Id_Creador = 10,
+    @Id_Estado = 1,
+    @O_Numero = @O_Numero OUTPUT,
+    @O_Msg = @O_Msg OUTPUT;
+
+SELECT @O_Numero AS Codigo_DNI_Duplicado, @O_Msg AS Mensaje_DNI_Duplicado;

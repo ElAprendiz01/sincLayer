@@ -54,6 +54,24 @@ BEGIN
         SET @O_Msg = 'El estado no existe o está desactivado.';
         RETURN;
     END
+	IF @Fecha_Nacimiento  is not NULL
+    BEGIN
+        -- Validar que no sea del año 1925 o anterior
+        IF YEAR(@Fecha_Nacimiento) <= 1925
+        BEGIN
+            SET @O_Numero = -1;
+            SET @O_Msg = 'La fecha de nacimiento no es válida. El año debe ser mayor a 1925.';
+            RETURN;
+        END
+
+        -- Validar que tenga al menos 12 años (Fecha actual menos 12 años)
+        IF @Fecha_Nacimiento > DATEADD(YEAR, -12, GETDATE())
+        BEGIN
+            SET @O_Numero = -1;
+            SET @O_Msg = 'La persona debe tener al menos 12 años de edad para ser registrada.';
+            RETURN;
+        END
+    END
 
     -- Validar que el DNI no exista en otra persona
     IF @DNI IS NOT NULL

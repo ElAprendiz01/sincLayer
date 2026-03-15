@@ -1,9 +1,12 @@
-body {
+.login-page {
   margin: 0;
-  font-family: 'Poppins', Arial, Helvetica, sans-serif;
-  background: radial-gradient(circle at top left, #0f0c29, #302b63, #24243e);
+  height: 100vh; /* Ocupa toda la altura */
+  display: flex;
+  justify-content: center; /* Centrado horizontal */
+  align-items: center;     /* Centrado vertical */
+  font-family: 'Poppins', sans-serif;
+  background: radial-gradient(circle at center, #1a1a2e, #0f0c29); /* Fondo más tenue */
   color: #fff;
-  overflow: hidden;
 }
 
 /* Contenedor con efecto de luces */
@@ -58,17 +61,23 @@ body {
 
 /* Tarjeta con efecto glassmorphism */
 .login-card {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 40px;
-  border-radius: 16px;
-  width: 350px;
+  background: rgba(255, 255, 255, 0.05); /* Ligeramente más transparente */
+  padding: 60px; /* Más padding para que se vea más grande */
+  border-radius: 20px;
+  width: 450px; /* Ancho mayor */
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  backdrop-filter: blur(12px);
-  box-shadow: 0 0 25px rgba(0, 255, 255, 0.6);
+  gap: 25px;
+  backdrop-filter: blur(10px);
+  /* Sombra reducida y más suave */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); 
+  border: 1px solid rgba(255, 255, 255, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  z-index: 1;
+}
+
+.login-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 15px 40px rgba(0, 242, 254, 0.2); /* Mucho menos luminoso */
 }
 
 .login-card:hover {

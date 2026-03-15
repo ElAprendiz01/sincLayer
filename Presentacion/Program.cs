@@ -8,23 +8,28 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
-
-
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
+// Servicios al contenedor
 builder.Services.AddControllers();
 
-//conexio base de datos 
+// Configuración de CORS
+builder.Services.AddCors(op =>
+{
+    op.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowAnyOrigin();
+    });
+});
 
+// Conexión base de datos 
 var connectionString = builder.Configuration.GetConnectionString("Default");
 builder.Services.AddSingleton(new DBconexionfactory(connectionString!));
 
-//para el JWT
-
+// Configuración JWT
 var jwtKey = builder.Configuration["Jwt:Key"];
-
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 .AddJwtBearer(options =>
 {
@@ -34,112 +39,58 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
-
-        IssuerSigningKey =
-            new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
     };
 });
 
-
-// Cls_Tipo_Catalogo
+// Inyección de servicios
 builder.Services.AddScoped<IautoresRepository, AutoresRepository>();
 builder.Services.AddScoped<AutoresServices>();
-
 builder.Services.AddScoped<ITipo_Catalogo_Repository, Cls_Tipo_Catalogo_Repository>();
 builder.Services.AddScoped<Cls_Tipo_Catalogo_Services>();
-
 builder.Services.AddScoped<ImultasRepository, MultasRepository>();
 builder.Services.AddScoped<MultasServices>();
-
-
 builder.Services.AddScoped<IDevolucionesRepository, DevolucionesRepository>();
 builder.Services.AddScoped<DevolucionesServices>();
-
-
 builder.Services.AddScoped<IPrestamosRepository, PrestamosRepository>();
-
 builder.Services.AddScoped<PrestamosServices>();
-
 builder.Services.AddScoped<IEstdoRepositorio, EstatdoRepository>();
 builder.Services.AddScoped<EsatdosServices>();
-
 builder.Services.AddScoped<IDatos_Personales_Repository, Datos_Personales_Repository>();
 builder.Services.AddScoped<Datos_Personales_Services>();
-
 builder.Services.AddScoped<ICatalogoRepositorio, CatalogoRepository>();
 builder.Services.AddScoped<CatalogoServices>();
-
 builder.Services.AddScoped<IContacto_Repository, Contacto_Repository>();
 builder.Services.AddScoped<Contacto_Services>();
-
 builder.Services.AddScoped<IDireccionRepository, DireccionRepository>();
 builder.Services.AddScoped<DireccionServices>();
-
 builder.Services.AddScoped<IRolRepository, RolRepository>();
 builder.Services.AddScoped<rolservice>();
-
-
 builder.Services.AddScoped<IUsuarioRepository, UsarioRepositoy>();
 builder.Services.AddScoped<UsuarioServices>();
-
 builder.Services.AddScoped<ILibrosRepository, LibrosRepository>();
 builder.Services.AddScoped<LibrosService>();
-
-
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// ajuste cors 
-builder.Services.AddCors(op =>
-{
-    op.AddPolicy("AllowAll", policy =>
-    {
-        policy.AllowAnyHeader()
-                  .AllowAnyMethod()
-                  .AllowAnyOrigin();
-
-    });
-      
-        
-});
-
 var app = builder.Build();
 
 
- //swagger
- app.UseSwagger();
+app.UseCors("AllowAll"); // Primero CORS
+
+app.UseSwagger();
 app.UseSwaggerUI(s =>
 {
-  s.SwaggerEndpoint( "/swagger/v1/swagger.json", "Api syncLayer");
+    s.SwaggerEndpoint("/swagger/v1/swagger.json", "Api syncLayer");
     s.RoutePrefix = string.Empty;
-
 });
-if (app.Environment.IsDevelopment())
-{
-    app.MapSwagger();
-}
-//para el uso del jwt
-app.UseAuthentication();
-app.UseAuthorization();
 
-app.UseCors("AllowAll");
-app.UseAuthorization();
+app.UseAuthentication();
+app.UseAuthorization(); // Único punto de autorización
 
 app.MapControllers();
 
 app.Run();
-//para examene
-// crear la 4 capas 
-// relacionrlo,
-// crear todas las caprtsa 
-// crear las conexion  el metodo completo 
-// trabajar el json de conexion
-//dbCadenaconexion crear en el metodo de conexion en el programn
-// crear en la database la clase de conexion
-// hacer todo lo que esta en indraestructura  qque seria el metodo de listar 
-// hacer el metodo listar  de la interfaz hacer los 4 metodos 
-// en repositrio  en repositio el metodo listar dejar  el olist vacio

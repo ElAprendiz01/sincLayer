@@ -11,14 +11,12 @@ CREATE OR ALTER PROCEDURE SpInsertarLibro
     @Stock INT,
     @Id_Creador INT,
     @Id_Estado INT,
-    @O_Id_Libro INT OUTPUT,   -- agregado
     @O_Numero INT OUTPUT,
     @O_Msg VARCHAR(255) OUTPUT
 AS
 BEGIN
     SET NOCOUNT ON;
-
-----------------
+--
 
 
 IF @Id_Autor IS NULL OR @Id_Autor = 0
@@ -27,7 +25,7 @@ IF @Id_Autor IS NULL OR @Id_Autor = 0
         SET @O_Msg = 'El Id autor es obligatorio.';
         RETURN;
     END;
-    ---------------
+   
     --para garantizar que el autor realmente exista en la tabla autores---
 
     IF NOT EXISTS (SELECT 1 FROM Tbl_Autores WHERE Id_Autor = @Id_Autor)
@@ -36,7 +34,7 @@ IF @Id_Autor IS NULL OR @Id_Autor = 0
         SET @O_Msg = 'El autor no existe.';
         RETURN;
     END;
-    ------------
+    
     --para evitar registros de libros asociados a autores que esten en estado eliminuado
 
     IF EXISTS (
@@ -51,7 +49,7 @@ IF @Id_Autor IS NULL OR @Id_Autor = 0
 		SET @O_Msg = 'No se puede registrar el libro porque el autor esta desactivado.';
 		RETURN;
 	END;
-    --------
+   
 
     --validar que el titulo del libro sea obligatorio
     IF @Titulo IS NULL OR LTRIM(RTRIM(@Titulo)) = ''
@@ -61,14 +59,53 @@ IF @Id_Autor IS NULL OR @Id_Autor = 0
         RETURN;
     END;
 
-    --------
+   -- Validar unicidad y formato ISBN
+    IF @ISBN IS NOT NULL AND LTRIM(RTRIM(@ISBN)) <> ''
+    BEGIN
+        -- Limpiar espacios en blanco
+        SET @ISBN = LTRIM(RTRIM(@ISBN)); 
+
+        IF EXISTS (SELECT 1 FROM Tbl_Libros WHERE ISBN = @ISBN)
+        BEGIN
+            SET @O_Numero = -1;
+            SET @O_Msg = 'El ISBN ingresado ya se encuentra registrado en otro libro.';
+            RETURN;
+        END;
+    END
+
+    -- Validar año de publicación lógico
+    IF @Año_Publicacion IS NOT NULL
+    BEGIN
+        IF @Año_Publicacion > YEAR(GETDATE())
+        BEGIN
+            SET @O_Numero = -1;
+            SET @O_Msg = 'El año de publicación no puede ser mayor al año actual.';
+            RETURN;
+        END;
+
+        IF @Año_Publicacion < 1000
+        BEGIN
+            SET @O_Numero = -1;
+            SET @O_Msg = 'El año de publicación ingresado no es válido (demasiado antiguo).';
+            RETURN;
+        END;
+    END
+
+    -- Validar stock no sea negativo
+    IF @Stock IS NOT NULL AND @Stock < 0
+    BEGIN
+        SET @O_Numero = -1;
+        SET @O_Msg = 'El stock inicial no puede ser negativo.';
+        RETURN;
+    END;
+
      IF @Id_Categoria IS NULL OR @Id_Categoria = 0
     BEGIN
         SET @O_Numero = -1;
         SET @O_Msg = 'La categoría es obligatoria.';
         RETURN;
     END;
-    -----
+ 
 
      IF NOT EXISTS (SELECT 1 FROM Cls_Catalogo WHERE Id_Catalogo = @Id_Categoria)
     BEGIN
@@ -76,7 +113,7 @@ IF @Id_Autor IS NULL OR @Id_Autor = 0
         SET @O_Msg = 'La categoría no existe.';
         RETURN;
     END;
-    --------
+  
     ---estado valido del libro 
     IF @Id_Estado IS NULL OR @Id_Estado = 0
     BEGIN
@@ -84,7 +121,7 @@ IF @Id_Autor IS NULL OR @Id_Autor = 0
         SET @O_Msg = 'El id estado es obligatorio.';
         RETURN;
     END;
-    -----
+
     IF NOT EXISTS (SELECT 1 FROM Cls_Estado WHERE Id_Estado = @Id_Estado)
     BEGIN
         SET @O_Numero = -1;
@@ -93,7 +130,8 @@ IF @Id_Autor IS NULL OR @Id_Autor = 0
     END;
 
 
-    -----estados no vigentes-----
+    -----estados no vigentes
+
     
     IF EXISTS (
         SELECT 1
@@ -133,7 +171,7 @@ IF @Id_Autor IS NULL OR @Id_Autor = 0
             @Id_Estado
         );
 
-        SET @O_Id_Libro = SCOPE_IDENTITY();
+      
 
         COMMIT TRAN;
 
@@ -147,19 +185,35 @@ IF @Id_Autor IS NULL OR @Id_Autor = 0
         SET @O_Msg = ERROR_MESSAGE();
     END CATCH;
 END;
------------
---validacion de stock que no sea negativo
-IF @Stock < 0
-BEGIN
-    SET @O_Numero = -1;
-    SET @O_Msg = 'El stock no puede ser negativo.';
-    RETURN;
-END;
 GO
 
 
+DECLARE 
+    @O_Numero INT,
+    @O_Msg VARCHAR(255);
+
+EXEC SpInsertarLibro
+    @Titulo = N'Introducción a SQL Server',
+    @ISBN = N'9781234567890',
+    @Id_Autor = 5,          
+    @Id_Categoria = 19,     
+    @Editorial = N'Microsoft Press',
+    @Año_Publicacion = 2024,
+    @Stock = 10,
+    @Id_Creador = 1,       
+    @Id_Estado = 3,      
+    @O_Numero = @O_Numero OUTPUT,
+    @O_Msg = @O_Msg OUTPUT;
+SELECT @O_Numero AS Codigo, @O_Msg AS Mensaje;
 
 
+select * from Cls_Catalogo
+
+select * from Cls_Tipo_Catalogo
+
+select * from Tbl_Autores
+
+select * from  Tbl_Libros
 
 
 

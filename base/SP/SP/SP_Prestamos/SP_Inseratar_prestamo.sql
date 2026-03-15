@@ -10,7 +10,6 @@ CREATE OR ALTER PROCEDURE SpInsertarPrestamo(
     @O_Numero INT OUTPUT,
     @O_Msg VARCHAR(255) OUTPUT
 )
-v
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -36,6 +35,34 @@ BEGIN
 		SET @O_Msg = 'El cliente tiene multas pendientes y no puede realizar un nuevo préstamo.';
 		RETURN;
 	END;
+	-- Validar máximo 2 préstamos activos
+    IF (
+        SELECT COUNT(*) 
+        FROM Tbl_Prestamos p
+        INNER JOIN Cls_Estado e ON p.Id_Estado = e.Id_Estado
+        WHERE p.Id_Usuario_Cliente = @Id_Usuario_Cliente 
+          AND e.Estado = 'Activo'
+    ) >= 2
+    BEGIN
+        SET @O_Numero = -1;
+        SET @O_Msg = 'El cliente ya alcanzó el máximo de 2 préstamos activos.';
+        RETURN;
+    END;
+
+    -- Validar libro repetido en préstamo
+    IF EXISTS (
+        SELECT 1 
+        FROM Tbl_Prestamos p
+        INNER JOIN Cls_Estado e ON p.Id_Estado = e.Id_Estado
+        WHERE p.Id_Usuario_Cliente = @Id_Usuario_Cliente 
+          AND p.Id_Libro = @Id_Libro 
+          AND e.Estado = 'Activo'
+    )
+    BEGIN
+        SET @O_Numero = -1;
+        SET @O_Msg = 'El cliente ya tiene este libro prestado actualmente.';
+        RETURN;
+    END;
 
     -- Validar libro obligatorio
     IF @Id_Libro IS NULL OR @Id_Libro = 0
@@ -60,19 +87,7 @@ BEGIN
         RETURN;
     END;
 
-    -- Validar que el cliente no tenga multas pendientes
-    IF EXISTS (
-        SELECT 1
-        FROM Tbl_Multas m
-        INNER JOIN Tbl_Prestamos p ON m.Id_Prestamo = p.Id_Prestamo
-        WHERE p.Id_Usuario_Cliente = @Id_Usuario_Cliente
-          AND m.Pagada = 0
-    )
-    BEGIN
-        SET @O_Numero = -1;
-        SET @O_Msg = 'El cliente tiene multas pendientes y no puede realizar un nuevo préstamo.';
-        RETURN;
-    END;
+
 
     -- Validar que el libro exista y esté activo
     IF NOT EXISTS (
@@ -113,6 +128,20 @@ BEGIN
     BEGIN TRY
         BEGIN TRAN;
 
+        -- Bloquear fila y validar stock
+        DECLARE @StockActual INT;
+        SELECT @StockActual = Stock 
+        FROM Tbl_Libros WITH (UPDLOCK) 
+        WHERE Id_Libro = @Id_Libro;
+
+        IF @StockActual IS NULL OR @StockActual <= 0
+        BEGIN
+            ROLLBACK TRAN;
+            SET @O_Numero = -1;
+            SET @O_Msg = 'No hay stock disponible en este momento (agotado).';
+            RETURN;
+        END;
+
         -- Insertar préstamo
         INSERT INTO Tbl_Prestamos(
             Id_Usuario_Cliente,
@@ -130,11 +159,7 @@ BEGIN
             @Fecha_Vencimiento,
             @Observaciones,
             @Id_Creador,
-             (SELECT TOP 1 Id_Estado 
-			 FROM Cls_Estado 
-			 WHERE Estado = 'Activo' AND Activo = 1 
-			 ORDER BY Id_Estado)
-
+            (SELECT TOP 1 Id_Estado FROM Cls_Estado WHERE Estado = 'Activo' AND Activo = 1 ORDER BY Id_Estado)
         );
 
         -- Actualizar stock del libro
@@ -145,8 +170,6 @@ BEGIN
         WHERE Id_Libro = @Id_Libro;
 
         COMMIT TRAN;
-
-
 
         SET @O_Numero = 200;
         SET @O_Msg = 'El préstamo se ha registrado correctamente.';

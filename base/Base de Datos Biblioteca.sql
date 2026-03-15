@@ -200,3 +200,38 @@ CREATE TABLE Tbl_Devoluciones (
     Id_Estado INT REFERENCES Cls_Estado(Id_Estado) 
 );
 GO
+
+
+CREATE TABLE Tbl_Acuerdos_Pago (
+    Id_Acuerdo INT PRIMARY KEY IDENTITY(1,1),
+    Id_Multa INT REFERENCES Tbl_Multas(Id_Multa) NOT NULL,
+    Monto_Total_Acordado DECIMAL(10,2) NOT NULL, 
+    Cantidad_Cuotas INT NOT NULL,                
+    Monto_Por_Cuota DECIMAL(10,2) NOT NULL,      
+    Frecuencia_Pago INT REFERENCES Cls_Catalogo(Id_Catalogo), 
+    Fecha_Creacion DATE DEFAULT GETDATE(),
+    Fecha_Modificacion DATETIME,
+    Id_Creador INT NOT NULL,
+    Id_Modificador INT,
+    Id_Estado INT REFERENCES Cls_Estado(Id_Estado) 
+);
+GO
+
+
+
+-- Tabla del dinero real ingresado
+CREATE TABLE Tbl_Pagos (
+    Id_Pago INT PRIMARY KEY IDENTITY(1,1),
+    Id_Multa INT REFERENCES Tbl_Multas(Id_Multa) NOT NULL,
+    Id_Acuerdo INT REFERENCES Tbl_Acuerdos_Pago(Id_Acuerdo) NULL, 
+    Monto_Pagado DECIMAL(10,2) NOT NULL,
+    Metodo_Pago INT REFERENCES Cls_Catalogo(Id_Catalogo) NOT NULL, 
+    Numero_Comprobante NVARCHAR(100) NULL, 
+    Fecha_Pago DATETIME DEFAULT GETDATE(),
+    Fecha_Creacion DATE DEFAULT GETDATE(),
+    Fecha_Modificacion DATETIME,
+    Id_Creador INT NOT NULL,
+    Id_Modificador INT,
+    Id_Estado INT REFERENCES Cls_Estado(Id_Estado)
+);
+GO

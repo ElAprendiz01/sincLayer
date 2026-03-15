@@ -55,6 +55,7 @@ namespace application.Services
             var token = GenerarToken(usuario);
 
             usuario.token = GenerarToken(usuario);
+
             return usuario;
         }
 

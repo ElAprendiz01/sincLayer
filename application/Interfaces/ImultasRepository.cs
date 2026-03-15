@@ -14,5 +14,5 @@ namespace application.Interfaces
         Task ActualizarMultasPorAbonoaync(MultasDomain omultas);
         Task ActualizarMultasaync(MultasDomain omultas);
         Task EliminarMultaSync(int id, int IdModificador);
-    }
+    }//
 }

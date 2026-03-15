@@ -121,7 +121,7 @@ namespace infrastructure.Repository
         }
 
         // ELIMINAR USUARIO (DESACTIVAR)
-        public async Task EliminarUsuarioAsync(int idUsuario, int idModificador)
+        public async Task EliminarUsuarioAsync(int? idUsuario, int idModificador)
         {
             using var con = _dbConnectionFactory.CreateConnection();
             await con.OpenAsync();
@@ -153,8 +153,6 @@ namespace infrastructure.Repository
                     throw new Exception(mensaje);
             }
         }
-
-       
 
      
     }

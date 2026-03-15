@@ -26,9 +26,17 @@ namespace Presentacion.Controllers
             var usuario = await _service.Login(dto);
 
             if (usuario == null)
-                return Unauthorized("Usuario o contraseña incorrecta");
+                // Retornamos un objeto JSON para que el cliente no falle al intentar parsearlo
+                return Unauthorized(new { message = "Usuario o contraseña incorrecta" });
 
-            return Ok(usuario);
+            // Retornamos solo lo necesario, sin exponer el hash de contraseña
+            return Ok(new
+            {
+                 usuario.Id_Usuario,
+                 usuario.Usuario,
+                 usuario.Rol,
+                 usuario.token
+            });
         }
 
         // CREAR USUARIO

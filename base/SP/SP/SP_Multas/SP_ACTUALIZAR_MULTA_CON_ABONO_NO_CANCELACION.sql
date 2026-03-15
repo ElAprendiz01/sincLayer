@@ -64,10 +64,10 @@ BEGIN
         FROM Cls_Estado
         WHERE Estado = 'Parcial' AND Activo = 1;
     END;
-
-    BEGIN TRY
+	BEGIN TRY
         BEGIN TRAN;
 
+        -- 1. Actualizar el saldo de la multa
         UPDATE Tbl_Multas
         SET 
             Saldo_Pendiente = @NuevoSaldo,
@@ -77,12 +77,69 @@ BEGIN
             Id_Modificador = @Id_Modificador
         WHERE Id_Multa = @Id_Multa;
 
+        -- 2. Buscar si hay un acuerdo de pago
+        DECLARE @Id_Acuerdo_Detectado INT = NULL;
+        
+        SELECT TOP 1 @Id_Acuerdo_Detectado = Id_Acuerdo
+        FROM Tbl_Acuerdos_Pago
+        WHERE Id_Multa = @Id_Multa 
+        ORDER BY Id_Acuerdo DESC;
+
+        -- 3. Preparar método de pago
+        DECLARE @IdMetodoEfectivo INT;
+        SELECT TOP 1 @IdMetodoEfectivo = Id_Catalogo FROM Cls_Catalogo WHERE Nombre = 'Efectivo';
+
+        -- 4. Registrar el pago
+        INSERT INTO Tbl_Pagos (
+            Id_Multa,
+            Id_Acuerdo,
+            Monto_Pagado,
+            Metodo_Pago,
+            Fecha_Pago,
+            Id_Creador,
+            Id_Estado
+        )
+        VALUES (
+            @Id_Multa,
+            @Id_Acuerdo_Detectado,
+            @MontoAbono,
+            ISNULL(@IdMetodoEfectivo, 1),
+            GETDATE(),
+            @Id_Modificador,
+            @NuevoEstado -- El pago hereda si fue un abono (Parcial) o el pago final (Pagada)
+        );
+
+        -- Capturar el ID recién generado y actualizar el comprobante
+        DECLARE @IdPagoInsertado INT = SCOPE_IDENTITY();
+        DECLARE @NumeroComprobanteGenerado VARCHAR(50) = 'Pag' + CAST((4563368 + @IdPagoInsertado) AS VARCHAR(20));
+
+        UPDATE Tbl_Pagos
+        SET Numero_Comprobante = @NumeroComprobanteGenerado
+        WHERE Id_Pago = @IdPagoInsertado;
+
+        -- 5. Cerrar el acuerdo si el saldo llegó a cero
+        IF @NuevoSaldo = 0 AND @Id_Acuerdo_Detectado IS NOT NULL
+        BEGIN
+            DECLARE @IdEstadoCompletado INT;
+            
+            SELECT TOP 1 @IdEstadoCompletado = Id_Estado 
+            FROM Cls_Estado 
+            WHERE Estado IN ('Completado', 'Pagado', 'Cancelado') AND Activo = 1;
+
+            UPDATE Tbl_Acuerdos_Pago
+            SET 
+                Id_Estado = ISNULL(@IdEstadoCompletado, Id_Estado),
+                Fecha_Modificacion = GETDATE(),
+                Id_Modificador = @Id_Modificador
+            WHERE Id_Acuerdo = @Id_Acuerdo_Detectado;
+        END;
+
         COMMIT TRAN;
 
         SET @O_Numero = 200;
         SET @O_Msg = CASE 
-                        WHEN @NuevoSaldo = 0 THEN 'La multa ha sido pagada en su totalidad.'
-                        ELSE 'Se registró el abono. Saldo pendiente: ' + CAST(@NuevoSaldo AS VARCHAR(20))
+                        WHEN @NuevoSaldo = 0 THEN 'Multa pagada. Comprobante: ' + @NumeroComprobanteGenerado
+                        ELSE 'Abono registrado. Saldo: ' + CAST(@NuevoSaldo AS VARCHAR(20)) + '. Comprobante: ' + @NumeroComprobanteGenerado
                      END;
     END TRY
     BEGIN CATCH
@@ -97,10 +154,14 @@ GO
 DECLARE @Num INT, @Msg VARCHAR(255);
 
 EXEC SpAbonarMulta
-    @Id_Multa = 7,
-    @MontoAbono = 20.00,
+    @Id_Multa = 2,
+    @MontoAbono = 160.00,
     @Id_Modificador = 2,
     @O_Numero = @Num OUTPUT,
     @O_Msg = @Msg OUTPUT;
 
 SELECT @Num AS Numero, @Msg AS Mensaje;
+
+select * from Tbl_Multas
+
+select * from Tbl_Pagos
