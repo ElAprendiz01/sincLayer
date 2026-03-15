@@ -1,23 +1,24 @@
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import "../styles/login.css"
-
-
-
 
 export default function Login() {
 
+  const navigate = useNavigate()
+
   const [usuario, setUsuario] = useState("")
-  const [contraseña, setContraseña] = useState("")
+  const [password, setPassword] = useState("")
 
   const handleSubmit = async (e) => {
     e.preventDefault()
 
     const data = {
       Usuario: usuario,
-      Contrasena: contraseña // enviar contraseña en texto plano
+      Contrasena: password
     }
 
     try {
+
       const response = await fetch("http://localhost:5082/api/Usuario/login", {
         method: "POST",
         headers: {
@@ -28,14 +29,16 @@ export default function Login() {
 
       const result = await response.json()
 
-      // ✅ Evaluar token en la respuesta
       if (!result.token) {
         alert("Usuario o contraseña incorrecta")
         return
       }
 
+      // guardar token
       localStorage.setItem("token", result.token)
-      alert("Login correcto")
+
+      // redirigir al HOME
+      navigate("/home")
 
     } catch (error) {
       console.error("Error en el login:", error)
@@ -44,11 +47,10 @@ export default function Login() {
   }
 
   return (
-    <div className="login-container">
-      <div className="line"></div>
-      <div className="line"></div>
+    <div className="login-page">
 
       <form className="login-card" onSubmit={handleSubmit}>
+
         <h2>Iniciar sesión</h2>
 
         <input
@@ -62,15 +64,17 @@ export default function Login() {
         <input
           type="password"
           placeholder="Contraseña"
-          value={contraseña}
-          onChange={(e) => setContraseña(e.target.value)}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           required
         />
 
         <button type="submit">
           Entrar
         </button>
+
       </form>
+
     </div>
   )
 }

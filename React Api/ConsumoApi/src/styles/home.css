@@ -1,0 +1,390 @@
+/* CONTENEDOR GENERAL */
+
+.home-container{
+  background:#0f0f0f;
+  color:#ffffff;
+  font-family: "Poppins", sans-serif;
+}
+
+
+
+/* NAVBAR */
+
+.navbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:20px 60px;
+  background:#111;
+  border-bottom:1px solid #222;
+}
+
+.logo h2{
+  color:#c9a227;
+  font-weight:600;
+}
+
+.navbar ul{
+  display:flex;
+  gap:30px;
+  list-style:none;
+}
+
+.navbar a{
+  text-decoration:none;
+  color:#ddd;
+  font-size:16px;
+  transition:0.3s;
+}
+
+.navbar a:hover{
+  color:#c9a227;
+}
+
+
+
+/* HERO */
+
+.hero{
+  padding:120px 60px;
+  text-align:center;
+  background:linear-gradient(
+    rgba(0,0,0,0.7),
+    rgba(0,0,0,0.9)
+  ),
+  url("/library-bg.jpg");
+  background-size:cover;
+  background-position:center;
+}
+
+.hero h1{
+  font-size:48px;
+  margin-bottom:20px;
+}
+
+.hero p{
+  max-width:700px;
+  margin:auto;
+  font-size:18px;
+  color:#ccc;
+}
+
+.hero-buttons{
+  margin-top:40px;
+  display:flex;
+  justify-content:center;
+  gap:20px;
+}
+
+.hero button{
+  padding:14px 28px;
+  border:none;
+  border-radius:8px;
+  background:#c9a227;
+  color:#000;
+  font-weight:600;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+.hero button:hover{
+  transform:scale(1.05);
+}
+
+
+
+/* BUSCADOR */
+
+.search-section{
+  padding:60px;
+  text-align:center;
+}
+
+.search-section h2{
+  margin-bottom:30px;
+}
+
+.search-box{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+}
+
+.search-box input{
+  width:400px;
+  padding:14px;
+  border-radius:8px;
+  border:none;
+}
+
+.search-box button{
+  padding:14px 25px;
+  border:none;
+  background:#c9a227;
+  cursor:pointer;
+  border-radius:8px;
+}
+
+
+
+/* LIBROS DESTACADOS */
+
+.featured-books{
+  padding:60px;
+}
+
+.featured-books h2{
+  margin-bottom:30px;
+}
+
+.books-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:30px;
+}
+
+.book-card{
+  background:#1a1a1a;
+  padding:20px;
+  border-radius:10px;
+  text-align:center;
+  transition:0.3s;
+}
+
+.book-card:hover{
+  transform:translateY(-5px);
+  box-shadow:0 10px 30px rgba(0,0,0,0.5);
+}
+
+.book-card img{
+  width:100%;
+  height:250px;
+  object-fit:cover;
+  border-radius:6px;
+}
+
+.book-card h3{
+  margin-top:10px;
+}
+
+.book-card p{
+  color:#aaa;
+}
+
+
+
+/* AUTORES */
+
+.authors{
+  padding:60px;
+}
+
+.authors-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:30px;
+}
+
+.author-card{
+  text-align:center;
+}
+
+.author-card img{
+  width:150px;
+  height:150px;
+  border-radius:50%;
+  object-fit:cover;
+}
+
+.author-card h3{
+  margin-top:10px;
+}
+
+
+
+/* ABOUT */
+
+.about{
+  padding:60px;
+  text-align:center;
+  max-width:900px;
+  margin:auto;
+}
+
+.about p{
+  color:#ccc;
+  line-height:1.7;
+}
+
+
+
+/* SERVICIOS */
+
+.services{
+  padding:60px;
+}
+
+.services-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:30px;
+}
+
+.service-card{
+  background:#1a1a1a;
+  padding:30px;
+  border-radius:10px;
+  transition:0.3s;
+}
+
+.service-card:hover{
+  transform:translateY(-5px);
+}
+
+.service-card h3{
+  margin-bottom:10px;
+}
+
+
+
+/* ESTADISTICAS */
+
+.stats{
+  display:flex;
+  justify-content:center;
+  gap:80px;
+  padding:60px;
+  background:#111;
+}
+
+.stat{
+  text-align:center;
+}
+
+.stat h3{
+  font-size:36px;
+  color:#c9a227;
+}
+
+.stat p{
+  color:#aaa;
+}
+
+
+
+/* CONTACTO */
+
+.contact{
+  padding:60px;
+}
+
+.contact-container{
+  display:flex;
+  gap:60px;
+  flex-wrap:wrap;
+}
+
+.contact form{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:15px;
+}
+
+.contact input,
+.contact textarea{
+  padding:14px;
+  border:none;
+  border-radius:6px;
+}
+
+.contact textarea{
+  min-height:120px;
+}
+
+.contact button{
+  padding:14px;
+  border:none;
+  background:#c9a227;
+  cursor:pointer;
+}
+
+.contact-info{
+  flex:1;
+}
+
+
+
+/* FOOTER */
+
+.footer{
+  text-align:center;
+  padding:30px;
+  background:#111;
+  border-top:1px solid #222;
+  color:#aaa;
+}
+@media (max-width:768px){
+
+.navbar{
+flex-direction:column;
+gap:20px;
+}
+
+.navbar ul{
+flex-direction:column;
+gap:15px;
+}
+
+.hero h1{
+font-size:32px;
+}
+
+.books-grid{
+grid-template-columns:1fr;
+}
+
+.authors-grid{
+grid-template-columns:1fr;
+}
+
+.services-grid{
+grid-template-columns:1fr;
+}
+
+.contact-container{
+flex-direction:column;
+}
+
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* El contenedor solo maneja el marco y la forma */
+.logo-container {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 2px solid #2a2c22;
+  overflow: hidden; /* Esto es vital: oculta lo que se salga del círculo */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* La imagen es la que se escala dentro del contenedor */
+.logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.4); /* Aquí haces el zoom solo a la imagen */
+}
+
+
+.logo h2 {
+  margin: 0;           /* Elimina márgenes por defecto del h2 */
+  font-size: 24px;
+}

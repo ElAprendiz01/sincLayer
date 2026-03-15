@@ -13,7 +13,7 @@ namespace application.Interfaces
 
         Task ActualizarUsuarioAsync(UsuarioDomain usuario);
 
-        Task EliminarUsuarioAsync(int idUsuario, int idModificador);
+        Task EliminarUsuarioAsync(int? idUsuario, int idModificador);
 
         Task<UsuarioDomain?> ObtenerUsuarioAsync(string usuario);
     }
