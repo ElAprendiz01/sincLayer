@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
-
+/* importar el guardia para que no puedan entrar a las otras oaginas con la <url></url>*/ 
+import ProtectedRoute from "./components/ProtectedRoute"
 import Login from "./pages/Login"
 import Home from "./pages/Home"
 import Listar_Cls_Tipo_Catalogo from "./pages/Catalogo/Listar_Cls_Tipo_Catalogo"
@@ -13,9 +14,21 @@ function App() {
 
         <Route path="/" element={<Login />} />
 
-        <Route path="/home" element={<Home />} />
+        {/* 2. Envuelves Home con el ProtectedRoute */}
+        <Route 
+          path="/home" 
+          element={
+            <ProtectedRoute>
+              <Home />
+            </ProtectedRoute>
+          } 
+        />
+        {/* 3. Haces lo mismo con el catálogo, o cualquier otra página que queramos  proteger */}
+        <Route path="/catalogo" element={ <ProtectedRoute>
+              <Listar_Cls_Tipo_Catalogo />
+            </ProtectedRoute>} />
 
-        <Route path="/catalogo" element={<Listar_Cls_Tipo_Catalogo />} />
+            {/*  este proceso para todas las páginas funcioan para  proteger */}
 
       </Routes>
 

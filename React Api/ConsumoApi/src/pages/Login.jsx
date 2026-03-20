@@ -17,8 +17,7 @@ export default function Login() {
       Contrasena: password
     }
 
-    try {
-
+try {
       const response = await fetch("http://localhost:5082/api/Usuario/login", {
         method: "POST",
         headers: {
@@ -34,8 +33,14 @@ export default function Login() {
         return
       }
 
-      // guardar token
+      // 1. Guardar token
       localStorage.setItem("token", result.token)
+      
+    
+      localStorage.setItem("userName", result.usuario || usuario) 
+
+      
+      localStorage.setItem("userId", result.id_Usuario) 
 
       // redirigir al HOME
       navigate("/home")

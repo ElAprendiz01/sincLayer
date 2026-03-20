@@ -1,159 +1,174 @@
-import { Link } from "react-router-dom"
-import "../styles/home.css"
+//voy hacer varios comentarios en el codigo para ir explicando cada parte, para que quede podamos saber que hace cada cosita 
+
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom"; // Importamos useNavigate
+import "../styles/home.css";//importo los estilos como hay supcapetas entonces ../ para llegar si hubiera oyra fuera ../../
+
 export default function Home() {
+  const [userName, setUserName] = useState(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  
+  // Nuevo estado para controlar el modal de cierre de sesión
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  
+  // Hook de navegación
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const storedName = localStorage.getItem("userName"); // aqui capturo el nombre del usuario del localstorage para darle la bienvenida 
+    if (storedName) {
+      setUserName(storedName);
+    }
+  }, []);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  // Función definitiva que ejecuta el cierre de sesión
+  const confirmLogout = () => {
+    localStorage.clear(); // Limpiamos la sesión
+    setUserName(null);    // Limpiamos el estado
+    setShowLogoutModal(false); // Cerramos el modal
+    
+    // Redirigimos al Login reemplazando el historial para que no pueda usar el botón "Atrás"
+    navigate("/", { replace: true });
+  };
 
   return (
-
+    // aqui comienxa el html por asi decirlo 
     <div className="home-container">
-
       {/* NAVBAR */}
       <header className="navbar">
-
         <div className="logo">
-            <div className="logo-container">
-              <img src="/logo.png" alt="Logo" className="logo-img" />
-            </div>
-             <h2>SyncLayer Library</h2>
+          <div className="logo-container">
+            <img src="/logo.png" alt="Logo" className="logo-img" />
+          </div>
+          <h2>SyncLayer Library</h2>
         </div>
 
-        <nav>
+        <button className="hamburger" onClick={toggleMenu}>
+          {isMenuOpen ? "✖" : "☰"}
+        </button>
+
+        <nav className={`nav-links ${isMenuOpen ? "active" : ""}`}>
           <ul>
-            <li><Link to="/home">Inicio</Link></li>
-            <li><Link to="/biblioteca">Biblioteca</Link></li>
-            <li><Link to="/prestamos">Préstamos</Link></li>
-            <li><Link to="/autores">Autores</Link></li>
-            <li><Link to="/contacto">Contacto</Link></li>
+            {userName && (
+              <li className="welcome-text">Hola, {userName} 👋</li> // esto es lo que les decia para darle el saludo 
+            )}
+            
+             {/*nota para estos btn es importante que esten protegidos con el ProtectedRoute para que no puedan entrar sin iniciar sesión, 
+             aunque intenten entrar con la url directa, el guardia los redirigira al login y que tambien esten
+             declaro en el app con en router obiamente que es donde se le pone la segurida d
+             y mandarlo allamr como se debe */}
+            
+            
+            <li><Link to="/biblioteca" className="nav-btn">Biblioteca</Link></li> 
+            <li><Link to="/prestamos" className="nav-btn">Mis préstamos</Link></li>
+            
+          <li>
+              <button 
+                onClick={() => setShowLogoutModal(true)} 
+                className="nav-btn logout-btn"
+              >
+                Cerrar Sesión
+              </button>
+            </li>
           </ul>
         </nav>
-
       </header>
-
-
 
       {/* HERO / PRESENTACIÓN */}
       <section className="hero">
-
         <div className="hero-content">
-
           <h1>Bienvenido a la Biblioteca SyncLayer</h1>
-
           <p>
-            Un espacio  donde el conocimiento, la lectura y la cultura
+            Un espacio donde el conocimiento, la lectura y la cultura
             se encuentran. Explora cientos de libros, descubre autores increíbles
             y administra tus préstamos de forma sencilla, todo en un solo lugar.
           </p>
-
           <div className="hero-buttons">
             <Link to="/biblioteca">
               <button>Explorar biblioteca</button>
             </Link>
-            
-            <Link to="/prestamos">
-              <button>Mis préstamos</button>
-            </Link>
+            {/* Solo mostramos este botón en el hero si hay sesión */}
+            {userName && (
+              <Link to="/prestamos">
+                <button className="secondary-btn">Mis préstamos</button>
+              </Link>
+            )}
           </div>
-
         </div>
-
       </section>
-
-
 
       {/* BUSCADOR */}
       <section className="search-section">
-
         <h2>Buscar libros por nombre</h2>
-
         <div className="search-box">
-
           <input
             type="text"
             placeholder="Buscar por título, autor o categoría..."
           />
-
           <button>Buscar</button>
-
         </div>
-
       </section>
-
-
 
       {/* LIBROS DESTACADOS */}
       <section className="featured-books">
-
         <h2>Libros destacados</h2>
-
         <div className="books-grid">
-
-             <div className="book-card">
+          <div className="book-card">
             <img src="/azul.jpg" alt="Libro"/>
             <h3>Azul</h3>
-            <p>Ruben Dario</p>
+            <p>Rubén Darío</p>
           </div>
-
           <div className="book-card">
-            <img src="Don_quijote.jpg" alt="Libro"/>
+            <img src="/Don_quijote.jpg" alt="Libro"/>
             <h3>Don Quijote</h3>
             <p>Miguel de Cervantes</p>
           </div>
-
           <div className="book-card">
             <img src="/1984.jpg" alt="Libro"/>
             <h3>1984</h3>
             <p>George Orwell</p>
           </div>
-
           <div className="book-card">
             <img src="/100_años.jpg" alt="Libro"/>
             <h3>Cien años de soledad</h3>
             <p>Gabriel García Márquez</p>
           </div>
-
           <div className="book-card">
             <img src="/El_principito.jpg" alt="Libro"/>
             <h3>El Principito</h3>
             <p>Antoine de Saint-Exupéry</p>
           </div>
-
         </div>
-
       </section>
-
-
 
       {/* AUTORES */}
       <section className="authors">
-
         <h2>Autores destacados</h2>
-
         <div className="authors-grid">
-
           <div className="author-card">
-            <img src="/Dario.png"/>
-            <h3>Ruben Dario </h3>
+            <img src="/Dario.png" alt="Autor"/>
+            <h3>Rubén Darío</h3>
           </div>
-
           <div className="author-card">
-            <img src="/Miguel _de_Cervantes.jpg"/>
+            <img src="/Miguel _de_Cervantes.jpg" alt="Autor"/>
             <h3>Miguel de Cervantes</h3>
           </div>
-
           <div className="author-card">
-            <img src="/George_Orwel.jpg"/>
+            <img src="/George_Orwel.jpg" alt="Autor"/>
             <h3>George Orwell</h3>
           </div>
-
           <div className="author-card">
-            <img src="/gabrielMarquez.jpg"/>
+            <img src="/gabrielMarquez.jpg" alt="Autor"/>
             <h3>Gabriel García Márquez</h3>
           </div>
-
         </div>
-
       </section>
 
-
+     
 
       {/* SECCIÓN SOBRE LA BIBLIOTECA */}
       <section className="about">
@@ -190,52 +205,17 @@ export default function Home() {
           <div className="service-card">
             <h3> Gestión de préstamos</h3>
             <p>
-              Solicita libros, revisa fechas de devolución
-              y consulta tu historial.
+              Solicita libros
             </p>
           </div>
+          
 
-          <div className="service-card">
-            <h3> Control de multas</h3>
-            <p>
-              Visualiza tus multas y administra pagos
-              pendientes de forma sencilla.
-            </p>
-          </div>
-
-          <div className="service-card">
-            <h3> Perfil de usuario</h3>
-            <p>
-              Administra tus datos personales,
-              contacto y dirección.
-            </p>
-          </div>
 
         </div>
 
-      </section>
+     </section>
 
-
-
-      {/* ESTADÍSTICAS */}
-      <section className="stats">
-
-        <div className="stat">
-          <h3>3,000</h3>
-          <p>Libros disponibles</p>
-        </div>
-
-        <div className="stat">
-          <h3>500</h3>
-          <p>Autores registrados</p>
-        </div>
-
-        <div className="stat">
-          <h3>15</h3>
-          <p>Usuarios activos</p>
-        </div>
-
-      </section>
+     
 
 
 
@@ -269,6 +249,22 @@ export default function Home() {
         </div>
 
       </section>
+      {showLogoutModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>¿Estás seguro de cerrar sesión?</h3>
+            <p>Tendrás que volver a ingresar tus credenciales para acceder a tus préstamos.</p>
+            <div className="modal-buttons">
+              <button className="btn-cancel" onClick={() => setShowLogoutModal(false)}>
+                No, cancelar
+              </button>
+              <button className="btn-confirm" onClick={confirmLogout}>
+                Sí, cerrar sesión
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
 
 

@@ -1,390 +1,614 @@
 /* CONTENEDOR GENERAL */
-
-.home-container{
-  background:#0f0f0f;
-  color:#ffffff;
+.home-container {
+  background: #0f0f0f;
+  color: #ffffff;
   font-family: "Poppins", sans-serif;
 }
 
-
-
-/* NAVBAR */
-
-.navbar{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:20px 60px;
-  background:#111;
-  border-bottom:1px solid #222;
+/* NAVBAR Y LOGO */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 60px;
+  background: #111;
+  border-bottom: 1px solid #222;
+  position: relative; /* Necesario para el menú desplegable en móvil */
 }
 
-.logo h2{
-  color:#c9a227;
-  font-weight:600;
-}
-
-.navbar ul{
-  display:flex;
-  gap:30px;
-  list-style:none;
-}
-
-.navbar a{
-  text-decoration:none;
-  color:#ddd;
-  font-size:16px;
-  transition:0.3s;
-}
-
-.navbar a:hover{
-  color:#c9a227;
-}
-
-
-
-/* HERO */
-
-.hero{
-  padding:120px 60px;
-  text-align:center;
-  background:linear-gradient(
-    rgba(0,0,0,0.7),
-    rgba(0,0,0,0.9)
-  ),
-  url("/library-bg.jpg");
-  background-size:cover;
-  background-position:center;
-}
-
-.hero h1{
-  font-size:48px;
-  margin-bottom:20px;
-}
-
-.hero p{
-  max-width:700px;
-  margin:auto;
-  font-size:18px;
-  color:#ccc;
-}
-
-.hero-buttons{
-  margin-top:40px;
-  display:flex;
-  justify-content:center;
-  gap:20px;
-}
-
-.hero button{
-  padding:14px 28px;
-  border:none;
-  border-radius:8px;
-  background:#c9a227;
-  color:#000;
-  font-weight:600;
-  cursor:pointer;
-  transition:0.3s;
-}
-
-.hero button:hover{
-  transform:scale(1.05);
-}
-
-
-
-/* BUSCADOR */
-
-.search-section{
-  padding:60px;
-  text-align:center;
-}
-
-.search-section h2{
-  margin-bottom:30px;
-}
-
-.search-box{
-  display:flex;
-  justify-content:center;
-  gap:10px;
-}
-
-.search-box input{
-  width:400px;
-  padding:14px;
-  border-radius:8px;
-  border:none;
-}
-
-.search-box button{
-  padding:14px 25px;
-  border:none;
-  background:#c9a227;
-  cursor:pointer;
-  border-radius:8px;
-}
-
-
-
-/* LIBROS DESTACADOS */
-
-.featured-books{
-  padding:60px;
-}
-
-.featured-books h2{
-  margin-bottom:30px;
-}
-
-.books-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-  gap:30px;
-}
-
-.book-card{
-  background:#1a1a1a;
-  padding:20px;
-  border-radius:10px;
-  text-align:center;
-  transition:0.3s;
-}
-
-.book-card:hover{
-  transform:translateY(-5px);
-  box-shadow:0 10px 30px rgba(0,0,0,0.5);
-}
-
-.book-card img{
-  width:100%;
-  height:250px;
-  object-fit:cover;
-  border-radius:6px;
-}
-
-.book-card h3{
-  margin-top:10px;
-}
-
-.book-card p{
-  color:#aaa;
-}
-
-
-
-/* AUTORES */
-
-.authors{
-  padding:60px;
-}
-
-.authors-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-  gap:30px;
-}
-
-.author-card{
-  text-align:center;
-}
-
-.author-card img{
-  width:150px;
-  height:150px;
-  border-radius:50%;
-  object-fit:cover;
-}
-
-.author-card h3{
-  margin-top:10px;
-}
-
-
-
-/* ABOUT */
-
-.about{
-  padding:60px;
-  text-align:center;
-  max-width:900px;
-  margin:auto;
-}
-
-.about p{
-  color:#ccc;
-  line-height:1.7;
-}
-
-
-
-/* SERVICIOS */
-
-.services{
-  padding:60px;
-}
-
-.services-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-  gap:30px;
-}
-
-.service-card{
-  background:#1a1a1a;
-  padding:30px;
-  border-radius:10px;
-  transition:0.3s;
-}
-
-.service-card:hover{
-  transform:translateY(-5px);
-}
-
-.service-card h3{
-  margin-bottom:10px;
-}
-
-
-
-/* ESTADISTICAS */
-
-.stats{
-  display:flex;
-  justify-content:center;
-  gap:80px;
-  padding:60px;
-  background:#111;
-}
-
-.stat{
-  text-align:center;
-}
-
-.stat h3{
-  font-size:36px;
-  color:#c9a227;
-}
-
-.stat p{
-  color:#aaa;
-}
-
-
-
-/* CONTACTO */
-
-.contact{
-  padding:60px;
-}
-
-.contact-container{
-  display:flex;
-  gap:60px;
-  flex-wrap:wrap;
-}
-
-.contact form{
-  flex:1;
-  display:flex;
-  flex-direction:column;
-  gap:15px;
-}
-
-.contact input,
-.contact textarea{
-  padding:14px;
-  border:none;
-  border-radius:6px;
-}
-
-.contact textarea{
-  min-height:120px;
-}
-
-.contact button{
-  padding:14px;
-  border:none;
-  background:#c9a227;
-  cursor:pointer;
-}
-
-.contact-info{
-  flex:1;
-}
-
-
-
-/* FOOTER */
-
-.footer{
-  text-align:center;
-  padding:30px;
-  background:#111;
-  border-top:1px solid #222;
-  color:#aaa;
-}
-@media (max-width:768px){
-
-.navbar{
-flex-direction:column;
-gap:20px;
-}
-
-.navbar ul{
-flex-direction:column;
-gap:15px;
-}
-
-.hero h1{
-font-size:32px;
-}
-
-.books-grid{
-grid-template-columns:1fr;
-}
-
-.authors-grid{
-grid-template-columns:1fr;
-}
-
-.services-grid{
-grid-template-columns:1fr;
-}
-
-.contact-container{
-flex-direction:column;
-}
-
-}
 .logo {
   display: flex;
   align-items: center;
   gap: 15px;
 }
 
-/* El contenedor solo maneja el marco y la forma */
 .logo-container {
   width: 150px;
   height: 150px;
   border-radius: 50%;
   border: 2px solid #2a2c22;
-  overflow: hidden; /* Esto es vital: oculta lo que se salga del círculo */
+  overflow: hidden; /* Oculta lo que se salga del círculo */
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* La imagen es la que se escala dentro del contenedor */
 .logo-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transform: scale(1.4); /* Aquí haces el zoom solo a la imagen */
+  transform: scale(1.4); /* Zoom a la imagen */
+}
+
+.logo h2 {
+  color: #c9a227;
+  font-weight: 600;
+  margin: 0;
+  font-size: 24px;
+}
+
+/* MENÚ DE ESCRITORIO CON BOTONES ELEGANTES */
+.nav-links ul {
+  display: flex;
+  gap: 20px;
+  list-style: none;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+
+.welcome-text {
+  color: #c9a227;
+  font-weight: 600;
+  font-size: 16px;
+  margin-right: 15px;
+}
+
+/* ESTILO BASE DE LOS BOTONES DE NAVEGACIÓN */
+.nav-btn {
+  text-decoration: none;
+  color: #ddd;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 8px 18px;
+  border-radius: 8px;
+  background: #222;
+  border: 1px solid #333;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: inline-block;
+  /*evitar que copien el texto del btn */
+  user-select: none;
+}
+
+/* HOVER "SALVAJE" DE LOS BOTONES */
+.nav-btn:hover {
+  background: #c9a227;
+  color: #000000 !important; /* Negro profundo para que contraste perfectamente */
+  font-weight: 700; /* Letra más gruesa al pasar el mouse */
+  border-color: #c9a227;
+  transform: translateY(-2px);
+  box-shadow: 0 0 15px rgba(201, 162, 39, 0.4); /* Resplandor amarillo */
+}
+
+.login-btn {
+  background: #c9a227;
+  color: #000;
+  font-weight: 600;
+}
+
+.login-btn:hover {
+  background: #e0b836; /* Un amarillo más brillante */
+  color: #000 !important;
+}
+
+.logout-btn {
+  background: transparent;
+  color: #ff4c4c;
+  border-color: #ff4c4c;
+}
+
+.logout-btn:hover {
+  background: #ff4c4c;
+  color: #fff !important;
+  border-color: #ff4c4c;
+  box-shadow: 0 0 15px rgba(255, 76, 76, 0.4);
+}
+
+/* BOTÓN HAMBURGUESA (Oculto en escritorio) */
+.hamburger {
+  display: none;
+  font-size: 28px;
+  background: none;
+  border: none;
+  color: #c9a227;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.hamburger:hover {
+  transform: scale(1.1);
+}
+
+/* HERO */
+.hero {
+  padding: 120px 60px;
+  text-align: center;
+  background: linear-gradient(
+    rgba(0, 0, 0, 0.7),
+    rgba(0, 0, 0, 0.9)
+  ),
+  url("/library-bg.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
+.hero h1 {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+.hero p {
+  max-width: 700px;
+  margin: auto;
+  font-size: 18px;
+  color: #ccc;
+}
+
+.hero-buttons {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.hero button {
+  padding: 14px 28px;
+  border: none;
+  border-radius: 8px;
+  background: #c9a227;
+  color: #000;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.hero button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px rgba(201, 162, 39, 0.4);
+}
+
+/* BOTÓN SECUNDARIO HERO */
+.secondary-btn {
+  background: transparent !important;
+  color: #c9a227 !important;
+  border: 2px solid #c9a227 !important;
+}
+
+.secondary-btn:hover {
+  background: #c9a227 !important;
+  color: #050505 !important;
+}
+
+/* BUSCADOR */
+.search-section {
+  padding: 60px;
+  text-align: center;
+}
+
+.search-section h2 {
+  margin-bottom: 30px;
+}
+
+.search-box {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.search-box input {
+  width: 400px;
+  padding: 14px;
+  border-radius: 8px;
+  border: none;
+}
+
+.search-box button {
+  padding: 14px 25px;
+  border: none;
+  background: #c9a227;
+  color: #000;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: 0.3s;
+}
+
+.search-box button:hover {
+  background: #e0b836;
+  box-shadow: 0 0 10px rgba(201, 162, 39, 0.4);
+}
+
+/* LIBROS DESTACADOS */
+.featured-books {
+  padding: 60px;
+}
+
+.featured-books h2 {
+  margin-bottom: 30px;
+}
+
+.books-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 30px;
+}
+
+.book-card {
+  background: #1a1a1a;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  transition: 0.3s;
+}
+
+.book-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.book-card img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.book-card h3 {
+  margin-top: 10px;
+}
+
+.book-card p {
+  color: #aaa;
+}
+
+/* AUTORES */
+.authors {
+  padding: 60px;
+}
+
+.authors-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 30px;
+}
+
+.author-card {
+  text-align: center;
+}
+
+.author-card img {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.author-card h3 {
+  margin-top: 10px;
+}
+
+/* ABOUT */
+.about {
+  padding: 60px;
+  text-align: center;
+  max-width: 900px;
+  margin: auto;
+}
+
+.about p {
+  color: #ccc;
+  line-height: 1.7;
+}
+
+/* SERVICIOS */
+.services {
+  padding: 60px;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+}
+
+.service-card {
+  background: #1a1a1a;
+  padding: 30px;
+  border-radius: 10px;
+  transition: 0.3s;
+}
+
+.service-card:hover {
+  transform: translateY(-5px);
+}
+
+.service-card h3 {
+  margin-bottom: 10px;
+}
+
+/* ESTADISTICAS */
+.stats {
+  display: flex;
+  justify-content: center;
+  gap: 80px;
+  padding: 60px;
+  background: #111;
+}
+
+.stat {
+  text-align: center;
+}
+
+.stat h3 {
+  font-size: 36px;
+  color: #c9a227;
+}
+
+.stat p {
+  color: #aaa;
+}
+
+/* CONTACTO */
+.contact {
+  padding: 60px;
+}
+
+.contact-container {
+  display: flex;
+  gap: 60px;
+  flex-wrap: wrap;
+}
+
+.contact form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.contact input,
+.contact textarea {
+  padding: 14px;
+  border: none;
+  border-radius: 6px;
+  font-family: "Poppins", sans-serif;
+}
+
+.contact textarea {
+  min-height: 120px;
+}
+
+.contact button {
+  padding: 14px;
+  border: none;
+  background: #c9a227;
+  color: #000;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: 0.3s;
+}
+
+.contact button:hover {
+  background: #e0b836;
+  box-shadow: 0 0 10px rgba(201, 162, 39, 0.4);
+}
+
+.contact-info {
+  flex: 1;
+}
+
+/* FOOTER */
+.footer {
+  text-align: center;
+  padding: 30px;
+  background: #111;
+  border-top: 1px solid #222;
+  color: #aaa;
 }
 
 
-.logo h2 {
-  margin: 0;           /* Elimina márgenes por defecto del h2 */
-  font-size: 24px;
+/* ========================================================
+   MEDIA QUERIES (DISEÑO RESPONSIVO UNIFICADO)
+   ======================================================== */
+@media (max-width: 768px) {
+  
+  /* NAVBAR MÓVIL */
+  .navbar {
+    flex-direction: row; /* Mantiene logo a la izquierda y hamburguesa a la derecha */
+    padding: 15px 20px;
+  }
+
+  /* Aseguramos que el logo no se encoja demasiado en móviles */
+  .logo-container {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .logo h2 {
+    font-size: 18px;
+  }
+
+  .hamburger {
+    display: block; /* Muestra el botón en móviles */
+  }
+
+  /* Oculta el menú normal y lo prepara para bajar (Drop-down) */
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: 100%; /* Justo debajo del navbar */
+    left: 0;
+    width: 100%;
+    background: #111; /* Mismo color del header para que se vea integrado */
+    padding: 20px 0;
+    border-bottom: 2px solid #c9a227;
+    z-index: 1000;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+  }
+
+  /* Esta clase se activa con React cuando presionas la hamburguesa */
+  .nav-links.active {
+    display: flex;
+    justify-content: center;
+  }
+
+  .nav-links ul {
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    align-items: center;
+  }
+
+  .nav-btn {
+    width: 80vw;
+    text-align: center;
+    padding: 12px;
+    user-select: none;
+  }
+
+  /* AJUSTES GENERALES PARA MÓVILES */
+  .hero h1 { font-size: 32px; }
+  
+  .search-box input { width: 100%; }
+  
+  .stats {
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .books-grid,
+  .authors-grid,
+  .services-grid { 
+    grid-template-columns: 1fr; 
+  }
+  
+  .contact-container { 
+    flex-direction: column; 
+  }
+}
+/*para evitar el cursor en los texto */
+/* Los títulos no se pueden sombrear (modo App) */
+h1 {
+  cursor: default;
+  user-select: none; 
+}
+
+/* Los párrafos tienen flecha normal, pero SÍ se pueden sombrear/copiar */
+p {
+  cursor: default;
+}
+
+/* MODAL DE CONFIRMACIÓN (CIERRE DE SESIÓN)*/
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.8); /* Fondo oscuro semitransparente */
+  backdrop-filter: blur(5px); /* Efecto difuminado elegante */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; /* Para que quede por encima de todo el sitio */
+}
+
+.modal-content {
+  background: #151515;
+  padding: 40px;
+  border-radius: 12px;
+  border: 1px solid #c9a227;
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(201, 162, 39, 0.15);
+  animation: modalFadeIn 0.3s ease-out forwards;
+}
+
+.modal-content h3 {
+  color: #c9a227;
+  margin-bottom: 15px;
+  font-size: 22px;
+}
+
+.modal-content p {
+  color: #aaa;
+  font-size: 15px;
+  margin-bottom: 30px;
+  line-height: 1.5;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.modal-buttons button {
+  padding: 12px 20px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: "Poppins", sans-serif;
+}
+
+.btn-cancel {
+  background: transparent;
+  color: #ddd;
+  border: 1px solid #555;
+}
+
+.btn-cancel:hover {
+  background: #333;
+  color: #fff;
+}
+
+.btn-confirm {
+  background: #ff4c4c;
+  color: #fff;
+  border: 1px solid #ff4c4c;
+}
+
+.btn-confirm:hover {
+  background: #e60000;
+  box-shadow: 0 0 15px rgba(255, 76, 76, 0.4);
+  transform: translateY(-2px);
+}
+
+/* Animación de entrada suave para el modal */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Ajuste para pantallas pequeñas */
+@media (max-width: 480px) {
+  .modal-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .modal-buttons button {
+    width: 100%;
+  }
 }
