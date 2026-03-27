@@ -131,7 +131,34 @@ namespace Presentacion.Controllers
                     return StatusCode(500, "Error al filtrar DTP: " + ex.Message);
                 }
             }
+        [HttpGet("Filtarcategoria")]
+        public async Task<IActionResult> FiltrarCategoria([FromQuery] string nombre)
+        {
+            try
+            {
+                var lista = await _service.FiltrarLibrosPorCategoria(nombre);
 
-
+                if (lista == null || !lista.Any())
+                {
+                    return NotFound(new
+                    {
+                        codigo = 404,
+                        msj = "No se encontro autor  con ese Id especificado."
+                    });
+                }
+                return Ok(new
+                {
+                    codigo = 200,
+                    msj = "Consulta exitosa",
+                    data = lista
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Error al filtrar DTP: " + ex.Message);
+            }
         }
+
+
+    }
 }

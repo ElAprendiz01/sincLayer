@@ -41,3 +41,6 @@ END;
 GO
 
 
+
+
+exec SPFiltrarLibrosPorAutor 2

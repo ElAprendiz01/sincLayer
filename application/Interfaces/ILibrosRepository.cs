@@ -11,7 +11,7 @@ namespace application.Interfaces
     {
         Task<IEnumerable<LibroDomain>> Listar_LibrosAsync();
         Task<IEnumerable<LibroDomain>> Listar_Libros_Por_AutorAsync(int idAutor);
-        Task<IEnumerable<LibroDomain>> Listar_Libros_Por_CategoriaAsync(int idCategoria);
+        Task<IEnumerable<LibroDomain>> Listar_Libros_Por_CategoriaAsync(string nombre);
         Task NuevoLibroAsync(LibroDomain libro);
         Task EditarLibroAsync(LibroDomain libro);
         Task EliminarLibroAsync(int idLibro, int idModificador);

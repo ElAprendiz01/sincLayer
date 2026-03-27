@@ -30,7 +30,7 @@ namespace infrastructure.Repository
                 using var con = _dBConectionFactory.CreateConnection();
                 await con.OpenAsync();
 
-                using (SqlCommand cmd = new SqlCommand("SpListarLibrosInactivos", con))
+                using (SqlCommand cmd = new SqlCommand("SpListarLibrosInactivos", con)) // son los activos que filtramso 
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
@@ -64,7 +64,7 @@ namespace infrastructure.Repository
 
     
 
-        public async Task<IEnumerable<LibroDomain>> Listar_Libros_Por_CategoriaAsync(int idCategoria)
+        public async Task<IEnumerable<LibroDomain>> Listar_Libros_Por_CategoriaAsync(string nombre)
         {
             var olist = new List<LibroDomain>();
 
@@ -74,7 +74,7 @@ namespace infrastructure.Repository
             using (SqlCommand cmd = new SqlCommand("SPFiltrarLibrosPorCategoria", con))
             {
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.Add(new SqlParameter("@Id_Categoria", idCategoria));
+                cmd.Parameters.Add(new SqlParameter("@nombre_categoria", nombre));
 
                 using (SqlDataReader dr = await cmd.ExecuteReaderAsync())
                 {

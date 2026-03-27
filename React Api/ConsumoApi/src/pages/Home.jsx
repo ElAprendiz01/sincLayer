@@ -63,7 +63,7 @@ export default function Home() {
              y mandarlo allamr como se debe */}
             
             
-            <li><Link to="/biblioteca" className="nav-btn">Biblioteca</Link></li> 
+            <li><Link to="/admin" className="nav-btn">Administracion</Link></li> 
             <li><Link to="/prestamos" className="nav-btn">Mis préstamos</Link></li>
             
           <li>

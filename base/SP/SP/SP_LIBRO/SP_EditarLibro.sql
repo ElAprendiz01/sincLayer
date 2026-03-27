@@ -181,3 +181,8 @@ SELECT @OutNumero AS CodigoRespuesta, @OutMsg AS MensajeRespuesta;
 
 
 select * from Tbl_Libros
+
+SELECT 
+    name AS Nombre_SP
+FROM sys.procedures
+ORDER BY name ASC;

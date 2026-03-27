@@ -1,8 +1,11 @@
 use SYNCLAYER
 go 
 
-create proc SPFiltrarLibroscategoria
-@Id_Categoria int 
+create or alter proc SPFiltrarLibroscategoria
+(
+@nombre_categoria Varchar(30)
+
+)
 as 
 begin 
 set nocount on;
@@ -33,10 +36,10 @@ l.Id_Libro,
         ON l.Id_Categoria = c.Id_Catalogo
 INNER JOIN Cls_Estado e
         ON l.Id_Estado = e.Id_Estado
-    WHERE l.Id_Categoria = @Id_Categoria
+    WHERE c.Nombre LIKE '%'+ @nombre_categoria + '%'
       AND e.Estado = 'Activo'
     ORDER BY l.Id_Libro DESC;
 END;
 GO
-
+exec SPFiltrarLibroscategoria 'nove'
 

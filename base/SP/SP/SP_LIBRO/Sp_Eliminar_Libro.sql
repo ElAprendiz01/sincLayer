@@ -1,10 +1,7 @@
 USE SYNCLAYER;
 GO
 
---- validaciones añadir, que el libro exista, 
---que no este eliminado/inactivo
---que exista un estado valido
---que Id_Modificador no sea nulo
+
 
 CREATE OR ALTER PROCEDURE Eliminar_Tbl_Libros
 (
@@ -91,10 +88,11 @@ GO
 DECLARE @Num INT, @Msg VARCHAR(255);
 
 EXEC Eliminar_Tbl_Libros
-    @Id_Libro = 5,
+    @Id_Libro = 1005,
     @Id_Modificador = 1,
     @O_Numero = @Num OUTPUT,
     @O_Msg = @Msg OUTPUT;
 
 SELECT @Num AS Numero, @Msg AS Mensaje;
 
+select * from Tbl_Libros

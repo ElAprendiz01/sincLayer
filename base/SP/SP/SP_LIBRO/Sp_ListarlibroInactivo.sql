@@ -1,8 +1,6 @@
 USE SYNCLAYER;
 GO
 
-USE SYNCLAYER;
-GO
 
 CREATE OR ALTER PROCEDURE SPListarLibrosInactivos
 AS
@@ -13,7 +11,7 @@ BEGIN
         l.Id_Libro,
         l.Titulo,
         l.ISBN,
-        a.Nombre_Completo AS Autor,
+        dto.Primer_Nombre AS Autor,
         c.Nombre AS Categoria,
         l.Editorial,
         l.Año_Publicacion,
@@ -27,7 +25,8 @@ BEGIN
         INNER JOIN Tbl_Autores a ON l.Id_Autor = a.Id_Autor
         INNER JOIN Cls_Catalogo c ON l.Id_Categoria = c.Id_Catalogo
         INNER JOIN Cls_Estado e ON l.Id_Estado = e.Id_Estado
-    WHERE e.Estado IN ('Inactiva', 'Inactivo', 'Eliminadas', 'Eliminado', 'Descativado', 'Desactivado'
+		INNER JOIN Tbl_Datos_Personales dto ON l.Id_Autor = dto.Id_Persona
+    WHERE e.Estado IN ('Activo', 'Disponible', 'Disponibles', 'Activos', 'en funcion', 'Activados'
     )
     ORDER BY l.Id_Libro DESC;
 END;
@@ -35,3 +34,5 @@ GO
 
 -- ------ --------- -------
 EXEC spListarLibrosInactivos;
+
+select * from Tbl_libros

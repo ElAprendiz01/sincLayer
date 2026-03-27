@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace application.Services
 {
@@ -68,12 +69,12 @@ namespace application.Services
         // filtar por categoria
 
 
-        public async Task<IEnumerable<LibroDomain>> FiltrarLibrosPorCategoria(int idCategoria)
+        public async Task<IEnumerable<LibroDomain>> FiltrarLibrosPorCategoria(string nombre)
         {
-            if (idCategoria <= 0)
+            if (string.IsNullOrWhiteSpace(nombre))
                 return Enumerable.Empty<LibroDomain>();
 
-            var listar = await _repository.Listar_Libros_Por_CategoriaAsync(idCategoria);
+            var listar = await _repository.Listar_Libros_Por_CategoriaAsync(nombre);
             return listar.Select(l => new LibroDomain
             {
                 Id_Libro = l.Id_Libro,

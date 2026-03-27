@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 function Listar_Cls_Tipo_Catalogo(){
     const[VariableTipo_Catalogo, setfunccionTipo_Catalogo] = useState([]);
     useEffect(()=>{
-        fetch("http://localhost:5082/api/Cls_Tipo_Catalogo_")
+        fetch("https://localhost:44305/api/Cls_Tipo_Catalogo_")
         .then((res)=> res.json())
         .then((data)=>{
             setfunccionTipo_Catalogo(data);
