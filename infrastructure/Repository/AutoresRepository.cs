@@ -182,7 +182,7 @@ namespace infrastructure.Repository
                 { Direction = ParameterDirection.Output };
                 cmd.Parameters.Add(oNumero);
                 cmd.Parameters.Add(oMsg);
-                await cmd.ExecuteNonQueryAsync();
+                await cmd.ExecuteNonQueryAsync( );
                 // Captura de errores del SP
                 int codigo = (int)oNumero.Value;
                 string mensaje = oMsg.Value.ToString();
