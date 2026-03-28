@@ -1,0 +1,219 @@
+/* src/styles/autores.css */
+
+.autores-page-container {
+    background-color: #000000;
+    min-height: 100vh;
+    padding: 2rem;
+    color: #ffffff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.autores-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #c9a227;
+    padding-bottom: 1rem;
+}
+
+.autores-header h1 {
+    font-size: 2rem;
+    color: #c9a227;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 0;
+}
+
+/* Estilos del Formulario de Gestión */
+.gestion-form {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 2rem;
+    border: 1px solid rgba(201, 162, 39, 0.2);
+    display: flex;
+    gap: 15px;
+    align-items: flex-end;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+}
+
+.form-group label {
+    color: #c9a227;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+.form-group input {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 10px;
+    border-radius: 5px;
+    color: #000000;
+    outline: none;
+}
+
+.form-group input:focus {
+    border-color: #c9a227;
+}
+
+/* Estilos de la Tabla */
+.table-wrapper {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 20px;
+    border: 1px solid rgba(201, 162, 39, 0.3);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+}
+
+.autores-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+
+.autores-table th {
+    color: #c9a227;
+    text-align: left;
+    padding: 15px;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    border-bottom: 1px solid rgba(201, 162, 39, 0.5);
+}
+
+.autores-table td {
+    padding: 15px;
+    background-color: rgba(255, 255, 255, 0.03);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.autores-table td:first-child { border-radius: 10px 0 0 10px; }
+.autores-table td:last-child { border-radius: 0 10px 10px 0; }
+
+/* Badges de Estado */
+.status-badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.status-active {
+    background-color: rgba(57, 255, 20, 0.2);
+    color: #39ff14;
+    border: 1px solid #39ff14;
+}
+
+/* Botones de Acción Generales */
+.btn-action {
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    transition: 0.3s;
+    border: none;
+}
+
+.btn-save {
+    background-color: #c9a227;
+    color: #000;
+}
+
+.btn-save:hover {
+    background-color: #e0b836;
+    box-shadow: 0 0 10px rgba(201, 162, 39, 0.5);
+}
+
+.btn-cancel {
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #fff;
+}
+
+.btn-cancel:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Botones de Icono dentro de la tabla */
+.actions-cell {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.btn-icon {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.5);
+    transition: 0.3s;
+}
+
+.btn-icon:hover {
+    transform: scale(1.1);
+}
+
+.btn-edit:hover {
+    color: #c9a227; /* Dorado para editar */
+}
+
+.btn-delete:hover {
+    color: #ff4c4c; /* Rojo para eliminar */
+}
+
+/* Botón Volver al Inicio */
+.btn-back {
+    background-color: transparent;
+    border: 1px solid #c9a227;
+    color: #c9a227;
+    padding: 8px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: 0.4s;
+    font-size: 0.9rem;
+}
+
+.btn-back:hover {
+    background-color: #c9a227;
+    color: #000;
+}
+/* Contenedor de notificaciones en la esquina */
+.notification-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+}
+
+.custom-alert {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgb(3, 1, 1);
+    padding: 15px 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    border-left: 5px solid #0e0d0d;
+    margin-bottom: 10px;
+    animation: slideIn 0.4s ease forwards;
+}
+
+.custom-alert.success { border-left-color: #22c55e; background-color: #000000; }
+.custom-alert.warning { border-left-color: #f59e0b; background-color: #10100f; }
+.custom-alert.error { border-left-color: #ef4444; background-color: #000000; }
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}

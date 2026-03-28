@@ -9,8 +9,8 @@ namespace Presentacion.Controllers
     [ApiController]
     public class AutorController : ControllerBase
     {
-
         private readonly AutoresServices _service;
+
         public AutorController(AutoresServices service)
         {
             _service = service;
@@ -20,27 +20,19 @@ namespace Presentacion.Controllers
         public async Task<IActionResult> ListarAutores()
         {
             try
-             {
+            {
                 var lista = await _service.Listar_autores();
-
-                if (lista == null || !lista.Any())
-                {
-                    return NotFound(new
-                    {
-                        codigo = 404,
-                        msj = "No se encontraron  el autor especificado."
-                    });
-                }
                 return Ok(new
                 {
-                    codigo = 200,
-                    msj = "Consulta exitosa",
+                    o_Numero = 200,
+                    o_Msg = "Consulta exitosa",
                     data = lista
                 });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Internal serve error" + ex.Message);
+                
+                return BadRequest(new { o_Numero = 0, o_Msg = ex.Message });
             }
         }
 
@@ -51,14 +43,18 @@ namespace Presentacion.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest(new { msj = "El Modelo no es valido" });
+                    return BadRequest(new { o_Numero = 400, o_Msg = "El Modelo no es válido" });
                 }
+
                 await _service.nuevoAutor(dto);
-                return StatusCode(201, "autor agregado Correctamente");
+
+                
+                return Ok(new { o_Numero = 200, o_Msg = "Autor agregado correctamente" });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "internal server error" + ex.Message);
+                // Aquí llega el "MENSAJE DEL SP" que lanzaste con throw new Exception(mensaje)
+                return BadRequest(new { o_Numero = 0, o_Msg = ex.Message });
             }
         }
 
@@ -69,33 +65,36 @@ namespace Presentacion.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest(new { msj = "el modelo no es valido" });
+                    return BadRequest(new { o_Numero = 400, o_Msg = "El modelo no es válido" });
                 }
-                if (id != dto.Id_Persona)
-                {
-                    return BadRequest(new { msj = "el id no coincide" });
-                }
-                dto.Id_Persona = id;
-
 
                 bool esAdmin = User.IsInRole("Admin");
 
+                
+                dto.Id_Autor = id;
 
                 await _service.EditarAutor(dto, esAdmin);
-                return NoContent();
+                return Ok(new { o_Numero = 200, o_Msg = "Autor actualizado correctamente" });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "internal server error" + ex.Message);
+                return BadRequest(new { o_Numero = 0, o_Msg = ex.Message });
             }
-
         }
 
         [HttpDelete("Eliminar/{id}")]
         public async Task<IActionResult> EliminarAutor(int id, int idModificador)
         {
-            await _service.EliminarAutor(id, idModificador);
-            return NoContent();
+            try
+            {
+                await _service.EliminarAutor(id, idModificador);
+                return Ok(new { o_Numero = 200, o_Msg = "Autor desactivado con éxito" });
+            }
+            catch (Exception ex)
+            {
+                // IMPORTANTE: Esto enviará el mensaje del SP: "El autor no existe o ya está desactivado"
+                return BadRequest(new { o_Numero = 0, o_Msg = ex.Message });
+            }
         }
 
         [HttpGet("FiltroPorIdPersona")]
@@ -107,22 +106,19 @@ namespace Presentacion.Controllers
 
                 if (lista == null || !lista.Any())
                 {
-                    return NotFound(new
-                    {
-                        codigo = 404,
-                        msj = "No se encontro autor  con ea Id especificado."
-                    });
+                    return NotFound(new { o_Numero = 404, o_Msg = "No se encontró el autor con ese ID Persona." });
                 }
+
                 return Ok(new
                 {
-                    codigo = 200,
-                    msj = "Consulta exitosa",
+                    o_Numero = 200,
+                    o_Msg = "Consulta exitosa",
                     data = lista
                 });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Error al filtrar DTP: " + ex.Message);
+                return BadRequest(new { o_Numero = 0, o_Msg = ex.Message });
             }
         }
     }

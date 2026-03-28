@@ -19,6 +19,12 @@ BEGIN
         SET @O_Msg = 'El id persona es obligatorio.';
         RETURN;
     END;
+	IF EXISTS (SELECT 1 FROM Tbl_Autores WHERE Id_Persona = @Id_Persona)
+    BEGIN
+        SET @O_Numero = -1;
+        SET @O_Msg = 'Error: Esta persona ya está registrada como autor.';
+        RETURN;
+    END;
 
     -- Validar que la persona exista
     IF NOT EXISTS (SELECT 1 FROM Tbl_Datos_Personales WHERE Id_Persona = @Id_Persona)
