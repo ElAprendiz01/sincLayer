@@ -1,64 +1,227 @@
-#root{
-  width:100%;
-  margin:0;
-  padding:0;
+@import "tailwindcss";
+
+/* --- VARIABLES Y CONFIGURACIÓN GLOBAL --- */
+:root {
+  font-family: 'Poppins', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #0f0f0f;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   overscroll-behavior-x: none;
   touch-action: pan-y;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+body {
+  margin: 0;
+  padding: 0;
+  background: #0f0f0f;
+  color: white;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+#root {
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+/* --- TIPOGRAFÍA Y ENLACES --- */
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+  font-weight: 800;
 }
 
-.card {
-  padding: 2em;
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
 }
 
-.read-the-docs {
-  color: #888;
+a:hover {
+  color: #535bf2;
 }
 
+/* --- BOTONES GLOBALES --- */
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: all 0.25s;
+  color: white;
+}
+
+button:hover {
+  border-color: #646cff;
+  background-color: #242424;
+}
+
+/* --- ESTILOS DEL MÓDULO DE ESTADOS (NUEVO) --- */
+
+.estados-wrapper {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.estados-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.estados-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.estado-card {
+  background-color: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 16px;
+  padding: 1.5rem;
+  transition: border-color 0.3s, transform 0.2s;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.estado-card:hover {
+  border-color: #646cff;
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+}
+
+.estado-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.id-badge {
+  font-family: 'JetBrains Mono', monospace;
+  color: #646cff;
+  font-size: 0.75rem;
+  background: rgba(100, 108, 255, 0.1);
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+/* Indicadores de Activo/Inactivo */
+.status-pill {
+  font-size: 0.65rem;
+  font-weight: 900;
+  padding: 4px 10px;
+  border-radius: 20px;
+  letter-spacing: 1px;
+}
+
+.status-active {
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.status-inactive {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.estado-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #333;
+}
+
+.btn-card-edit {
+  flex: 1;
+  font-size: 0.85rem;
+  background: #242424;
+  color: #646cff;
+}
+
+.btn-card-delete {
+  flex: 1;
+  font-size: 0.85rem;
+  background: #242424;
+  color: #ef4444;
+}
+
+.btn-card-delete:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: #ef4444;
+}
+
+/* --- BUSCADOR --- */
+.search-container {
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.search-input {
+  width: 100%;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  padding: 12px 12px 12px 45px;
+  border-radius: 12px;
+  color: white;
+  transition: border-color 0.3s;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #646cff;
+}
+
+/* --- TABLAS ORIGINALES (Tipo_Catalogo) --- */
 .Tabla-Tipo_Catalogo {
   width: 100%;
   border-collapse: collapse;
   margin-top: 15px;
-  font-family: Arial, sans-serif;
 }
+
 .Tabla-Tipo_Catalogo th {
   background-color: #a2a1a8;
+  color: #1a1a1a;
   font-weight: bold;
 }
 
 .Tabla-Tipo_Catalogo th,
-.Tabla-Tipo_Catalogo td{
-  border: 1px solid#333;
-  padding: 8px;
+.Tabla-Tipo_Catalogo td {
+  border: 1px solid #333;
+  padding: 12px;
   text-align: left;
-  
 }
-.Tabla-Tipo_Catalogo tr:nth-child(even)
-{background-color: #f7f8f8;}
+
+.Tabla-Tipo_Catalogo tr:nth-child(even) {
+  background-color: #1a1a1a;
+}
+
+/* --- ANIMACIONES Y RESPONSIVIDAD --- */
+@keyframes logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  h1 { font-size: 28px; }
+  .estados-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .estados-grid { grid-template-columns: 1fr; }
+}

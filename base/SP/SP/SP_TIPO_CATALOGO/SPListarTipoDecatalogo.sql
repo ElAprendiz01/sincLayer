@@ -18,7 +18,8 @@ BEGIN
 	TC.Activo
 
 	FROM Cls_Tipo_Catalogo AS TC
-	ORDER BY Id_Tipo_Catalogo ASC
+	Where TC.Activo = 1 and tc.Activo = 0
+	ORDER BY Id_Tipo_Catalogo desc
 END; 
 GO
 

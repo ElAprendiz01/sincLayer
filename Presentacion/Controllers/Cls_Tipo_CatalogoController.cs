@@ -7,10 +7,10 @@ namespace Presentacion.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class Cls_Tipo_Catalogo_Controller : ControllerBase
+    public class Cls_Tipo_CatalogoController : ControllerBase
     {
         private readonly Cls_Tipo_Catalogo_Services _service;
-        public Cls_Tipo_Catalogo_Controller(Cls_Tipo_Catalogo_Services service)
+        public Cls_Tipo_CatalogoController(Cls_Tipo_Catalogo_Services service)
         {
             _service = service;
         }

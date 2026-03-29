@@ -1,0 +1,168 @@
+/* Contenedor Principal */
+.catalogo-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    color: #e2e8f0;
+}
+
+/* Botón Volver */
+.btn-back {
+    background: none;
+    border: none;
+    color: #646cff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    transition: color 0.2s;
+}
+
+.btn-back:hover { color: #535bf2; }
+
+/* Header */
+.catalogo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.btn-new {
+    background: #646cff;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: bold;
+    transition: transform 0.2s;
+}
+
+.btn-new:hover { transform: scale(1.02); }
+
+/* Grid de Tarjetas */
+.catalogo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+}
+
+.catalogo-card {
+    background: #1a1a1a;
+    border: 1px solid #333;
+    padding: 20px;
+    border-radius: 16px;
+    transition: border-color 0.3s;
+}
+
+.catalogo-card:hover { border-color: #646cff; }
+
+/* Badges de Estado */
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.status-active {
+    background: rgba(76, 175, 80, 0.1);
+    color: #4caf50;
+    border: 1px solid #4caf50;
+}
+
+.status-inactive {
+    background: rgba(244, 67, 54, 0.1);
+    color: #f44336;
+    border: 1px solid #f44336;
+}
+
+/* Sección Auditoría */
+.audit-section {
+    background: #0f0f0f;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 11px;
+    border: 1px solid #252525;
+    margin-top: 15px;
+}
+
+.audit-row {
+    display: flex;
+    justify-content: space-between;
+    color: #94a3b8;
+}
+
+.audit-divider {
+    border-top: 1px dashed #333;
+    margin: 8px 0;
+}
+
+/* Botones de Acción */
+.card-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-edit {
+    flex: 1;
+    background: #2a2a2a;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+}
+
+.btn-delete {
+    flex: 1;
+    background: rgba(244, 67, 54, 0.1);
+    color: #f44336;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+}
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: #1a1a1a;
+    padding: 30px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 32rem;
+    border: 1px solid #333;
+}
+
+.modal-input {
+    padding: 12px;
+    background: #000;
+    border: 1px solid #333;
+    border-radius: 8px;
+    color: white;
+    width: 100%;
+}

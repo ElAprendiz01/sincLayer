@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { 
   Activity, Book, Users, MapPin, ShieldCheck, 
   ClipboardList, BookOpen, AlertCircle, 
-  Undo2, Handshake, DollarSign, Layers, Tag, ChevronRight, UserCircle
+  Undo2, Handshake, DollarSign, Layers, Tag, ChevronRight, UserCircle,
+  ArrowLeft // Agregado para el botón de volver
 } from 'lucide-react';
 
 const AdminDashboard = () => {
@@ -59,6 +60,20 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen bg-[#0f172a] p-6 lg:p-12 font-sans text-white">
+      
+      {/* --- BOTÓN DE VUELTA ATRÁS AGREGADO --- */}
+      <motion.button
+        initial={{ opacity: 0, x: -10 }}
+        animate={{ opacity: 1, x: 0 }}
+        whileHover={{ x: -5 }}
+        onClick={() => navigate('/home')} 
+        className="flex items-center gap-2 text-slate-400 hover:text-blue-400 transition-colors mb-6 group bg-transparent border-none cursor-pointer"
+      >
+        <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
+        <span className="text-sm font-semibold tracking-wide">Volver al Inicio</span>
+      </motion.button>
+      {/* --------------------------------------- */}
+
       <header className="mb-12 flex justify-between items-end">
         <div>
           <span className="text-blue-400 font-bold tracking-widest uppercase text-xs">Administración Central</span>
@@ -97,7 +112,7 @@ const AdminDashboard = () => {
                   `}
                 >
                   {/* Icono con Gradiente */}
-                  <div className={`p-3 rounded-2xl bg-gradient-to-br ${item.color} text-white mb-4 shadow-lg group-hover:rotate-6 transition-transform`}>
+                  <div className={`p-3 rounded-2xl bg-linear- ${item.color} text-white mb-4 shadow-lg group-hover:rotate-6 transition-transform`}>
                     {React.cloneElement(item.icon, { size: 24 })}
                   </div>
 
@@ -112,7 +127,7 @@ const AdminDashboard = () => {
                   </div>
 
                   {/* Detalle decorativo de fondo */}
-                  <div className={`absolute -right-4 -top-4 w-24 h-24 bg-gradient-to-br ${item.color} opacity-[0.05] rounded-full group-hover:opacity-[0.15] transition-opacity`}></div>
+                  <div className={`absolute -right-4 -top-4 w-24 h-24 bg-linear- ${item.color} opacity-[0.05] rounded-full group-hover:opacity-[0.15] transition-opacity`}></div>
                 </motion.button>
               ))}
             </div>

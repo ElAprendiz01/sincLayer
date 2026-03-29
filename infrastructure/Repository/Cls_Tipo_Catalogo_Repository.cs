@@ -118,11 +118,6 @@ namespace infrastructure.Repository
                 string mensaje = oMsg.Value.ToString();
                 if (codigo <= 0)
                     throw new Exception(mensaje);
-
-
-                await cmd.ExecuteNonQueryAsync();
-
-
             }
 
         }
@@ -154,9 +149,6 @@ namespace infrastructure.Repository
                 string mensaje = oMsg.Value.ToString();
                 if (codigo <= 0)
                     throw new Exception(mensaje);
-
-
-                await cmd.ExecuteNonQueryAsync();
 
             }
         }

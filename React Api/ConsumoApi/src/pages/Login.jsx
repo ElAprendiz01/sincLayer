@@ -17,8 +17,8 @@ export default function Login() {
       Contrasena: password
     }
 
-try {
-      const response = await fetch("https://localhost:44305/api/Usuario/login", {
+    try {
+      const response = await fetch("http://localhost:5082/api/Usuario/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -36,10 +36,10 @@ try {
       // 1. Guardar token
       localStorage.setItem("token", result.token)
       
-    
+      // 2. Guardar nombre de usuario
       localStorage.setItem("userName", result.usuario || usuario) 
 
-      
+      // 3. Guardar ID del Usuario (Agregado para el ID Creador/Modificador)
       localStorage.setItem("userId", result.id_Usuario) 
 
       // redirigir al HOME

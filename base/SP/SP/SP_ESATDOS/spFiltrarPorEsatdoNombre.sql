@@ -15,7 +15,8 @@ BEGIN
                Id_Modificador,
                Activo
         FROM Cls_Estado
-       WHERE Estado LIKE '%' + @Estado + '%';
+       WHERE Estado LIKE '%' + @Estado + '%'
+       order by Id_Estado desc
 
     END TRY
     BEGIN CATCH

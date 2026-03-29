@@ -1,0 +1,123 @@
+/* Contenedor Principal */
+.estados-container {
+  padding: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 100vh;
+}
+
+/* Header del Módulo */
+.estados-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.estados-header h1 {
+  margin: 0;
+  font-size: 2.8rem;
+  color: white;
+  letter-spacing: -1px;
+}
+
+/* Buscador y Filtros */
+.search-wrapper {
+  position: relative;
+  margin-bottom: 30px;
+}
+
+.input-search {
+  width: 100%;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  padding: 15px 15px 15px 45px;
+  border-radius: 12px;
+  color: white;
+  transition: border-color 0.3s;
+}
+
+.input-search:focus {
+  border-color: #646cff;
+  outline: none;
+}
+
+/* Grid de Tarjetas */
+.estados-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.estado-card {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 16px;
+  padding: 24px;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.estado-card:hover {
+  transform: translateY(-5px);
+  border-color: #646cff;
+}
+
+/* Badges y Estados */
+.id-tag {
+  font-family: monospace;
+  background: #242424;
+  color: #646cff;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.online { background: #10b981; box-shadow: 0 0 8px #10b981; }
+.offline { background: #ef4444; box-shadow: 0 0 8px #ef4444; }
+
+/* Botones de Acción */
+.actions-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  border-top: 1px solid #333;
+  padding-top: 20px;
+}
+
+.btn-action {
+  flex: 1;
+  background: #242424;
+  border: 1px solid #333;
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.btn-action:hover {
+  background: #333;
+  border-color: #444;
+}
+
+.btn-delete:hover {
+  color: #ef4444;
+  border-color: #ef4444;
+}
