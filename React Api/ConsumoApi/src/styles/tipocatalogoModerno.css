@@ -1,100 +1,64 @@
 /* ==========================================================================
-   ESTILOS GLOBALES - NEXACORE / SYNCLAYER
+   ESTILOS GLOBALES - NEXACORE
    ========================================================================== */
-
 .tipo-container {
-    background-color: #030303; /* Negro profundo */
+    background-color: #030303;
     min-height: 100vh;
     padding: 2rem;
     color: white;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Inter', sans-serif;
     max-width: 1600px;
     margin: 0 auto;
 }
 
-/* Header Adaptable */
 .header-flex {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap; /* Responsivo */
-    gap: 1.5rem;
-    margin-bottom: 2rem;
+    margin-bottom: 2.5rem;
 }
 
 .header-flex h1 {
-    font-size: clamp(1.8rem, 5vw, 2.5rem); /* Tamaño fluido */
+    font-size: 2.2rem;
     font-weight: 500;
-    margin: 0;
     color: #eee;
 }
 
-/* Barra de Búsqueda Estilo Píldora */
-.search-box {
-    display: flex;
-    align-items: center;
-    background-color: #0d0d0d;
-    border: 1px solid #1a1a1a;
-    border-radius: 50px;
-    padding: 12px 20px;
-    margin-bottom: 2.5rem;
-    transition: 0.3s ease;
-}
-
-.search-box:focus-within {
-    border-color: #333;
-}
-
-.search-box input {
-    background: none;
-    border: none;
-    color: #ddd;
-    font-size: 1rem;
-    margin-left: 12px;
-    width: 100%;
-    outline: none;
-}
-
-/* 🚩 GRID RESPONSIVO */
+/* Grid de Tarjetas */
 .tipo-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
     gap: 2rem;
-    width: 100%;
 }
 
 /* ==========================================================================
-   TARJETA ESTILO "ESTADOS"
+   TARJETA MODERNA (ESTILO ESTADOS)
    ========================================================================== */
-
 .modern-card {
     background-color: #0a0a0a;
     border: 1px solid #1a1a1a;
     border-radius: 20px;
     padding: 1.8rem;
-    display: flex;
-    flex-direction: column;
     transition: transform 0.3s ease, border-color 0.3s ease;
 }
 
 .modern-card:hover {
-    border-color: #222;
+    border-color: #333;
     transform: translateY(-5px);
 }
 
 .modern-card-header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.2rem;
 }
 
 .badge-id {
     background-color: #161616;
-    color: #444; /* Gris oscuro sutil */
+    color: #555;
     padding: 4px 12px;
     border-radius: 6px;
     font-size: 0.8rem;
-    font-family: monospace;
 }
 
 .status-pill {
@@ -104,92 +68,87 @@
     border-radius: 20px;
     font-size: 0.7rem;
     font-weight: bold;
-    letter-spacing: 0.5px;
 }
 
 .card-title {
-    font-size: 1.8rem;
+    font-size: 1.7rem;
     color: #ccc;
-    margin: 0 0 1.5rem 0;
-    font-weight: 400;
+    margin-bottom: 1.5rem;
 }
 
-/* 🚩 CUADRO DE AUDITORÍA CON BORDES PUNTEADOS */
+/* Cuadro de Auditoría Punteado */
 .audit-box {
     background: rgba(255, 255, 255, 0.01);
-    border: 1px dashed #1a1a1a; /* El toque clave de la imagen */
+    border: 1px dashed #1a1a1a;
     border-radius: 12px;
     padding: 1.2rem;
-    margin-bottom: 1.8rem;
+    margin-bottom: 1.5rem;
 }
 
 .audit-row {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-}
-
-.audit-label {
-    color: #333; /* Etiquetas muy tenues */
     font-size: 0.85rem;
+    margin-bottom: 8px;
 }
 
-.audit-user {
-    color: #888;
-    font-size: 0.9rem;
-}
-
-.audit-date {
-    color: #333;
-    font-size: 0.75rem;
-    display: block;
-    text-align: right;
-}
+.audit-label { color: #444; }
+.audit-user { color: #888; display: block; text-align: right; }
+.audit-date { color: #333; font-size: 0.75rem; display: block; text-align: right; }
 
 .audit-sep {
     border-top: 1px dashed #1a1a1a;
-    margin: 12px 0;
+    margin: 10px 0;
 }
 
-/* ==========================================================================
-   BOTONES Y ACCIONES
-   ========================================================================== */
-
-.acciones {
-    display: flex;
-    gap: 12px;
-}
-
+/* Botones de Acción */
+.acciones { display: flex; gap: 12px; }
 .btn-edit, .btn-del {
     flex: 1;
     background: #111;
     border: 1px solid #1a1a1a;
-    color: #444;
+    color: #666;
     padding: 12px;
     border-radius: 12px;
     cursor: pointer;
-    font-size: 0.95rem;
+    transition: 0.2s;
+}
+
+.btn-edit:hover { background: #1a1a1a; color: #eee; }
+.btn-del:hover { color: #ef4444; border-color: rgba(239,68,68,0.2); }
+
+/* ==========================================================================
+   MODAL (CORRECCIÓN DE TRANSPARENCIA)
+   ========================================================================== */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 8px;
-    transition: 0.2s ease;
+    z-index: 9999;
 }
 
-.btn-edit:hover {
-    background: #1a1a1a;
-    color: #eee;
+.modal {
+    background-color: #0a0a0a;
+    border: 1px solid #1a1a1a;
+    padding: 2.5rem;
+    border-radius: 24px;
+    width: 95%;
+    max-width: 450px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
 }
 
-.btn-del:hover {
-    color: #ef4444;
-    border-color: rgba(239, 68, 68, 0.2);
-}
-
-/* Responsividad para móviles */
-@media (max-width: 480px) {
-    .tipo-container { padding: 1rem; }
-    .header-flex { flex-direction: column; align-items: flex-start; }
-    .audit-row { flex-direction: column; align-items: flex-start; gap: 8px; }
-    .audit-date { text-align: left; }
+.modal h2 { color: #eee; margin-bottom: 1.5rem; }
+.modal input {
+    width: 100%;
+    background: #111;
+    border: 1px solid #222;
+    color: white;
+    padding: 14px;
+    border-radius: 12px;
+    margin: 10px 0 20px 0;
+    outline: none;
 }

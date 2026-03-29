@@ -1,6 +1,6 @@
-import "../../styles/tipocatalogoModerno.css";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ArrowLeft, Plus } from "lucide-react";
 import { 
     getTiposCatalogo, 
     eliminarTipoCatalogo, 
@@ -8,23 +8,17 @@ import {
     editarTipoCatalogo 
 } from "../../services/tipoCatalogoService";
 import TipoCatalogoCard from "../../components/TipoCatologoCard"; 
-import { ArrowLeft, Plus, Search } from "lucide-react";
+import "../../styles/tipocatalogoModerno.css";
 
 const ListarTipoCatalogo = () => {
     const navigate = useNavigate();
     const [tipos, setTipos] = useState([]);
     const [cargando, setCargando] = useState(true);
-    const [enviando, setEnviando] = useState(false); 
     const [modalAbierto, setModalAbierto] = useState(false);
     const [editandoId, setEditandoId] = useState(null);
     const [nombreTipo, setNombreTipo] = useState("");
-    
-    // Estado para la búsqueda dinámica
-    const [terminoBusqueda, setTerminoBusqueda] = useState("");
 
     const cargar = async () => {
-        const token = localStorage.getItem("token");
-        if (!token) { navigate("/login"); return; }
         try {
             setCargando(true);
             const data = await getTiposCatalogo();
@@ -43,54 +37,25 @@ const ListarTipoCatalogo = () => {
     const handleGuardar = async (e) => {
         e.preventDefault();
         const loggedUserId = localStorage.getItem("userId");
-        setEnviando(true);
-        try {
-            const payload = { 
-                nombre: nombreTipo, 
-                id_Creador: editandoId ? null : parseInt(loggedUserId), 
-                id_Modificador: editandoId ? parseInt(loggedUserId) : null, 
-                activo: true 
-            };
-            const exito = editandoId ? await editarTipoCatalogo(editandoId, payload) : await crearTipoCatalogo(payload);
-            if (exito) { setModalAbierto(false); await cargar(); }
-        } finally { setEnviando(false); }
+        const payload = { 
+            nombre: nombreTipo, 
+            id_Creador: editandoId ? null : parseInt(loggedUserId), 
+            id_Modificador: editandoId ? parseInt(loggedUserId) : null, 
+            activo: true 
+        };
+        const exito = editandoId ? await editarTipoCatalogo(editandoId, payload) : await crearTipoCatalogo(payload);
+        if (exito) { setModalAbierto(false); cargar(); }
     };
-
-    // Lógica para filtrar los catálogos por nombre en tiempo real
-    const catalogosFiltrados = tipos.filter(t => 
-        t.nombre.toLowerCase().includes(terminoBusqueda.toLowerCase())
-    );
 
     return (
         <div className="tipo-container">
-            {/* --- BOTÓN VOLVER ATRÁS AL PANEL --- */}
-            <button 
-                onClick={() => navigate('/admin')} 
-                className="btn-back-link"
-                style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: '8px', 
-                    background: 'none', 
-                    border: 'none', 
-                    color: '#888', 
-                    cursor: 'pointer', 
-                    marginBottom: '20px', 
-                    fontWeight: 'bold',
-                    padding: 0
-                }}
-            >
+            <button onClick={() => navigate('/admin')} className="btn-back-link" style={{ color: '#888', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
                 <ArrowLeft size={20} /> Volver al Panel
             </button>
 
-            {/* --- HEADER CON TÍTULO Y NUEVO REGISTRO --- */}
             <div className="header-flex">
                 <h1>Tipos de Catálogo</h1>
-                <button 
-                    className="btn-principal" 
-                    onClick={() => {setEditandoId(null); setNombreTipo(""); setModalAbierto(true);}}
-                    style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
-                >
+                <button className="btn-principal" onClick={() => {setEditandoId(null); setNombreTipo(""); setModalAbierto(true);}} style={{ background: '#111', color: '#eee', border: '1px solid #222', padding: '10px 20px', borderRadius: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <Plus size={20} /> Nuevo Registro
                 </button>
             </div>
@@ -99,7 +64,7 @@ const ListarTipoCatalogo = () => {
                 <div className="loader">Sincronizando con NexaCore...</div>
             ) : (
                 <div className="tipo-grid">
-                    {catalogosFiltrados.map((t, index) => (
+                    {tipos.map((t, index) => (
                         <TipoCatalogoCard 
                             key={t.id_Tipo_Catalogo} 
                             t={t} 
@@ -112,39 +77,16 @@ const ListarTipoCatalogo = () => {
                 </div>
             )}
 
-            {/* Modal de Formulario */}
             {modalAbierto && (
                 <div className="modal-overlay">
                     <div className="modal">
-                        <h2>{editandoId ? "Actualizar" : "Nuevo"} Registro</h2>
-                        <form onSubmit={handleGuardar}> 
-                            <div className="form-group">
-                                <label style={{ color: '#666', fontSize: '0.8rem', display: 'block', marginBottom: '10px' }}>
-                                    Nombre del catálogo:
-                                </label>
-                                <input 
-                                    type="text" 
-                                    value={nombreTipo} 
-                                    onChange={(e) => setNombreTipo(e.target.value)} 
-                                    required 
-                                    autoFocus
-                                    placeholder="Ingrese el nombre..."
-                                />
-                            </div>
-
-                            <div className="modal-btns" style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-                                <button type="submit" className="btn-principal" style={{ flex: 1 }} disabled={enviando}>
-                                    {enviando ? "Guardando..." : "Guardar"}
-                                </button>
-                                
-                                <button 
-                                    type="button" 
-                                    className="btn-del" 
-                                    style={{ flex: 1 }} 
-                                    onClick={() => setModalAbierto(false)}
-                                >
-                                    Cancelar
-                                </button>
+                        <h2>{editandoId ? "Actualizar Registro" : "Nuevo Registro"}</h2>
+                        <form onSubmit={handleGuardar}>
+                            <label>Nombre del catálogo:</label>
+                            <input type="text" value={nombreTipo} onChange={(e) => setNombreTipo(e.target.value)} required />
+                            <div className="modal-btns" style={{ display: 'flex', gap: '10px' }}>
+                                <button type="submit" className="btn-edit" style={{ flex: 2, background: '#eee', color: '#000' }}>Guardar</button>
+                                <button type="button" className="btn-del" onClick={() => setModalAbierto(false)} style={{ flex: 1 }}>Cancelar</button>
                             </div>
                         </form>
                     </div>

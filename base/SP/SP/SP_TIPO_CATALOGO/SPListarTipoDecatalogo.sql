@@ -18,12 +18,13 @@ BEGIN
 	TC.Activo
 
 	FROM Cls_Tipo_Catalogo AS TC
-	Where TC.Activo = 1 and tc.Activo = 0
+	Where TC.Activo = 1
 	ORDER BY Id_Tipo_Catalogo desc
 END; 
 GO
 
 EXEC Listar_Cls_Tipo_Catalogo
 
+Select * from Cls_Tipo_Catalogo
 	
 
