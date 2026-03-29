@@ -11,10 +11,13 @@ CREATE TABLE Cls_Estado (
     Fecha_Modificacion DATETIME,
     Id_Creador INT NOT NULL,
     Id_Modificador INT ,
-    Activo BIT NOT NULL
+    Activo BIT DEFAULT 1 not null
 );
 GO
 
+ALTER TABLE Cls_Estado
+ADD CONSTRAINT DF_ClsEstado_Activo 
+DEFAULT 1 FOR Activo;
 
 
 CREATE TABLE Cls_Tipo_Catalogo (
