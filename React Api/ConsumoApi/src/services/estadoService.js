@@ -109,15 +109,18 @@ export const editarEstado = async (id, nombreEstado, activo) => {
 export const eliminarEstado = async (id) => {
     try {
         const token = localStorage.getItem("token");
-        const response = await fetch(`${API_URL}/api/Estado/eliminar?id_Estado=${id}`, {
+        // CORRECCIÓN: Cambiamos ${idEliminar} por ${id}
+        const response = await fetch(`${API_URL}/api/Estado/Eliminar/${id}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             }
         });
-        return response.ok;
+        
+        return response.ok; 
     } catch (error) {
         console.error("Error al eliminar:", error);
+        return false; // Es buena práctica retornar false si hubo un error de red
     }
 };

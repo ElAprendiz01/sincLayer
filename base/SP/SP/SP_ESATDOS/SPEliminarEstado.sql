@@ -12,7 +12,8 @@ AS
 BEGIN  
     BEGIN TRY 
         BEGIN TRAN
-            DELETE FROM Cls_Estado
+            update Cls_Estado
+            set Activo = 0
             WHERE Id_Estado =@Id_Estado
         COMMIT 
     PRINT 'SE EL ESTADO SE HA ELIMINADO'

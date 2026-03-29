@@ -87,7 +87,7 @@ namespace Presentacion.Controllers
         public async Task<IActionResult> eliminarEstado(int id)
         {
             await _service.EliminarEstado(id);
-            return NoContent();
+            return StatusCode(200,"Estado eliminado corectamente");
         }
     }
 }
