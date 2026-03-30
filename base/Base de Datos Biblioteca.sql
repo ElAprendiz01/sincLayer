@@ -15,11 +15,6 @@ CREATE TABLE Cls_Estado (
 );
 GO
 
-ALTER TABLE Cls_Estado
-ADD CONSTRAINT DF_ClsEstado_Activo 
-DEFAULT 1 FOR Activo;
-
-
 CREATE TABLE Cls_Tipo_Catalogo (
     Id_Tipo_Catalogo INT PRIMARY KEY IDENTITY(1,1),
     Nombre NVARCHAR(50) NOT NULL,
@@ -154,9 +149,6 @@ CREATE TABLE Tbl_Libros (
 );
 GO
 
-
-
--- He ejecutado hasya la tabla de libnros  rebeca 
 CREATE TABLE Tbl_Prestamos (
     Id_Prestamo INT PRIMARY KEY IDENTITY(1,1),
     Id_Usuario_Cliente INT REFERENCES Tbl_Usuarios(Id_Usuario), 
@@ -172,7 +164,6 @@ CREATE TABLE Tbl_Prestamos (
     Id_Estado INT REFERENCES Cls_Estado(Id_Estado) 
 );
 GO
-
 
 CREATE TABLE Tbl_Multas (
     Id_Multa INT PRIMARY KEY IDENTITY(1,1),
