@@ -98,27 +98,20 @@ BEGIN
         SET @O_Msg = ERROR_MESSAGE();
     END CATCH;
 END;
-
-
-DECLARE @Num INT, @Msg VARCHAR(255);
-
-EXEC SpActualizarAutor
-    @Id_Autor = 1,
-    @Id_Persona = 4,
-    @Id_Modificador = 2,
-    @Id_Estado = 3,
-    @O_Numero = @Num OUTPUT,
-    @O_Msg = @Msg OUTPUT;
-
-SELECT @Num AS Numero, @Msg AS Mensaje;
+Go
 
 select * from Tbl_Autores
 
+Select * from Tbl_Datos_Personales
+
+update Tbl_Datos_Personales set Id_Estado = 3 where Id_Estado = 4
+
 DECLARE @Num INT, @Msg VARCHAR(255);
 
 EXEC SpActualizarAutor
     @Id_Autor = 1,
-    @Id_Modificador = 2,
+     @Id_Persona = 1,
+    @Id_Modificador = 5,
     @Id_Estado = 3,
 	@ForzarRecuperacion=1,
     @O_Numero = @Num OUTPUT,

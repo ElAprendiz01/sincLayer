@@ -1,6 +1,5 @@
 
 
-// --- HELPERS DE SESIÓN ---
 
 const getUserIdSession = () => {
     const id = localStorage.getItem("userId");
@@ -66,22 +65,25 @@ export const insertarAutor = async (idPersona) => {
     });
 };
 
-// 3. ACTUALIZAR (PUT)
 export const actualizarAutor = async (idAutor, idPersona) => {
-    const idUrl = parseInt(idPersona); 
+    // 1. La URL usa el ID del autor (id) que recibe el controlador: [HttpPut("Editar/{id}")]
+    const url = `${import.meta.env.VITE_API_URL}/api/Autor/Editar/${parseInt(idAutor)}`;
 
-    const body = {
-        "id_Autor": parseInt(idAutor),   
-        "id_Persona": parseInt(idPersona),
-        "id_Modificador": getUserIdSession(), 
-        "id_Estado": 3
+    // 2. El cuerpo DEBE tener los nombres exactos de las propiedades de tu clase AutoresDTOs
+    // NOTA: No uses comas al final del último elemento para evitar el error de JSON
+    const data = {
+        Id_Autor: parseInt(idAutor),   
+        Id_Persona: parseInt(idPersona), 
+        Id_Modificador: getUserIdSession(), 
+        Id_Estado: 3,
+        ForzarRecuperacion: false
     };
 
-    console.log("📝 Actualizando autor:", body);
+    console.log("📝 Enviando al controlador:", data);
 
-    return await fetchConToken(`${import.meta.env.VITE_API_URL}/api/Autor/Editar/${idUrl}`, {
+    return await fetchConToken(url, {
         method: 'PUT',
-        body: JSON.stringify(body)
+        body: JSON.stringify(data) // .NET convertirá este JSON en el objeto 'dto'
     });
 };
 

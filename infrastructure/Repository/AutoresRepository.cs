@@ -140,6 +140,7 @@ namespace infrastructure.Repository
                 cmd.CommandType = CommandType.StoredProcedure;
 
                 cmd.Parameters.Add(new SqlParameter("@Id_Autor", oautor.Id_Autor));
+                cmd.Parameters.Add(new SqlParameter("@Id_Persona", oautor.Id_Persona));
                 cmd.Parameters.Add(new SqlParameter("@Id_Modificador", (object?)oautor.Id_Modificador ?? DBNull.Value));
                 cmd.Parameters.Add(new SqlParameter("@Id_Estado", (object?)oautor.Id_Estado ?? DBNull.Value));
 
