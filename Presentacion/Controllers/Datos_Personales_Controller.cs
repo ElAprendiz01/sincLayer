@@ -81,7 +81,7 @@ namespace Presentacion.Controllers
 
 
                 await _service.EditarDatos_Personales(dto, esAdmin);
-                return NoContent();
+                return StatusCode(200,"Datos Editados correctamente");
             }
             catch (Exception ex)
             {
@@ -91,10 +91,26 @@ namespace Presentacion.Controllers
         }
 
         [HttpDelete("Eliminar/{id}")]
-        public async Task<IActionResult> EliminarDatos_Personales(int id, int idModificador)
+        public async Task<IActionResult> EliminarDatos_Personales(int id, [FromQuery] int idModificador)
         {
-            await _service.EliminarDatos_Personales(id,  idModificador);
-            return NoContent();
+            try
+            {
+                await _service.EliminarDatos_Personales(id, idModificador);
+                return Ok(new
+                {
+                    codigo = 200,
+                    msj = "Datos personales eliminados exitosamente"
+                });
+            }
+            catch (Exception ex)
+            {
+                // Esto captura el "La persona no existe o ya está desactivada"
+                return BadRequest(new
+                {
+                    codigo = 400,
+                    msj = ex.Message
+                });
+            }
         }
 
         [HttpGet("buscarPErsonaPorFechaNacimiento")]

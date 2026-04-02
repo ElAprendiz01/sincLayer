@@ -1,4 +1,3 @@
-
 USE SYNCLAYER;
 GO
 
@@ -13,7 +12,7 @@ CREATE OR ALTER PROCEDURE Insertar_Tbl_Datos_Personales
     @Tipo_DNI INT,
     @DNI VARCHAR(20),
     @Id_Creador INT,
-    @Id_Estado INT,
+    @Id_Estado INT = 3,
     @O_Numero INT OUTPUT,
     @O_Msg VARCHAR(255) OUTPUT
 )
@@ -186,3 +185,5 @@ EXEC Insertar_Tbl_Datos_Personales
     @O_Msg = @O_Msg OUTPUT;
 
 SELECT @O_Numero AS Codigo_DNI_Duplicado, @O_Msg AS Mensaje_DNI_Duplicado;
+
+Select * from Cls_Estado
