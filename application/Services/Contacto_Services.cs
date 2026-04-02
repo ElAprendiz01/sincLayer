@@ -72,10 +72,7 @@ namespace application.Services
                 Id_Persona = dto.Id_Persona,
                 Tipo_Contacto = dto.Tipo_Contacto,
                 Contacto = dto.Contacto,
-                Fecha_Creacion = dto.Fecha_Creacion,
-                Fecha_Modificacion = dto.Fecha_Modificacion,
                 Id_Creador = dto.Id_Creador,
-                Id_Modificador = dto.Id_Modificador,
                 Id_Estado = dto.Id_Estado,
             };
             await _repository.NuevoContactoAsyn(oContacto_Domai);
@@ -95,12 +92,8 @@ namespace application.Services
                 Id_Persona = dto.Id_Persona,
                 Tipo_Contacto = dto.Tipo_Contacto,
                 Contacto = dto.Contacto,
-                Fecha_Creacion = dto.Fecha_Creacion,
-                Fecha_Modificacion = dto.Fecha_Modificacion,
-                Id_Creador = dto.Id_Creador,
                 Id_Modificador = dto.Id_Modificador,
-                Id_Estado = dto.Id_Estado,
-                ForzarRecuperacion = dto.ForzarRecuperacion
+                Id_Estado = dto.Id_Estado
 
             };
             await _repository.EditarContactoAsync(oContacto_Domai);

@@ -6,7 +6,7 @@ CREATE OR ALTER PROCEDURE Insertar_Tbl_Contacto(
     @Tipo_Contacto INT,
     @Contacto NVARCHAR(100),
     @Id_Creador INT,
-    @Id_Estado INT,
+    @Id_Estado INT = 3,
     @O_Numero INT OUTPUT,
     @O_Msg VARCHAR(255) OUTPUT
 )

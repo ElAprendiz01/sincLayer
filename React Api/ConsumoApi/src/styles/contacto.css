@@ -1,0 +1,82 @@
+.contactos-container {
+    padding: 2rem;
+    color: #e0e0e0;
+}
+
+.contactos-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+/* TABLA */
+.table-wrapper {
+    background: #1e1e1e;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.tabla-contactos {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tabla-contactos th {
+    background: #333;
+    padding: 12px;
+    text-align: left;
+    color: #ffc107;
+}
+
+.tabla-contactos td {
+    padding: 12px;
+    border-bottom: 1px solid #444;
+}
+
+/* FORMULARIO MODAL */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.contacto-form {
+    background: #2d2d2d;
+    padding: 2rem;
+    border-radius: 12px;
+    width: 400px;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label { display: block; margin-bottom: 5px; color: #bbb; }
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    background: #3d3d3d;
+    border: 1px solid #555;
+    color: white;
+    border-radius: 4px;
+}
+
+/* BOTONES */
+.btn-nuevo { background: #ffc107; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+.btn-guardar { background: #28a745; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; flex: 1; }
+.btn-cancelar { background: #dc3545; color: white; border: none; padding: 10px; border-radius: 4px; cursor: pointer; flex: 1; }
+.form-buttons { display: flex; gap: 10px; margin-top: 1.5rem; }
+
+.status-pill {
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    background: #28a745;
+}

@@ -7,15 +7,15 @@ namespace Presentacion.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class Contacto_Controller : ControllerBase
+    public class ContactoController : ControllerBase
     {
         private readonly Contacto_Services _service;
-        public Contacto_Controller(Contacto_Services service)
+        public ContactoController(Contacto_Services service)
         {
             _service = service;
         }
 
-        [HttpGet("Listar Contacto")]
+        [HttpGet("ListarContacto")]
         public async Task<IActionResult> Listar_Contacto()
         {
             try
@@ -44,8 +44,8 @@ namespace Presentacion.Controllers
             }
         }
 
-        [HttpPost("Insertar Contacto")]
-        public async Task<IActionResult> NuevoContacto(ContactoDTOs dto)
+        [HttpPost("InsertarContacto")]
+        public async Task<IActionResult> NuevoContacto([FromBody] ContactoDTOs dto)
         {
             try
             {
@@ -56,11 +56,12 @@ namespace Presentacion.Controllers
 
                 await _service.NuevoContacto(dto);
 
-                return StatusCode(201, "Contacto agregado correctamente");
+                // CORRECCIÓN: Enviar un objeto anónimo para que sea JSON válido
+                return Ok(new { codigo = 200, msj = "Contacto agregado correctamente" });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Error al insertar contacto: " + ex.Message);
+                return StatusCode(500, new { msj = "Error al insertar contacto: " + ex.Message });
             }
         }
 
@@ -69,27 +70,20 @@ namespace Presentacion.Controllers
         {
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(new { msj = "El modelo no es válido" });
-                }
-
                 if (id != dto.Id_Contacto)
                 {
                     return BadRequest(new { msj = "El id no coincide" });
                 }
 
-                dto.Id_Contacto = id;
-
                 bool esAdmin = User.IsInRole("Admin");
-
                 await _service.EditarContacto(dto, esAdmin);
 
-                return NoContent();
+                // CORRECCIÓN: Enviar objeto JSON
+                return Ok(new { codigo = 200, msj = "Se ha editado correctamente" });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Error al editar contacto: " + ex.Message);
+                return StatusCode(500, new { msj = "Error al editar contacto: " + ex.Message });
             }
         }
 
@@ -99,11 +93,13 @@ namespace Presentacion.Controllers
             try
             {
                 await _service.EliminarContacto(id, idModificador);
-                return NoContent();
+
+                // CORRECCIÓN: No uses NoContent() si quieres mostrar un mensaje en el alert de React
+                return Ok(new { codigo = 200, msj = "Contacto eliminado correctamente" });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Error al eliminar contacto: " + ex.Message);
+                return StatusCode(500, new { msj = "Error al eliminar contacto: " + ex.Message });
             }
         }
     }

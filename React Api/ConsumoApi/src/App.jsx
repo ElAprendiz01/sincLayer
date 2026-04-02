@@ -7,6 +7,7 @@ import ListarCatalogo from "./pages/catalogo/ListarCatalogo"
 import ListarEstados from "./pages/Estados/ListarEstados";
 import ListarTipoCatalogo from "./pages/admin/ListarTipoCatalogo";
 import ListarPersonas from './pages/DatosPersonales/ListarDatosPersonales';
+import ListarContactos from './pages/contactos/ListarContactos'
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="/admin" element={<Administracion />} />
           <Route path="/catalogos" element={<ListarCatalogo />} />
           <Route path="/autores" element={<ListarCatalogo />} /> 
+          <Route path="/Contactos" element={<ListarContactos />} /> 
           <Route path="/datos-personales" element={<ListarPersonas />} />
           <Route path="/estado" element={<ListarEstados />} />
           <Route path="/Tipocatalogo" element={<ListarTipoCatalogo />} />

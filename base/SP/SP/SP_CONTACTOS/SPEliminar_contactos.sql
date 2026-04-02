@@ -76,8 +76,8 @@ GO
 DECLARE @Num INT, @Msg VARCHAR(255);
 
 EXEC Eliminar_Tbl_Contacto
-    @Id_Contacto = 1,
-    @Id_Modificador = 1,
+    @Id_Contacto = 1021,
+    @Id_Modificador = 5,
     @O_Numero = @Num OUTPUT,
     @O_Msg = @Msg OUTPUT;
 
