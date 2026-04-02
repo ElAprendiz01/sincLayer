@@ -26,3 +26,6 @@ BEGIN
     ORDER BY c.Id_Catalogo DESC;
 END;
 GO
+
+exec SP_FiltrarCatalogosPorNombre 'Identificacion'
+

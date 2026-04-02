@@ -64,14 +64,14 @@ namespace Presentacion.Controllers
 
                     await _service.EditarCatalogo(dto);
 
-                     return NoContent();
+                     return StatusCode(200,"Catalogo editado correctamente");
                 }
                 catch (Exception ex)
                 {
-                    return BadRequest(new { msj = ex.Message }); // con este return podriamos mostrar las exceppciones desde el sp
-                   // consultarlor con el docente lovo pa ver si es permitodo 
+                    // Si es un error del SP, queremos saber qué dice
+                    return StatusCode(500, new { msj = "Error en el servidor: " + ex.Message });
                 }
-            }
+        }
 
             
             [HttpDelete("DesactivarEliminar/{id}")]

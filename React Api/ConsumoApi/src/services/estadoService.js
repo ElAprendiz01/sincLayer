@@ -1,10 +1,11 @@
 // Obtenemos la URL desde el archivo .env
-const API_URL = import.meta.env.VITE_API_URL; 
+const Api1 = import.meta.env.VITE_API_URL;
+const API_URL = `${Api1}/api/Catalogo`; 
 
 export const getEstados = async () => {
     try {
         const token = localStorage.getItem("token");
-        const response = await fetch(`${API_URL}/api/Estado/listarEstado`, {
+        const response = await fetch(`${API_URL}/listarEstado`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -42,7 +43,7 @@ export const insertarEstado = async (nombreEstado) => {
         const userId = localStorage.getItem("userId");
 
         // CAMBIO: Usamos la ruta que te funciona 'Nuevo_estado'
-        const response = await fetch(`${API_URL}/api/Estado/Nuevo_estado`, {
+        const response = await fetch(`${API_URL}/Nuevo_estado`, {
             method: 'POST', 
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -73,7 +74,7 @@ export const editarEstado = async (id, nombreEstado, activo) => {
         const userId = localStorage.getItem("userId");
 
         // IMPORTANTE: Agregamos /${id} al final de la URL
-        const response = await fetch(`${API_URL}/api/Estado/editar/${id}`, {
+        const response = await fetch(`${API_URL}/editar/${id}`, {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -110,7 +111,7 @@ export const eliminarEstado = async (id) => {
     try {
         const token = localStorage.getItem("token");
         // CORRECCIÓN: Cambiamos ${idEliminar} por ${id}
-        const response = await fetch(`${API_URL}/api/Estado/Eliminar/${id}`, {
+        const response = await fetch(`${API_URL}/Eliminar/${id}`, {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${token}`,

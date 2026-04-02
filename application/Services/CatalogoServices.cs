@@ -71,8 +71,7 @@ namespace application.Services
                 Id_Catalogo = oCatalogo.Id_Catalogo,
                 Id_Tipo_Catalogo = oCatalogo.Id_Tipo_Catalogo,
                 Nombre = oCatalogo.Nombre,
-                Id_Modificador = oCatalogo.Id_Modificador,
-                Activo = oCatalogo.Activo
+                Id_Modificador = oCatalogo.Id_Modificador
             };
              await _repository.EditarCatalogoAsync(oCatalogoDom);
 

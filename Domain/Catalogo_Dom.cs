@@ -10,7 +10,7 @@ namespace Domain
     {
         public int Id_Catalogo { get; set; }
         public int Id_Tipo_Catalogo { get; set; }
-        public string Nombre { get; set; }
+        public string? Nombre { get; set; }
         public DateTime Fecha_Creacion { get; set; }
         public DateTime? Fecha_Modificacion { get; set; }
         public int Id_Creador { get; set; }

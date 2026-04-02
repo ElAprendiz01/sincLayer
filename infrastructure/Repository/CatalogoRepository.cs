@@ -29,31 +29,34 @@ namespace infrastructure.Repository
             {
                 cmd.CommandType = CommandType.StoredProcedure;
 
-                cmd.Parameters.Add(new SqlParameter("@Id_Catalogo", oCatalogo.Id_Catalogo));
-                cmd.Parameters.Add(new SqlParameter("@Id_Tipo_Catalogo", (object?)oCatalogo.Id_Tipo_Catalogo ?? DBNull.Value));
-                cmd.Parameters.Add(new SqlParameter("@Nombre", (object?)oCatalogo.Nombre ?? DBNull.Value));
-                cmd.Parameters.Add(new SqlParameter("@Activo", (object?)oCatalogo.Activo ?? DBNull.Value));
-                cmd.Parameters.Add(new SqlParameter("@Id_Modificador", oCatalogo.Id_Modificador));
+                // Asegúrate de que los nombres coincidan exactamente con el SP
+                cmd.Parameters.AddWithValue("@Id_Catalogo", oCatalogo.Id_Catalogo);
 
-                var oNumero = new SqlParameter("@O_Numero", SqlDbType.Int)
-                { Direction = ParameterDirection.Output };
-                var oMsg = new SqlParameter("@O_Msg", SqlDbType.VarChar, 255)
-                { Direction = ParameterDirection.Output };
+                // Si el ID es 0, enviamos DBNull para que el SP use ISNULL(@Id_Tipo_Catalogo, Id_Tipo_Catalogo)
+                cmd.Parameters.Add(new SqlParameter("@Id_Tipo_Catalogo",
+                    oCatalogo.Id_Tipo_Catalogo == 0 ? DBNull.Value : oCatalogo.Id_Tipo_Catalogo));
+
+                cmd.Parameters.Add(new SqlParameter("@Nombre",
+                    string.IsNullOrEmpty(oCatalogo.Nombre) ? DBNull.Value : oCatalogo.Nombre));
+
+                cmd.Parameters.AddWithValue("@Id_Modificador", oCatalogo.Id_Modificador);
+
+                // Parámetros de salida
+                var oNumero = new SqlParameter("@O_Numero", SqlDbType.Int) { Direction = ParameterDirection.Output };
+                var oMsg = new SqlParameter("@O_Msg", SqlDbType.VarChar, 255) { Direction = ParameterDirection.Output };
 
                 cmd.Parameters.Add(oNumero);
                 cmd.Parameters.Add(oMsg);
 
                 await cmd.ExecuteNonQueryAsync();
 
-                // Captura de errores del SP
-                int codigo = (int)oNumero.Value;
-                string mensaje = oMsg.Value.ToString();
+                // IMPORTANTE: Validar la respuesta del SP
+                int codigo = (oNumero.Value != DBNull.Value) ? (int)oNumero.Value : -1;
+                string mensaje = oMsg.Value?.ToString() ?? "Error desconocido";
 
-                if (codigo <= 0)
+                if (codigo != 200) // Tu SP devuelve 200 cuando es exitoso
                     throw new Exception(mensaje);
-
             }
-
         }
 
         public async Task EliminarCatalogoAsync(int id, int idModificador)
