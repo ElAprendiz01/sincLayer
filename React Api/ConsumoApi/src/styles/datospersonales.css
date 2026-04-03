@@ -1,131 +1,343 @@
-/* Contenedor Principal */
-.modulo-container {
+/* ============================================================
+   CONTENEDOR Y LAYOUT PRINCIPAL (NexaCore Dark Theme)
+   ============================================================ */
+.tipo-container {
     background-color: #0b0f1a;
     min-height: 100vh;
     padding: 30px;
     color: #c9d1d9;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .modulo-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 25px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 20px;
 }
 
-.header-left { display: flex; align-items: center; gap: 15px; }
+.modulo-titulo {
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: #ffffff;
+}
 
+/* Botón de volver */
 .btn-back {
-    background: #161b22;
-    border: 1px solid #30363d;
+    background: #21262d;
     color: #8b949e;
+    border: 1px solid #30363d;
     padding: 8px;
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
+    transition: all 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease-in-out;
 }
 
 .btn-back:hover {
-    background: #21262d;
-    color: #58a6ff;
-    border-color: #58a6ff;
-    transform: translateX(-5px); /* Efecto visual de retroceso */
+    color: #ffffff;
+    border-color: #8b949e;
 }
 
-/* Buscador y Botón Nuevo */
-.acciones-top { display: flex; gap: 15px; }
-.search-container { position: relative; }
-.search-icon { position: absolute; left: 12px; top: 10px; color: #8b949e; }
-.search-input {
-    background: #0d1117;
-    border: 1px solid #30363d;
-    color: white;
-    padding: 10px 15px 10px 40px;
-    border-radius: 8px;
-    width: 250px;
+/* ============================================================
+   GRID Y TARJETAS (MODERN CARDS)
+   ============================================================ */
+.tipo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 25px;
 }
 
-.btn-nuevo {
-    background: #238636;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-/* Tabla */
-.tabla-card {
+.modern-card {
     background: #161b22;
     border: 1px solid #30363d;
-    border-radius: 12px;
-    overflow: hidden;
+    border-radius: 16px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    animation: fadeIn 0.5s ease forwards;
+    position: relative;
 }
 
-.tabla-entidad { width: 100%; border-collapse: collapse; }
-.tabla-entidad th { background: #21262d; padding: 15px; color: #8b949e; text-align: left; font-size: 13px; }
-.tabla-entidad td { padding: 15px; border-bottom: 1px solid #30363d; }
-.row-persona:hover { background: #1c2128; }
-
-.no-data {
-    text-align: center;
-    padding: 50px !important;
-    color: #8b949e;
+.modern-card:hover {
+    transform: translateY(-5px);
+    border-color: #58a6ff;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
 }
-.no-data p { margin-top: 10px; }
 
-/* Botones de Acción */
-.acciones-celda { display: flex; gap: 10px; }
-.btn-action {
+.modern-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.badge-id {
     background: #21262d;
-    border: 1px solid #30363d;
     color: #8b949e;
-    padding: 6px;
-    border-radius: 6px;
-    cursor: pointer;
+    padding: 4px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
 }
-.btn-action.edit:hover { color: #d29922; border-color: #d29922; }
-.btn-action.delete:hover { color: #f85149; border-color: #f85149; }
 
-/* Modal y Formulario */
+.status-pill {
+    background: rgba(35, 134, 54, 0.1);
+    color: #aff5b4; /* Verde de alto contraste para las letras */
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 800;
+    border: 1px solid rgba(63, 185, 80, 0.4);
+    text-transform: uppercase;
+}
+
+.card-title {
+    color: #f0f6fc;
+    font-size: 1.4rem;
+    margin: 0;
+}
+
+/* Caja de Información/Auditoría */
+.audit-box {
+    background: #0d1117;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #21262d;
+}
+
+.audit-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.audit-label {
+    font-size: 12px;
+    color: #8b949e;
+}
+
+.audit-user {
+    color: #58a6ff;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+/* Botones de Acción en Tarjeta */
+.acciones {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.btn-edit, .btn-del {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.btn-edit {
+    background: #21262d;
+    color: #c9d1d9;
+    border: 1px solid #30363d;
+}
+
+.btn-edit:hover {
+    background: #30363d;
+    border-color: #58a6ff;
+    color: #fff;
+}
+
+.btn-del {
+    background: rgba(248, 81, 73, 0.1);
+    color: #f85149;
+    border: 1px solid rgba(248, 81, 73, 0.2);
+}
+
+.btn-del:hover {
+    background: #f85149;
+    color: #fff;
+}
+
+/* ============================================================
+   MODAL Y FORMULARIO (ESTRUCTURA DE DATOS PERSONALES)
+   ============================================================ */
 .modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.7);
+    background: rgba(0, 0, 0, 0.85);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
+    backdrop-filter: blur(6px);
+    z-index: 9999;
 }
 
-.enhanced-form {
-    background: #0d1117;
-    width: 500px;
-    border-radius: 12px;
-    border: 1px solid #30363d;
-}
-
-.modal-header { padding: 20px; border-bottom: 1px solid #30363d; display: flex; justify-content: space-between; }
-.form-main { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
-.form-section label { font-size: 12px; color: #8b949e; text-transform: uppercase; margin-bottom: 5px; display: block;}
-.input-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-input {
+.modal {
     background: #161b22;
+    padding: 32px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 500px;
     border: 1px solid #30363d;
-    color: white;
-    padding: 10px;
-    border-radius: 6px;
-    width: 100%;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.7);
 }
 
-.modal-footer { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
-.btn-cancelar { background: none; border: none; color: #8b949e; cursor: pointer; }
-.btn-guardar-pro { background: #238636; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; display: flex; gap: 8px; }
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #fff;
+    font-size: 1.5rem;
+}
+
+.form-section {
+    margin-bottom: 20px;
+}
+
+.form-section label {
+    display: block;
+    color: #8b949e;
+    font-size: 13px;
+    margin-bottom: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+/* Grid para nombres y apellidos (Dos columnas) */
+.input-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.form-main input {
+    width: 100%;
+    background: #0d1117;
+    border: 1px solid #30363d;
+    color: #f0f6fc;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 15px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+
+.form-main input:focus {
+    border-color: #58a6ff;
+    box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1);
+    outline: none;
+}
+
+.full-input {
+    width: 100% !important;
+}
+
+/* Footer del Modal */
+.modal-footer {
+    display: flex;
+    gap: 12px;
+    margin-top: 30px;
+}
+
+.btn-cancelar {
+    flex: 1;
+    background: transparent;
+    color: #8b949e;
+    border: 1px solid #30363d;
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-guardar-pro {
+    flex: 2;
+    background: #238636;
+    color: #fff;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: background 0.2s;
+}
+
+.btn-guardar-pro:hover {
+    background: #2ea043;
+}
+
+/* Animación de entrada */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Loader */
+.loader {
+    display: flex;
+    justify-content: center;
+    padding: 100px;
+    font-size: 1.2rem;
+    color: #58a6ff;
+    font-weight: 500;
+}
+
+/* Estilo para los selectores (Género y Tipo ID) */
+.custom-select {
+    width: 100%;
+    background-color: #0d1117 !important; /* Fondo oscuro igual que los inputs */
+    border: 1px solid #30363d !important;
+    color: #ffffff !important;           /* Letra blanca SIEMPRE visible */
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 15px;
+    cursor: pointer;
+    appearance: none; /* Quita el estilo nativo de algunos navegadores */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238b949e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    transition: border-color 0.2s;
+}
+
+.custom-select:focus {
+    border-color: #58a6ff !important;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1);
+}
+
+/* IMPORTANTE: Estilo para las opciones dentro del desplegable */
+.custom-select option {
+    background-color: #161b22; /* Fondo del desplegable */
+    color: #ffffff;            /* Color de las letras de las opciones */
+    padding: 10px;
+}
+
+/* Ajuste para que los inputs de fecha también se vean bien */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1); /* Hace que el icono del calendario sea blanco */
+    cursor: pointer;
+}

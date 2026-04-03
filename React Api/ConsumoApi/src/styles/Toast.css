@@ -1,0 +1,149 @@
+/* Contenedor de las notificaciones */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    /* Alinea las tarjetas a la derecha para que la animación de entrada sea limpia */
+    align-items: flex-end; 
+    gap: 12px;
+    pointer-events: none;
+    /* Evita que en pantallas pequeñas el contenedor ocupe todo el ancho */
+    max-width: calc(100vw - 40px); 
+}
+
+/* Media Query para móviles: Centrar las alertas en pantallas pequeñas */
+@media (max-width: 480px) {
+    .toast-container {
+        top: 10px;
+        right: 10px;
+        left: 10px; /* Al poner left y right, se estira o centra */
+        align-items: center;
+    }
+}
+
+/* Tarjeta de alerta */
+.toast-card {
+    pointer-events: auto;
+    min-width: 320px;
+    background: rgba(15, 23, 42, 0.9); /* Azul muy oscuro traslúcido */
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #f8fafc;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+    animation: slideInToast 0.3s cubic-bezier(0.17, 0.78, 0.51, 1.02);
+}
+
+/* Colores por tipo */
+.toast-success { border-left: 4px solid #10b981; }
+.toast-error { border-left: 4px solid #ef4444; }
+.toast-warning { border-left: 4px solid #f59e0b; }
+.toast-info { border-left: 4px solid #3b82f6; }
+
+.toast-icon { display: flex; align-items: center; justify-content: center; }
+.toast-content { flex: 1; font-size: 0.9rem; line-height: 1.4; }
+
+.toast-close {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 4px;
+    transition: color 0.2s;
+}
+
+.toast-close:hover { color: white; }
+
+@keyframes slideInToast {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+/* Barra de progreso */
+.toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.2);
+    width: 100%;
+    border-bottom-left-radius: 12px;
+    animation: toastProgress 4s linear forwards;
+}
+
+@keyframes toastProgress {
+    from { width: 100%; }
+    to { width: 0%; }
+}
+/* Overlay del Modal - Centrado Total */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(15, 23, 42, 0.7); /* Azul oscuro traslúcido como tus toasts */
+    backdrop-filter: blur(8px); /* Desenfoque profesional */
+    display: flex;
+    justify-content: center; /* Centrado horizontal */
+    align-items: center;     /* Centrado vertical */
+    z-index: 9999; /* Por debajo de los toasts (10000) pero arriba de todo lo demás */
+    animation: fadeIn 0.2s ease-out;
+}
+
+/* Tarjeta del Modal de Confirmación */
+.modal-confirm-card {
+    background: #1e293b; /* Fondo sólido para que no se pierda el texto */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 32px;
+    width: 90%;
+    max-width: 420px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
+
+/* Animación de entrada para el modal */
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Ajustes de botones dentro del modal para que coincidan con NexaCore */
+.btn-confirm-group {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.btn-confirm-yes {
+    flex: 1;
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: filter 0.2s;
+}
+
+.btn-confirm-no {
+    flex: 1;
+    background: #334155;
+    color: #f8fafc;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.btn-confirm-yes:hover { filter: brightness(1.2); }
+.btn-confirm-no:hover { background: #475569; }

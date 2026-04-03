@@ -63,7 +63,6 @@ namespace application.Services
                 Fecha_Modificacion = dto.Fecha_Modificacion,
                 Id_Creador = dto.Id_Creador,
                 Id_Modificador = dto.Id_Modificador,
-                Activo = dto.Activo,
             };
             await _repository.NuevoEstadoasync(onuevoEstado);
 

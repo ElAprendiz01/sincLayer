@@ -1,5 +1,5 @@
-const ApiBase = import.meta.env.VITE_API_URL; // http://localhost:5082
-// Nombre exacto según tu [Route("api/[controller]")]
+const ApiBase = import.meta.env.VITE_API_URL; 
+// Asegúrate de que el nombre coincida exactamente con tu controlador en C#
 const ApiUrl = `${ApiBase}/api/Datos_Personales_`; 
 
 const getHeaders = () => ({
@@ -7,64 +7,92 @@ const getHeaders = () => ({
     "Authorization": `Bearer ${localStorage.getItem("token")}`
 });
 
+/**
+ * Función centralizada mejorada para procesar respuestas
+ */
 const manejarRespuesta = async (resp) => {
     const texto = await resp.text();
     let resultado = { codigo: resp.status, data: [], msj: "" };
 
     try {
-        const json = JSON.parse(texto);
-        // Si el backend responde con el objeto { codigo, msj, data }
-        resultado.data = json.data || [];
-        resultado.msj = json.msj || "";
-        resultado.codigo = json.codigo || resp.status;
+        if (texto) {
+            const json = JSON.parse(texto);
+            resultado.data = json.data || [];
+            resultado.msj = json.msj || "";
+            resultado.codigo = json.codigo || resp.status;
+        }
     } catch (e) {
-        // Si el backend responde solo texto (como tus StatusCode 201 o 500)
+        // Si no es JSON, tomamos el texto plano (ej. "Datos personal agregado Correctamente")
         resultado.msj = texto;
     }
+
+    // ¡IMPORTANTE! Si la respuesta no es exitosa (200 o 201), lanzamos el objeto para que 
+    // el 'catch' de tu componente ListarDatosPersonales.jsx lo reciba en error.response
+    if (!resp.ok) {
+        const errorForzado = new Error(resultado.msj || "Error en el servidor");
+        errorForzado.response = { data: resultado }; // Simulamos estructura de Axios para compatibilidad
+        throw errorForzado;
+    }
+
     return resultado;
 };
 
-// GET: api/Datos_Personales_/Listar_Datos_Personales
 export const getPersonas = async () => {
-    const resp = await fetch(`${ApiUrl}/Listar_Datos_Personales`, { 
-        headers: getHeaders() 
-    });
-    return await manejarRespuesta(resp);
+    try {
+        const resp = await fetch(`${ApiUrl}/Listar_Datos_Personales`, { 
+            headers: getHeaders() 
+        });
+        return await manejarRespuesta(resp);
+    } catch (error) {
+        throw error; // Re-lanzamos para que el componente maneje el mensaje
+    }
 };
 
-// POST: api/Datos_Personales_/Insertar_Datos_Personales
 export const insertarPersona = async (datos) => {
-    const resp = await fetch(`${ApiUrl}/Insertar_Datos_Personales`, {
-        method: 'POST',
-        headers: getHeaders(),
-        body: JSON.stringify(datos)
-    });
-    return await manejarRespuesta(resp);
+    try {
+        const resp = await fetch(`${ApiUrl}/Insertar_Datos_Personales`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify(datos)
+        });
+        return await manejarRespuesta(resp);
+    } catch (error) {
+        throw error;
+    }
 };
 
-// PUT: api/Datos_Personales_/Editar/{id}
 export const editarPersona = async (id, datos) => {
-    const resp = await fetch(`${ApiUrl}/Editar/${id}`, {
-        method: 'PUT',
-        headers: getHeaders(),
-        body: JSON.stringify(datos)
-    });
-    return await manejarRespuesta(resp);
+    try {
+        const resp = await fetch(`${ApiUrl}/Editar/${id}`, {
+            method: 'PUT',
+            headers: getHeaders(),
+            body: JSON.stringify(datos)
+        });
+        return await manejarRespuesta(resp);
+    } catch (error) {
+        throw error;
+    }
 };
 
-// DELETE: api/Datos_Personales_/Eliminar/{id}?idModificador=...
 export const eliminarPersona = async (id, idModificador) => {
-    const resp = await fetch(`${ApiUrl}/Eliminar/${id}?idModificador=${idModificador}`, {
-        method: 'DELETE',
-        headers: getHeaders()
-    });
-    return await manejarRespuesta(resp);
+    try {
+        const resp = await fetch(`${ApiUrl}/Eliminar/${id}?idModificador=${idModificador}`, {
+            method: 'DELETE',
+            headers: getHeaders()
+        });
+        return await manejarRespuesta(resp);
+    } catch (error) {
+        throw error;
+    }
 };
 
-// GET: api/Datos_Personales_/buscarPErsonaPorFechaNacimiento?buscar=...
 export const buscarPersonas = async (criterio) => {
-    const resp = await fetch(`${ApiUrl}/buscarPErsonaPorFechaNacimiento?buscar=${criterio}`, {
-        headers: getHeaders()
-    });
-    return await manejarRespuesta(resp);
+    try {
+        const resp = await fetch(`${ApiUrl}/buscarPErsonaPorFechaNacimiento?buscar=${criterio}`, {
+            headers: getHeaders()
+        });
+        return await manejarRespuesta(resp);
+    } catch (error) {
+        throw error;
+    }
 };

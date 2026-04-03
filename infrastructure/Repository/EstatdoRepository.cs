@@ -126,7 +126,6 @@ namespace infrastructure.Repository
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Add(new SqlParameter("@Estado", oestado.Estado));
                 cmd.Parameters.Add(new SqlParameter("@Id_Creador", oestado.Id_Creador));
-                cmd.Parameters.Add(new SqlParameter("@Activo", oestado.Activo));
                 await cmd.ExecuteNonQueryAsync();
             }
         }

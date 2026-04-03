@@ -1,6 +1,6 @@
 // Obtenemos la URL desde el archivo .env
 const Api1 = import.meta.env.VITE_API_URL;
-const API_URL = `${Api1}/api/Catalogo`; 
+const API_URL = `${Api1}/api/Estado`; // Asegúrate de que esta ruta coincida con tu backend
 
 export const getEstados = async () => {
     try {
@@ -22,7 +22,7 @@ export const getEstados = async () => {
 export const filtrarEstados = async (nombre) => {
     try {
         const token = localStorage.getItem("token");
-        const response = await fetch(`${API_URL}/api/Estado/filtrar?nombreEstado=${nombre}`, {
+        const response = await fetch(`${API_URL}/filtrar?nombreEstado=${nombre}`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -40,9 +40,10 @@ export const filtrarEstados = async (nombre) => {
 export const insertarEstado = async (nombreEstado) => {
     try {
         const token = localStorage.getItem("token");
+        
+        // RECUPERAMOS EL ID QUE GUARDASTE EN EL LOGIN
         const userId = localStorage.getItem("userId");
 
-        // CAMBIO: Usamos la ruta que te funciona 'Nuevo_estado'
         const response = await fetch(`${API_URL}/Nuevo_estado`, {
             method: 'POST', 
             headers: {
@@ -50,14 +51,17 @@ export const insertarEstado = async (nombreEstado) => {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                estado: nombreEstado,
-                id_Creador: Number(userId),
-                activo: true
+                // NOTA: Prueba con mayúsculas si el error 500 persiste
+                Estado: nombreEstado,
+                Id_Creador: Number(userId), 
+                Activo: true
             })
         });
 
         if (!response.ok) {
-            console.error("Error en insertar:", response.status);
+            // Esto nos ayudará a ver qué dice el servidor exactamente
+            const errorText = await response.text();
+            console.error("Error detallado del servidor:", errorText);
             return null;
         }
 
@@ -67,7 +71,6 @@ export const insertarEstado = async (nombreEstado) => {
         return null;
     }
 };
-
 export const editarEstado = async (id, nombreEstado, activo) => {
     try {
         const token = localStorage.getItem("token");

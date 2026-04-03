@@ -47,6 +47,22 @@ BEGIN
         SET @O_Msg = 'El valor de Genero no existe o está inactivo.';
         RETURN;
     END
+	IF @DNI LIKE '%[a-z][a-z][a-z][a-z][a-z]%' -- Rechaza 5 letras seguidas si el formato es numérico
+       OR @DNI NOT LIKE '%[0-9]%'               -- Rechaza si no contiene ni un solo número
+    BEGIN
+        SET @O_Numero = -1;
+        SET @O_Msg = 'El formato del DNI/Pasaporte es inválido. Verifique que no contenga texto aleatorio.';
+        RETURN;
+    END
+
+    -- Validación específica para Cédula (Si @Tipo_DNI = 12)
+    IF @Tipo_DNI = 12 AND @DNI NOT LIKE '[0-9][0-9][0-9]-[0-9][0-9][0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9][A-Z]'
+    BEGIN
+        -- Si permites cédulas sin guiones, ajusta el patrón o usa REPLACE(@DNI, '-', '')
+        SET @O_Numero = -1;
+        SET @O_Msg = 'El formato de Cédula debe ser 000-000000-0000A.';
+        RETURN;
+    ENd
 	IF @Fecha_Nacimiento IS NOT NULL
     BEGIN
         -- Validar que no sea del año 1925 o anterior
@@ -130,7 +146,7 @@ BEGIN
         SET @O_Msg = ERROR_MESSAGE();
     END CATCH
 END;
-GO
+go
 
 DECLARE @O_Numero INT;
 DECLARE @O_Msg VARCHAR(255);
@@ -187,3 +203,8 @@ EXEC Insertar_Tbl_Datos_Personales
 SELECT @O_Numero AS Codigo_DNI_Duplicado, @O_Msg AS Mensaje_DNI_Duplicado;
 
 Select * from Cls_Estado
+
+
+
+select * from Tbl_Datos_Personales
+select * from Cls_Catalogo

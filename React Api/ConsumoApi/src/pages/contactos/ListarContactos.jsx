@@ -1,21 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // Hook para navegación
-import { ArrowLeft } from "lucide-react";       // Icono de retroceso
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft, AlertCircle, Edit, Trash2 } from "lucide-react"; // Añadido AlertCircle
 import { ContactoService } from "../../services/contactosService";
 import "../../styles/contacto.css";
+import { useToast } from "../../components/ToastContext"; 
 
 const ListarContactos = () => {
-  const navigate = useNavigate(); // Inicializamos el hook de navegación
+  const navigate = useNavigate();
+  const { showToast } = useToast(); 
 
   // --- ESTADOS ---
   const [contactos, setContactos] = useState([]);
   const [mostrarForm, setMostrarForm] = useState(false);
   const [contactoEdit, setContactoEdit] = useState(null);
+  
+  // Estado para el Modal de Confirmación
+  const [confirmarBorrado, setConfirmarBorrado] = useState({ abierto: false, id: null });
 
-  // Obtenemos el ID del usuario logueado para auditoría
   const userIdLogueado = localStorage.getItem("userId") || 5;
 
-  // Estado del Formulario inicial
   const [formData, setFormData] = useState({
     id_Persona: "",
     tipo_Contacto: "",
@@ -37,6 +40,7 @@ const ListarContactos = () => {
       }
     } catch (error) {
       console.error("Error al cargar contactos:", error);
+      showToast("No se pudieron cargar los contactos", "error");
     }
   };
 
@@ -75,59 +79,40 @@ const ListarContactos = () => {
       let respuesta;
       if (contactoEdit) {
         respuesta = await ContactoService.editar(contactoEdit.id_Contacto, formData);
+        showToast(respuesta.msj || "¡Contacto actualizado!", "success");
       } else {
         respuesta = await ContactoService.insertar(formData);
+        showToast(respuesta.msj || "¡Contacto registrado!", "success");
       }
-
-      alert(respuesta.msj || "¡Operación realizada con éxito!");
       setMostrarForm(false);
-      setContactoEdit(null);
       await cargarContactos(); 
-
     } catch (error) {
-      console.error("Error en la operación:", error);
-      alert("Error del sistema: " + error.message);
+      showToast(error.message || "Error al procesar", "error");
     }
   };
 
-  const handleEliminar = async (id) => {
-    if (!window.confirm("¿Estás seguro de que deseas eliminar este contacto?")) {
-        return; 
-    }
+  const handleEliminar = (id) => {
+    setConfirmarBorrado({ abierto: true, id });
+  };
 
+  const ejecutarEliminacion = async () => {
     try {
+        const { id } = confirmarBorrado;
         const respuesta = await ContactoService.eliminar(id, userIdLogueado);
-        alert(respuesta.msj || "Eliminado con éxito");
+        showToast(respuesta.msj || "Contacto eliminado", "warning");
+        setConfirmarBorrado({ abierto: false, id: null });
         await cargarContactos();
     } catch (error) {
-        console.error("Error al eliminar:", error);
-        alert("No se pudo eliminar: " + error.message);
+        showToast("Error: " + error.message, "error");
+        setConfirmarBorrado({ abierto: false, id: null });
     }
   };
 
-  // --- RENDERIZADO ---
   return (
     <div className="contactos-container">
-      {/* BARRA DE NAVEGACIÓN SUPERIOR */}
       <div className="nav-top-bar" style={{ marginBottom: '20px' }}>
-        <button 
-          onClick={() => navigate("/admin")} 
-          className="btn-back-dashboard"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            background: 'transparent',
-            border: 'none',
-            color: '#94a3b8',
-            cursor: 'pointer',
-            fontSize: '14px',
-            fontWeight: 'bold',
-            transition: '0.3s'
-          }}
-        >
-          <ArrowLeft size={20} />
-          Volver al Panel de Control
+        <button onClick={() => navigate("/admin")} className="btn-back-dashboard">
+          <ArrowLeft size={20} /> Volver al Panel
         </button>
       </div>
 
@@ -138,67 +123,51 @@ const ListarContactos = () => {
         </button>
       </header>
 
-      {/* MODAL / FORMULARIO */}
+      {/* FORMULARIO */}
       {mostrarForm && (
         <div className="modal-overlay">
           <form className="contacto-form" onSubmit={handleSubmit}>
-            <h3>
-              {contactoEdit ? "Actualizar Contacto" : "Registrar Contacto"}
-            </h3>
-            
+            <h3>{contactoEdit ? "Actualizar Contacto" : "Registrar Contacto"}</h3>
             <div className="form-group">
               <label>ID Persona</label>
-              <input
-                name="id_Persona"
-                type="number"
-                value={formData.id_Persona}
-                onChange={handleChange}
-                required
-                disabled={!!contactoEdit}
-              />
+              <input name="id_Persona" type="number" value={formData.id_Persona} onChange={handleChange} required disabled={!!contactoEdit} />
             </div>
-
             <div className="form-group">
               <label>Tipo (4: Celular, 5: Correo)</label>
-              <input
-                name="tipo_Contacto"
-                type="number"
-                placeholder="Ej: 5"
-                value={formData.tipo_Contacto}
-                onChange={handleChange}
-                required
-              />
+              <input name="tipo_Contacto" type="number" value={formData.tipo_Contacto} onChange={handleChange} required />
             </div>
-
             <div className="form-group">
               <label>Valor de Contacto</label>
-              <input
-                name="contacto"
-                type="text"
-                placeholder="Ej: darwin@gmail.com"
-                value={formData.contacto}
-                onChange={handleChange}
-                required
-              />
+              <input name="contacto" type="text" value={formData.contacto} onChange={handleChange} required />
             </div>
-
             <div className="form-buttons">
-              <button type="submit" className="btn-guardar">
-                {contactoEdit ? "Actualizar" : "Guardar"}
-              </button>
-              <button
-                type="button"
-                className="btn-cancelar"
-                onClick={() => setMostrarForm(false)}
-              >
-                Cancelar
-              </button>
+              <button type="submit" className="btn-guardar">Guardar</button>
+              <button type="button" className="btn-cancelar" onClick={() => setMostrarForm(false)}>Cancelar</button>
             </div>
           </form>
         </div>
       )}
 
-      {/* TABLA DE RESULTADOS */}
+      {/* MODAL DE ELIMINACIÓN (BONITO) */}
+      {confirmarBorrado.abierto && (
+        <div className="modal-overlay">
+          <div className="modal-confirm-card">
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ background: 'rgba(239, 68, 68, 0.1)', width: '60px', height: '60px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 15px' }}>
+                <AlertCircle size={32} color="#ef4444" />
+              </div>
+              <h3 style={{ color: 'white' }}>¿Confirmar eliminación?</h3>
+              <p style={{ color: '#94a3b8' }}>Esta acción no se puede deshacer.</p>
+            </div>
+            <div className="btn-confirm-group" style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+              <button className="btn-confirm-no" onClick={() => setConfirmarBorrado({ abierto: false, id: null })}>Cancelar</button>
+              <button className="btn-confirm-yes" onClick={ejecutarEliminacion}>Eliminar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TABLA */}
       <div className="table-wrapper">
         <table className="tabla-contactos">
           <thead>
@@ -219,31 +188,15 @@ const ListarContactos = () => {
                   <td>{c.nombre_Persona} {c.apellido}</td>
                   <td>{c.tipo_Contacto_Nombre}</td>
                   <td>{c.contacto}</td>
+                  <td><span className={`status-pill ${c.estado?.toLowerCase()}`}>{c.estado}</span></td>
                   <td>
-                    <span className={`status-pill ${c.estado?.toLowerCase()}`}>
-                      {c.estado}
-                    </span>
-                  </td>
-                  <td>
-                    <button
-                      className="btn-accion edit"
-                      onClick={() => abrirFormulario(c)}
-                    >
-                      Editar
-                    </button>
-                    <button
-                      className="btn-accion delete"
-                      onClick={() => handleEliminar(c.id_Contacto)}
-                    >
-                      Eliminar
-                    </button>
+                    <button className="btn-accion edit" onClick={() => abrirFormulario(c)}>Editar</button>
+                    <button className="btn-accion delete" onClick={() => handleEliminar(c.id_Contacto)}>Eliminar</button>
                   </td>
                 </tr>
               ))
             ) : (
-              <tr>
-                <td colSpan="6">No se encontraron contactos activos.</td>
-              </tr>
+              <tr><td colSpan="6">No hay datos.</td></tr>
             )}
           </tbody>
         </table>

@@ -1,92 +1,190 @@
-/* DatosPersonales.css */
-
-.modulo-container {
-    background-color: #0b0f1a !important; /* Fondo oscuro NexaCore */
-    padding: 30px;
+/* Contenedor Principal */
+.tipo-container {
+    background-color: #0b0f1a;
     min-height: 100vh;
+    padding: 30px;
+    color: #c9d1d9;
+    font-family: 'Inter', sans-serif;
 }
 
-.modulo-header {
+/* Header */
+.header-flex {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 25px;
-    border-bottom: 1px solid #1e293b;
-    padding-bottom: 15px;
+    margin-bottom: 30px;
 }
 
-.acciones-top {
+.header-flex h1 {
+    font-size: 2rem;
+    color: #fff;
+    margin: 0;
+}
+
+/* Grid de Tarjetas */
+.tipo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 25px;
+}
+
+/* La Tarjeta Modern-Card */
+.modern-card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 16px;
+    padding: 24px;
     display: flex;
+    flex-direction: column;
     gap: 15px;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+    animation: fadeIn 0.5s ease forwards;
+    opacity: 0;
+}
+
+.modern-card:hover {
+    transform: translateY(-5px);
+    border-color: #58a6ff;
+}
+
+/* Header de la Tarjeta */
+.modern-card-header {
+    display: flex;
+    justify-content: space-between;
     align-items: center;
 }
 
-/* LA TABLA - Esto es lo que arregla el desorden */
-.tabla-card {
-    background: #161b22;
-    border-radius: 12px;
-    border: 1px solid #30363d;
-    overflow-x: auto;
-}
-
-.tabla-entidad {
-    width: 100% !important;
-    border-collapse: collapse !important; /* Une las líneas de la tabla */
-}
-
-.tabla-entidad th {
-    background-color: #21262d;
-    color: #58a6ff;
-    text-align: left;
-    padding: 15px !important;
-    font-size: 13px;
-}
-
-.tabla-entidad td {
-    padding: 15px !important;
-    border-bottom: 1px solid #30363d !important;
-    color: #c9d1d9;
-    font-size: 14px;
-}
-
-.row-persona:hover {
-    background-color: #1c2128;
-}
-
-/* Badges */
-.badge-estado {
-    background-color: rgba(46, 160, 67, 0.15);
-    color: #3fb950;
-    padding: 4px 10px;
-    border-radius: 10px;
-    font-size: 12px;
-}
-
-/* Botones de acción */
-.acciones-celda {
-    display: flex;
-    gap: 10px;
-}
-
-.btn-action {
-    padding: 8px;
-    border-radius: 6px;
-    border: 1px solid #30363d;
+.badge-id {
     background: #21262d;
     color: #8b949e;
-    cursor: pointer;
+    padding: 4px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
 }
 
-.btn-action.edit:hover { color: #d29922; border-color: #d29922; }
-.btn-action.delete:hover { color: #f85149; border-color: #f85149; }
+.status-pill {
+    background: rgba(35, 134, 54, 0.1); /* Fondo verde muy sutil */
+    color: #1c1932;                     /* Verde brillante */
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    border: 1px solid rgba(63, 185, 80, 0.4); /* Borde que le da estructura */
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.card-title {
+    color: #f0f6fc;
+    font-size: 1.6rem;
+    margin: 10px 0;
+}
 
-/* Buscador */
-.search-container { position: relative; }
-.search-input {
+/* Caja de Auditoría (Lo que arregla el desorden) */
+.audit-box {
     background: #0d1117;
-    border: 1px solid #30363d;
-    color: white;
-    padding: 8px 10px 8px 35px;
-    border-radius: 6px;
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid #21262d;
 }
-.search-icon { position: absolute; left: 10px; top: 10px; color: #8b949e; }
+
+.audit-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.audit-label {
+    font-size: 12px;
+    color: #8b949e;
+}
+
+.audit-user {
+    display: block;
+    color: #58a6ff;
+    font-weight: 700;
+    font-size: 13px;
+    text-align: right;
+}
+
+.audit-date {
+    display: block;
+    color: #7d8590;
+    font-size: 11px;
+    text-align: right;
+}
+
+.audit-sep {
+    border-top: 1px dashed #30363d;
+    margin: 12px 0;
+}
+
+/* Acciones / Botones */
+.acciones {
+    display: flex;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.btn-edit, .btn-del {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid #30363d;
+    transition: all 0.2s ease;
+}
+
+.btn-edit {
+    background: #21262d;
+    color: #c9d1d9;
+}
+
+.btn-edit:hover {
+    background: #30363d;
+    color: #fff;
+    border-color: #58a6ff;
+}
+
+.btn-del {
+    background: rgba(248, 81, 73, 0.1);
+    color: #f85149;
+    border-color: rgba(248, 81, 73, 0.2);
+}
+
+.btn-del:hover {
+    background: #f85149;
+    color: #fff;
+}
+
+/* Animación */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+}
+
+.modal {
+    background: #161b22;
+    padding: 30px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 400px;
+    border: 1px solid #30363d;
+}

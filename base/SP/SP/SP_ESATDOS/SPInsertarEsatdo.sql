@@ -18,8 +18,8 @@ BEGIN
 
         -- 2. Inicio de transacción
         BEGIN TRAN TRX_INSERTAR_ESTADO
-            INSERT INTO Cls_Estado (Estado, Id_Creador, Fecha_Creacion)
-            VALUES (TRIM(@Estado), @Id_Creador, GETDATE());
+            INSERT INTO Cls_Estado (Estado, Id_Creador, Fecha_Creacion, Activo)
+            VALUES (TRIM(@Estado), @Id_Creador, GETDATE(),1);
         COMMIT TRAN TRX_INSERTAR_ESTADO
         
         PRINT 'El estado se insertó correctamente';

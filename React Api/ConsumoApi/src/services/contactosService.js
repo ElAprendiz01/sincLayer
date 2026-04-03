@@ -1,5 +1,7 @@
-const BASE_URL = 'http://localhost:5082/api/Contacto';
 
+const ApiBase = import.meta.env.VITE_API_URL; 
+// Asegúrate de que el nombre coincida exactamente con tu controlador en C#
+const BASE_URL = `${ApiBase}/api/Contacto`; 
 export const ContactoService = {
     // 1. Listar
     listar: async () => {
