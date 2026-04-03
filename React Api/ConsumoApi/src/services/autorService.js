@@ -6,10 +6,6 @@ const getUserIdSession = () => {
     return id ? parseInt(id) : 1; 
 };
 
-/**
- * Helper para realizar peticiones fetch incluyendo el Token de Bearer
- * y manejando la expiración de sesión (401).
- */
 const fetchConToken = async (url, options = {}) => {
     const token = localStorage.getItem("token");
     

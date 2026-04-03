@@ -1,34 +1,40 @@
-const BASE_URL = 'http://localhost:5082/api/Datos_Personales_';
+const ApiBase = import.meta.env.VITE_API_URL; // http://localhost:5082
+// Nombre exacto según tu [Route("api/[controller]")]
+const ApiUrl = `${ApiBase}/api/Datos_Personales_`; 
 
-// Función auxiliar para obtener headers con Token
 const getHeaders = () => ({
     "Content-Type": "application/json",
     "Authorization": `Bearer ${localStorage.getItem("token")}`
 });
 
-// Función auxiliar para procesar respuestas mixtas (JSON o Texto plano)
 const manejarRespuesta = async (resp) => {
     const texto = await resp.text();
+    let resultado = { codigo: resp.status, data: [], msj: "" };
+
     try {
-        return JSON.parse(texto);
+        const json = JSON.parse(texto);
+        // Si el backend responde con el objeto { codigo, msj, data }
+        resultado.data = json.data || [];
+        resultado.msj = json.msj || "";
+        resultado.codigo = json.codigo || resp.status;
     } catch (e) {
-        // Si no es JSON (es texto plano), devolvemos un objeto compatible
-        return { 
-            codigo: resp.ok ? 200 : resp.status, 
-            msj: texto || (resp.ok ? "Operación exitosa" : "Error en el servidor") 
-        };
+        // Si el backend responde solo texto (como tus StatusCode 201 o 500)
+        resultado.msj = texto;
     }
+    return resultado;
 };
 
+// GET: api/Datos_Personales_/Listar_Datos_Personales
 export const getPersonas = async () => {
-    const resp = await fetch(`${BASE_URL}/Listar_Datos_Personales`, {
-        headers: getHeaders()
+    const resp = await fetch(`${ApiUrl}/Listar_Datos_Personales`, { 
+        headers: getHeaders() 
     });
     return await manejarRespuesta(resp);
 };
 
+// POST: api/Datos_Personales_/Insertar_Datos_Personales
 export const insertarPersona = async (datos) => {
-    const resp = await fetch(`${BASE_URL}/Insertar_Datos_Personales`, {
+    const resp = await fetch(`${ApiUrl}/Insertar_Datos_Personales`, {
         method: 'POST',
         headers: getHeaders(),
         body: JSON.stringify(datos)
@@ -36,8 +42,9 @@ export const insertarPersona = async (datos) => {
     return await manejarRespuesta(resp);
 };
 
+// PUT: api/Datos_Personales_/Editar/{id}
 export const editarPersona = async (id, datos) => {
-    const resp = await fetch(`${BASE_URL}/Editar/${id}`, {
+    const resp = await fetch(`${ApiUrl}/Editar/${id}`, {
         method: 'PUT',
         headers: getHeaders(),
         body: JSON.stringify(datos)
@@ -45,19 +52,19 @@ export const editarPersona = async (id, datos) => {
     return await manejarRespuesta(resp);
 };
 
+// DELETE: api/Datos_Personales_/Eliminar/{id}?idModificador=...
 export const eliminarPersona = async (id, idModificador) => {
-    // Se envía el idModificador como Query String (?idModificador=X) como espera el Controller
-    const resp = await fetch(`${BASE_URL}/Eliminar/${id}?idModificador=${idModificador}`, {
+    const resp = await fetch(`${ApiUrl}/Eliminar/${id}?idModificador=${idModificador}`, {
         method: 'DELETE',
         headers: getHeaders()
     });
     return await manejarRespuesta(resp);
 };
 
+// GET: api/Datos_Personales_/buscarPErsonaPorFechaNacimiento?buscar=...
 export const buscarPersonas = async (criterio) => {
-    const resp = await fetch(`${BASE_URL}/buscarPErsonaPorFechaNacimiento?buscar=${criterio}`, {
+    const resp = await fetch(`${ApiUrl}/buscarPErsonaPorFechaNacimiento?buscar=${criterio}`, {
         headers: getHeaders()
     });
-    // Usamos el procesador que creamos antes para capturar mensajes de error de la API
     return await manejarRespuesta(resp);
 };

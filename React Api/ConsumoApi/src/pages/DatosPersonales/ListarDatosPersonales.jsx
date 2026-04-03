@@ -1,16 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Search,
-  Plus,
-  Edit,
-  Trash2,
-  X,
-  Save,
-  ArrowLeft,
-  User,
-  IdCard,
-  AlertCircle,
+  Search, Plus, Edit, Trash2, X, Save, ArrowLeft, User, AlertCircle,
 } from "lucide-react";
 import {
   getPersonas,
@@ -21,12 +12,13 @@ import {
 } from "./../../services/datospersonalesService";
 import "../../styles/datospersonales.css";
 
-const DatosPersonalesModulo = () => {
+const ListarDatosPersonales = () => {
   const navigate = useNavigate();
   const [lista, setLista] = useState([]);
   const [busqueda, setBusqueda] = useState("");
   const [mostrarModal, setMostrarModal] = useState(false);
   const [mensajeApi, setMensajeApi] = useState("");
+  const [cargando, setCargando] = useState(false);
 
   const userIdLogueado = parseInt(localStorage.getItem("userId") || "0");
 
@@ -44,13 +36,26 @@ const DatosPersonalesModulo = () => {
 
   const [formData, setFormData] = useState(estadoInicial);
 
+  // Función para obtener los datos
   const fetchPersonas = async () => {
-    const res = await getPersonas();
-    if (res.codigo === 200) {
-      setLista(res.data);
-      setMensajeApi("");
-    } else {
-      setMensajeApi(res.msj || "No hay datos disponibles");
+    setCargando(true);
+    try {
+      const res = await getPersonas();
+      // Validamos si res.data existe (porque el service ahora devuelve {codigo, data, msj})
+      // O si res es directamente el array.
+      const datos = res.data || (Array.isArray(res) ? res : []);
+      
+      if (res.codigo === 200 || Array.isArray(res)) {
+        setLista(datos);
+        setMensajeApi(datos.length === 0 ? "No hay registros disponibles" : "");
+      } else {
+        setLista([]);
+        setMensajeApi(res.msj || "Error al cargar los datos");
+      }
+    } catch (error) {
+      setMensajeApi("Error de conexión con el servidor");
+    } finally {
+      setCargando(false);
     }
   };
 
@@ -61,12 +66,14 @@ const DatosPersonalesModulo = () => {
       fetchPersonas();
     } else {
       const res = await buscarPersonas(valor);
-      if (res.codigo === 200) {
-        setLista(res.data);
-        setMensajeApi("");
+      const datos = res.data || (Array.isArray(res) ? res : []);
+      
+      if (res.codigo === 200 || Array.isArray(res)) {
+        setLista(datos);
+        setMensajeApi(datos.length === 0 ? "No se encontraron resultados" : "");
       } else {
         setLista([]);
-        setMensajeApi(res.msj); // Captura el mensaje "No se encontraron personas..." de tu API
+        setMensajeApi(res.msj || "Error en la búsqueda");
       }
     }
   };
@@ -81,33 +88,35 @@ const DatosPersonalesModulo = () => {
           id_Modificador: userIdLogueado,
         });
       } else {
-        res = await insertarPersona({
-          ...formData,
-          id_Creador: userIdLogueado,
-        });
+        res = await insertarPersona(formData);
       }
 
-      if (res) {
+      if (res.codigo === 200 || res.codigo === 201) {
         alert(res.msj || "Operación exitosa");
         setMostrarModal(false);
         setFormData(estadoInicial);
-        await fetchPersonas();
+        fetchPersonas();
+      } else {
+        alert("Error: " + res.msj);
       }
     } catch (error) {
-      console.error("Error:", error);
+      alert("Error al procesar la solicitud");
     }
   };
 
   const handleEliminar = async (id) => {
     if (window.confirm("¿Estás seguro de eliminar este registro?")) {
       const res = await eliminarPersona(id, userIdLogueado);
-      alert(res.msj);
-      if (res.codigo === 200) await fetchPersonas();
+      if (res.codigo === 200) {
+        alert(res.msj);
+        fetchPersonas();
+      } else {
+        alert("Error al eliminar: " + res.msj);
+      }
     }
   };
 
   const prepararEdicion = (persona) => {
-    // Limpiamos los nulos para que React no de error de "prop null"
     setFormData({
       id_Persona: persona.id_Persona,
       primer_Nombre: persona.primer_Nombre || "",
@@ -140,17 +149,14 @@ const DatosPersonalesModulo = () => {
             <input
               className="search-input"
               type="text"
-              placeholder="Filtrar por fecha..."
+              placeholder="Buscar por fecha..."
               value={busqueda}
               onChange={handleBusqueda}
             />
           </div>
-          <button
-            className="btn-nuevo"
-            onClick={() => {
-              setFormData(estadoInicial);
-              setMostrarModal(true);
-            }}
+          <button 
+            className="btn-nuevo" 
+            onClick={() => { setFormData(estadoInicial); setMostrarModal(true); }}
           >
             <Plus size={18} /> Nuevo Registro
           </button>
@@ -168,33 +174,21 @@ const DatosPersonalesModulo = () => {
             </tr>
           </thead>
           <tbody>
-            {lista.length > 0 ? (
+            {cargando ? (
+              <tr><td colSpan="4" className="no-data">Cargando datos...</td></tr>
+            ) : lista.length > 0 ? (
               lista.map((p) => (
                 <tr key={p.id_Persona} className="row-persona">
                   <td>{p.id_Persona}</td>
                   <td>
-                    {/* Concatenación inteligente: Ignora nulos o vacíos */}
-                    {[
-                      p.primer_Nombre,
-                      p.segundo_Nombre,
-                      p.primer_Apellido,
-                      p.segundo_Apellido,
-                    ]
-                      .filter((n) => n && n.trim() !== "")
-                      .join(" ")}
+                    {`${p.primer_Nombre || ''} ${p.segundo_Nombre || ''} ${p.primer_Apellido || ''} ${p.segundo_Apellido || ''}`.trim()}
                   </td>
                   <td>{p.dni}</td>
                   <td className="acciones-celda">
-                    <button
-                      className="btn-action edit"
-                      onClick={() => prepararEdicion(p)}
-                    >
+                    <button className="btn-action edit" onClick={() => prepararEdicion(p)}>
                       <Edit size={16} />
                     </button>
-                    <button
-                      className="btn-action delete"
-                      onClick={() => handleEliminar(p.id_Persona)}
-                    >
+                    <button className="btn-action delete" onClick={() => handleEliminar(p.id_Persona)}>
                       <Trash2 size={16} />
                     </button>
                   </td>
@@ -203,8 +197,10 @@ const DatosPersonalesModulo = () => {
             ) : (
               <tr>
                 <td colSpan="4" className="no-data">
-                  <AlertCircle size={20} />
-                  <p>{mensajeApi || "No se encontraron registros"}</p>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+                    <AlertCircle size={30} color="#666" />
+                    <p>{mensajeApi || "No se encontraron registros"}</p>
+                  </div>
                 </td>
               </tr>
             )}
@@ -218,98 +214,64 @@ const DatosPersonalesModulo = () => {
             <div className="modal-header">
               <div className="title-group">
                 <User className="icon-title" />
-                <h3>
-                  {formData.id_Persona ? "Editar Registro" : "Nuevo Registro"}
-                </h3>
+                <h3>{formData.id_Persona ? "Editar Registro" : "Nuevo Registro"}</h3>
               </div>
-              <X
-                className="close-icon"
-                onClick={() => setMostrarModal(false)}
-              />
+              <X className="close-icon" onClick={() => setMostrarModal(false)} />
             </div>
             <form className="form-main" onSubmit={handleGuardar}>
-              <div className="form-section">
-                <label>Nombres</label>
-                <div className="input-group">
-                  <input
-                    type="text"
-                    placeholder="Primer Nombre"
-                    value={formData.primer_Nombre}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        primer_Nombre: e.target.value,
-                      })
-                    }
-                    required
-                  />
-                  <input
-                    type="text"
-                    placeholder="Segundo Nombre"
-                    value={formData.segundo_Nombre}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        segundo_Nombre: e.target.value,
-                      })
-                    }
-                  />
+                <div className="form-section">
+                    <label>Nombres</label>
+                    <div className="input-group">
+                        <input 
+                          type="text" 
+                          placeholder="Primer Nombre" 
+                          value={formData.primer_Nombre} 
+                          onChange={(e) => setFormData({...formData, primer_Nombre: e.target.value})} 
+                          required 
+                        />
+                        <input 
+                          type="text" 
+                          placeholder="Segundo Nombre" 
+                          value={formData.segundo_Nombre} 
+                          onChange={(e) => setFormData({...formData, segundo_Nombre: e.target.value})} 
+                        />
+                    </div>
                 </div>
-              </div>
-              <div className="form-section">
-                <label>Apellidos</label>
-                <div className="input-group">
-                  <input
-                    type="text"
-                    placeholder="Primer Apellido"
-                    value={formData.primer_Apellido}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        primer_Apellido: e.target.value,
-                      })
-                    }
-                    required
-                  />
-                  <input
-                    type="text"
-                    placeholder="Segundo Apellido"
-                    value={formData.segundo_Apellido}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        segundo_Apellido: e.target.value,
-                      })
-                    }
-                  />
+                <div className="form-section">
+                    <label>Apellidos</label>
+                    <div className="input-group">
+                        <input 
+                          type="text" 
+                          placeholder="Primer Apellido" 
+                          value={formData.primer_Apellido} 
+                          onChange={(e) => setFormData({...formData, primer_Apellido: e.target.value})} 
+                          required 
+                        />
+                        <input 
+                          type="text" 
+                          placeholder="Segundo Apellido" 
+                          value={formData.segundo_Apellido} 
+                          onChange={(e) => setFormData({...formData, segundo_Apellido: e.target.value})} 
+                        />
+                    </div>
                 </div>
-              </div>
-              <div className="form-section">
-                <label>Documento de Identidad</label>
-                <input
-                  className="full-input"
-                  type="text"
-                  placeholder="DNI"
-                  value={formData.dni}
-                  onChange={(e) =>
-                    setFormData({ ...formData, dni: e.target.value })
-                  }
-                  required
-                />
-              </div>
-              <div className="modal-footer">
-                <button
-                  type="button"
-                  className="btn-cancelar"
-                  onClick={() => setMostrarModal(false)}
-                >
-                  Cancelar
-                </button>
-                <button type="submit" className="btn-guardar-pro">
-                  <Save size={18} />{" "}
-                  {formData.id_Persona ? "Actualizar" : "Registrar"}
-                </button>
-              </div>
+                <div className="form-section">
+                    <label>DNI</label>
+                    <input 
+                      className="full-input" 
+                      type="text" 
+                      placeholder="Número de documento" 
+                      value={formData.dni} 
+                      onChange={(e) => setFormData({...formData, dni: e.target.value})} 
+                      required 
+                    />
+                </div>
+                <div className="modal-footer">
+                    <button type="button" className="btn-cancelar" onClick={() => setMostrarModal(false)}>Cancelar</button>
+                    <button type="submit" className="btn-guardar-pro">
+                      <Save size={18} /> {formData.id_Persona ? "Actualizar" : "Registrar"}
+                    </button>
+                </div>
             </form>
           </div>
         </div>
@@ -318,4 +280,4 @@ const DatosPersonalesModulo = () => {
   );
 };
 
-export default DatosPersonalesModulo;
+export default ListarDatosPersonales;
