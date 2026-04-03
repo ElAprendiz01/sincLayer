@@ -2,7 +2,7 @@ USE SYNCLAYER;
 GO
 
 
-CREATE OR ALTER PROCEDURE SPListarLibrosInactivos
+CREATE OR ALTER PROCEDURE SPListarLibrosActivos
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -11,7 +11,8 @@ BEGIN
         l.Id_Libro,
         l.Titulo,
         l.ISBN,
-        dto.Primer_Nombre AS Autor,
+		l.Id_Autor,
+        dto.Primer_Nombre AS Nombre_Autor,
         c.Nombre AS Categoria,
         l.Editorial,
         l.Año_Publicacion,
@@ -33,6 +34,6 @@ END;
 GO
 
 -- ------ --------- -------
-EXEC spListarLibrosInactivos;
+EXEC SPListarLibrosActivos;
 
 select * from Tbl_libros

@@ -41,7 +41,7 @@ namespace Presentacion.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Internal server error: " + ex.Message);
+                return BadRequest(new { codigo = 400, msj = ex.Message });
             }
         }
 
@@ -55,11 +55,11 @@ namespace Presentacion.Controllers
 
                 await _service.NuevaDireccion(dto);
 
-                return StatusCode(201, "Dirección agregada correctamente");
+                return Ok(new { codigo = 200, msj = "Direccion agregada correctamente" });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Error al insertar dirección: " + ex.Message);
+                return BadRequest(new { codigo = 400, msj = ex.Message });
             }
         }
 
@@ -84,7 +84,7 @@ namespace Presentacion.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Error al editar dirección: " + ex.Message);
+                return BadRequest(new { codigo = 400, msj = ex.Message });
             }
         }
 
@@ -127,7 +127,7 @@ namespace Presentacion.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Error al filtrar dirección: " + ex.Message);
+                return BadRequest(new { codigo = 400, msj = ex.Message });
             }
         }
     }

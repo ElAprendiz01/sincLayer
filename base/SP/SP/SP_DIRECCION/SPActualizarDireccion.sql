@@ -8,7 +8,6 @@ CREATE OR ALTER PROCEDURE SpActualizarDireccion(
     @Barrio NVARCHAR(40)=null,
     @Calle NVARCHAR(30)=null,
     @Id_Modificador INT ,
-    @Id_Estado INT = null,
 	@ForzarRecuperacion bit = 0,
     @O_Numero INT OUTPUT,
     @O_Msg VARCHAR(255) OUTPUT
@@ -18,20 +17,7 @@ BEGIN
     SET NOCOUNT ON;
 
 -- Validar solo si se envió un Id_Estado para hacer uso  del coalasce
-	IF @Id_Estado IS NOT NULL
-	BEGIN
-		IF NOT EXISTS (
-			SELECT 1 
-			FROM Cls_Estado 
-			WHERE Id_Estado = @Id_Estado
-			  AND Activo = 1
-		)
-		BEGIN
-			SET @O_Numero = -1;
-			SET @O_Msg = 'El estado no existe o está desactivado.';
-			RETURN;
-		END
-	END
+
 	    IF @ForzarRecuperacion = 0
         AND EXISTS (
             SELECT 1
@@ -70,9 +56,8 @@ BEGIN
             Barrio = TRIM(coalesce (@Barrio, Barrio)),
             Calle = TRIM(coalesce (@Calle, Calle)),
             Fecha_Modificacion = GETDATE(),
-            Id_Modificador = @Id_Modificador,
-            Id_Estado = coalesce(@Id_Estado, Id_Estado) --por si el usuario es peresozo y no escribe todos los aprametros jajaj y evitar que reviente por flaa de parametros 
-        WHERE Id_direccion = @Id_direccion;
+            Id_Modificador = @Id_Modificador
+               WHERE Id_direccion = @Id_direccion;
 
         COMMIT;
 

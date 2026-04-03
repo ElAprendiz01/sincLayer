@@ -42,8 +42,8 @@ namespace Presentacion.Controllers
                 }
                 catch (Exception ex)
                 {
-                    return StatusCode(500, "Internal serve error" + ex.Message);
-                }
+                return BadRequest(new { codigo = 400, msj = ex.Message });  
+            }
             }
 
 
@@ -57,12 +57,12 @@ namespace Presentacion.Controllers
                         return BadRequest(new { msj = "El Modelo no es valido" });
                     }
                     await _service.NuevoLibro(dto);
-                    return StatusCode(201, "libro agregado Correctamente");
-                }
+                  return Ok(new { codigo = 201, msj = "Datos personales agregados correctamente" });
+            }
                 catch (Exception ex)
                 {
-                    return StatusCode(500, "internal server error" + ex.Message);
-                }
+                return BadRequest(new { codigo = 400, msj = ex.Message });
+            }
             }
 
 
@@ -90,8 +90,8 @@ namespace Presentacion.Controllers
                 }
                 catch (Exception ex)
                 {
-                    return StatusCode(500, "internal server error" + ex.Message);
-                }
+                return BadRequest(new { codigo = 400, msj = ex.Message });
+            }
 
             }
 
@@ -128,7 +128,7 @@ namespace Presentacion.Controllers
                 }
                 catch (Exception ex)
                 {
-                    return StatusCode(500, "Error al filtrar DTP: " + ex.Message);
+                   return BadRequest(new { codigo = 400, msj = ex.Message });
                 }
             }
         [HttpGet("Filtarcategoria")]
@@ -155,7 +155,7 @@ namespace Presentacion.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Error al filtrar DTP: " + ex.Message);
+                return BadRequest(new { codigo = 400, msj = ex.Message });
             }
         }
 

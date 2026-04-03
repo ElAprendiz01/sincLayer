@@ -32,7 +32,6 @@ namespace infrastructure.Repository
                 cmd.Parameters.Add(new SqlParameter("@Barrio", (object?)oDireccion_Dom.Barrio ?? DBNull.Value));
                 cmd.Parameters.Add(new SqlParameter("@Calle", (object?)oDireccion_Dom.Calle ?? DBNull.Value));
                 cmd.Parameters.Add(new SqlParameter("@Id_Modificador", (object?)oDireccion_Dom.Id_Modificador ?? DBNull.Value));
-                cmd.Parameters.Add(new SqlParameter("@Id_Estado", (object?)oDireccion_Dom.Id_Estado ?? DBNull.Value));
 
                 cmd.Parameters.Add(new SqlParameter("@ForzarRecuperacion", oDireccion_Dom.ForzarRecuperacion));
 
@@ -60,7 +59,7 @@ namespace infrastructure.Repository
         {
             using var con = _dBConectionFactory.CreateConnection();
             await con.OpenAsync();
-            using var cmd = new SqlCommand("SpDesactivarEliinarDireccion", con);
+            using var cmd = new SqlCommand("SpDesactivarDireccionAutomatico", con);
             {
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Add(new SqlParameter("@Id_direccion", id));
@@ -172,7 +171,6 @@ namespace infrastructure.Repository
                 cmd.Parameters.Add(new SqlParameter("@Barrio", (object?)oDireccion_Dom.Barrio ?? DBNull.Value));
                 cmd.Parameters.Add(new SqlParameter("@Calle", (object?)oDireccion_Dom.Calle ?? DBNull.Value));
                 cmd.Parameters.Add(new SqlParameter("@Id_Creador", (object?)oDireccion_Dom.Id_Creador ?? DBNull.Value));
-                cmd.Parameters.Add(new SqlParameter("@Id_Estado", (object?)oDireccion_Dom.Id_Estado ?? DBNull.Value));
 
 
                 var oNumero = new SqlParameter("@O_Numero", SqlDbType.Int)

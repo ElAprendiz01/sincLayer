@@ -72,7 +72,6 @@ namespace application.Services
                 Calle = dto.Calle,
                 Id_Creador = dto.Id_Creador,
                 Id_Modificador = dto.Id_Modificador,
-                Id_Estado = dto.Id_Estado
             };
             await _repository.NuevaDireccionAsyn(direccion);
 
@@ -93,7 +92,6 @@ namespace application.Services
                 Barrio = dto.Barrio,
                 Calle = dto.Calle,
                 Id_Modificador = dto.Id_Modificador,
-                Id_Estado = dto.Id_Estado,
                 ForzarRecuperacion = dto.ForzarRecuperacion
             };
             await _repository.EditarDireccionAsync(direccion);

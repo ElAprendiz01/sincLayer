@@ -8,7 +8,10 @@ import ListarEstados from "./pages/Estados/ListarEstados";
 import ListarTipoCatalogo from "./pages/admin/ListarTipoCatalogo";
 import ListarPersonas from './pages/DatosPersonales/ListarDatosPersonales';
 import ListarContactos from './pages/contactos/ListarContactos'
+import ListarDirecciones from './pages/Direcciones/ListarDirecciones'
+import ListarLibros from './pages/Libros/ListarLibros'
 import { ToastProvider } from './components/ToastContext';
+
 
 function App() {
   return (
@@ -26,7 +29,9 @@ function App() {
             <Route path="/datos-personales" element={<ListarPersonas />} />
             <Route path="/estado" element={<ListarEstados />} />
             <Route path="/Tipocatalogo" element={<ListarTipoCatalogo />} />
-            {/* Se eliminó la ruta /alertas porque el provider ya envuelve todo */}
+            <Route path="/libros" element={<ListarLibros />} />
+            <Route path="/estado" element={<ListarEstados />} />
+            <Route path="/direcciones" element={<ListarDirecciones />} />
           </Route>
         </Routes>
       </BrowserRouter>

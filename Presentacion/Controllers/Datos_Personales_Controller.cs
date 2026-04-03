@@ -53,11 +53,11 @@ namespace Presentacion.Controllers
                     return BadRequest(new { msj = "El Modelo no es valido" });
                 }
                 await _service.NuevoDatos_Personales(dto);
-                return StatusCode(201, "Datos personal agregado Correctamente");
+                return Ok(new { codigo = 201, msj = "Datos personales agregados correctamente" });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "internal server error" + ex.Message);
+                return BadRequest(new { codigo = 400, msj = ex.Message });
             }
         }
 
@@ -80,12 +80,12 @@ namespace Presentacion.Controllers
                 bool esAdmin = User.IsInRole("Admin");
 
 
-                await _service.EditarDatos_Personales(dto, esAdmin);
-                return StatusCode(200,"Datos Editados correctamente");
+                await _service.EditarDatos_Personales(dto, esAdmin); 
+                return Ok(new { codigo = 200, msj = "Datos personales Actualizdo correctamente" });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "internal server error" + ex.Message);
+                return BadRequest(new { codigo = 400, msj = ex.Message });
             }
 
         }
@@ -137,7 +137,7 @@ namespace Presentacion.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Error al filtrar DTP: " + ex.Message);
+                return BadRequest(new { codigo = 400, msj = ex.Message });
             }
         }
     }

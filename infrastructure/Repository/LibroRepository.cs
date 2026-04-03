@@ -30,7 +30,7 @@ namespace infrastructure.Repository
                 using var con = _dBConectionFactory.CreateConnection();
                 await con.OpenAsync();
 
-                using (SqlCommand cmd = new SqlCommand("SpListarLibrosInactivos", con)) // son los activos que filtramso 
+                using (SqlCommand cmd = new SqlCommand("SPListarLibrosActivos", con)) // son los activos que filtramso 
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
@@ -43,7 +43,8 @@ namespace infrastructure.Repository
                                 Id_Libro = dr["Id_Libro"] == DBNull.Value ? null : Convert.ToInt32(dr["Id_Libro"]),
                                 Titulo = dr["Titulo"] == DBNull.Value ? null : dr["Titulo"].ToString(),
                                 ISBN = dr["ISBN"] == DBNull.Value ? null : dr["ISBN"].ToString(),
-                                Nombre_Autor = dr["Autor"] == DBNull.Value ? null : dr["Autor"].ToString(),
+                                Id_Autor = dr["Id_Autor"] == DBNull.Value ? null : Convert.ToInt32(dr["Id_Autor"]),
+                                Nombre_Autor = dr["Nombre_Autor"] == DBNull.Value ? null : dr["Nombre_Autor"].ToString(),
                                 Nombre_Categoria = dr["Categoria"] == DBNull.Value ? null : dr["Categoria"].ToString(),
                                 Editorial = dr["Editorial"] == DBNull.Value ? null : dr["Editorial"].ToString(),
                                 Año_Publicacion = dr["Año_Publicacion"] == DBNull.Value ? null : Convert.ToInt32(dr["Año_Publicacion"]),
@@ -71,7 +72,7 @@ namespace infrastructure.Repository
             using var con = _dBConectionFactory.CreateConnection();
             await con.OpenAsync();
 
-            using (SqlCommand cmd = new SqlCommand("SPFiltrarLibrosPorCategoria", con))
+            using (SqlCommand cmd = new SqlCommand("SPFiltrarLibroscategoria", con))
             {
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.Add(new SqlParameter("@nombre_categoria", nombre));
@@ -85,6 +86,8 @@ namespace infrastructure.Repository
                             Id_Libro = dr["Id_Libro"] == DBNull.Value ? null : Convert.ToInt32(dr["Id_Libro"]),
                             Titulo = dr["Titulo"] == DBNull.Value ? null : dr["Titulo"].ToString(),
                             ISBN = dr["ISBN"] == DBNull.Value ? null : dr["ISBN"].ToString(),
+
+                            Id_Autor = dr["Id_Autor"] == DBNull.Value ? null : Convert.ToInt32(dr["Id_Autor"]),
                             Nombre_Autor = dr["Nombre_Autor"] == DBNull.Value ? null : dr["Nombre_Autor"].ToString(),
                             Nombre_Categoria = dr["Categoria"] == DBNull.Value ? null : dr["Categoria"].ToString(),
                             Editorial = dr["Editorial"] == DBNull.Value ? null : dr["Editorial"].ToString(),
@@ -168,7 +171,8 @@ namespace infrastructure.Repository
                             Id_Libro = dr["Id_Libro"] == DBNull.Value ? null : Convert.ToInt32(dr["Id_Libro"]),
                             Titulo = dr["Titulo"] == DBNull.Value ? null : dr["Titulo"].ToString(),
                             ISBN = dr["ISBN"] == DBNull.Value ? null : dr["ISBN"].ToString(),
-                            Nombre_Autor = dr["Autor"] == DBNull.Value ? null : dr["Autor"].ToString(),
+                            Id_Autor = dr["Id_Autor"] == DBNull.Value ? null : Convert.ToInt32(dr["Id_Autor"]),
+                            Nombre_Autor = dr["Nombre_Autor"] == DBNull.Value ? null : dr["Nombre_Autor"].ToString(),
                             Nombre_Categoria = dr["Categoria"] == DBNull.Value ? null : dr["Categoria"].ToString(),
                             Editorial = dr["Editorial"] == DBNull.Value ? null : dr["Editorial"].ToString(),
                             Año_Publicacion = dr["Año_Publicacion"] == DBNull.Value ? null : Convert.ToInt32(dr["Año_Publicacion"]),
@@ -185,14 +189,74 @@ namespace infrastructure.Repository
             return olist;
         }
 
-        public Task EditarLibroAsync(LibroDomain libro)
+        public async Task EditarLibroAsync(LibroDomain libro)
         {
-            throw new NotImplementedException();
+            using var con = _dBConectionFactory.CreateConnection();
+            await con.OpenAsync();
+
+            using var cmd = new SqlCommand("Editar_Tbl_Libros", con);
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+
+
+                cmd.Parameters.Add(new SqlParameter("@Id_Libro", (object?)libro.Id_Libro ?? DBNull.Value));
+
+                cmd.Parameters.Add(new SqlParameter("@Titulo", libro.Titulo));
+                cmd.Parameters.Add(new SqlParameter("@ISBN", (object?)libro.ISBN ?? DBNull.Value));
+                cmd.Parameters.Add(new SqlParameter("@Id_Autor", (object?)libro.Id_Autor ?? DBNull.Value));
+                cmd.Parameters.Add(new SqlParameter("@Id_Categoria", (object?)libro.Id_Categoria ?? DBNull.Value));
+                cmd.Parameters.Add(new SqlParameter("@Editorial", (object?)libro.Editorial ?? DBNull.Value));
+                cmd.Parameters.Add(new SqlParameter("@Año_Publicacion", (object?)libro.Año_Publicacion ?? DBNull.Value));
+                cmd.Parameters.Add(new SqlParameter("@Stock", (object?)libro.Stock ?? DBNull.Value));
+                cmd.Parameters.Add(new SqlParameter("@Id_Modificador", (object?)libro.Id_Modificador ?? DBNull.Value));
+                cmd.Parameters.Add(new SqlParameter("@Id_Estado", (object?)libro.Id_Estado ?? DBNull.Value));
+
+
+                var oNumero = new SqlParameter("@O_Numero", SqlDbType.Int)
+                { Direction = ParameterDirection.Output };
+                var oMsg = new SqlParameter("@O_Msg", SqlDbType.VarChar, 255)
+                { Direction = ParameterDirection.Output };
+
+                cmd.Parameters.Add(oNumero);
+                cmd.Parameters.Add(oMsg);
+
+                await cmd.ExecuteNonQueryAsync();
+
+                // Captura de errores del SP
+                int codigo = (int)oNumero.Value;
+                string mensaje = oMsg.Value.ToString();
+
+                if (codigo <= 0)
+                    throw new Exception(mensaje);
+            }
         }
 
-        public Task EliminarLibroAsync(int idLibro, int idModificador)
+        public  async Task EliminarLibroAsync(int idLibro, int idModificador)
         {
-            throw new NotImplementedException();
+
+            using var con = _dBConectionFactory.CreateConnection();
+            await con.OpenAsync();
+            using var cmd = new SqlCommand("Eliminar_Tbl_Libros", con);
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add(new SqlParameter("@Id_Libro", idLibro));
+                cmd.Parameters.Add(new SqlParameter("@Id_Modificador", idModificador));
+
+
+                var oNumero = new SqlParameter("@O_Numero", SqlDbType.Int)
+                { Direction = ParameterDirection.Output };
+                var oMsg = new SqlParameter("@O_Msg", SqlDbType.VarChar, 255)
+                { Direction = ParameterDirection.Output };
+                cmd.Parameters.Add(oNumero);
+                cmd.Parameters.Add(oMsg);
+                await cmd.ExecuteNonQueryAsync();
+                // Captura de errores del SP
+                int codigo = (int)oNumero.Value;
+                string mensaje = oMsg.Value.ToString();
+                if (codigo <= 0)
+                    throw new Exception(mensaje);
+            }
+
         }
     }
 
