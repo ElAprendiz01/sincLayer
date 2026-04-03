@@ -3,7 +3,7 @@ import { Navigate, Outlet } from "react-router-dom"; // 1. Importamos Outlet
 export default function ProtectedRoute({ children }) {
   const token = localStorage.getItem("token");
 
-  if (!token) {
+  if (!token) { 
     return <Navigate to="/" replace />;
   }
 
