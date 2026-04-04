@@ -12,6 +12,7 @@ import ListarDirecciones from './pages/Direcciones/ListarDirecciones'
 import ListarLibros from './pages/Libros/ListarLibros'
 import { ToastProvider } from './components/ToastContext';
 import Prestamos from './pages/Prestamos/ListarPrestamos';
+import Multas from './pages/Multas/GestionMultas';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
             <Route path="/datos-personales" element={<ListarPersonas />} />
             <Route path="/estado" element={<ListarEstados />} />
             <Route path="/Tipocatalogo" element={<ListarTipoCatalogo />} />
+            <Route path="/multa" element={<Multas />} />
             <Route path="/libros" element={<ListarLibros />} />
             <Route path="/estado" element={<ListarEstados />} />
             <Route path="/direcciones" element={<ListarDirecciones />} />

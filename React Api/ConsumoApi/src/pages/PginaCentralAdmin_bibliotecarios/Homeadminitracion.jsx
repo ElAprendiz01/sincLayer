@@ -58,7 +58,7 @@ const AdminDashboard = () => {
       label: "Finanzas",
       items: [
         { title: "Pagos", icon: <DollarSign />, color: "from-green-500 to-green-600", path: "/pagos" },
-        { title: "Multas", icon: <AlertCircle />, color: "from-red-500 to-red-600", path: "/multas" },
+        { title: "Multas", icon: <AlertCircle />, color: "from-red-500 to-red-600", path: "/multa" },
         { title: "Acuerdos", icon: <Handshake />, color: "from-lime-500 to-lime-600", path: "/acuerdos" },
       ]
     }
