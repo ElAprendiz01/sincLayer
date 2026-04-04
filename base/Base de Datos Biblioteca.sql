@@ -229,3 +229,8 @@ CREATE TABLE Tbl_Pagos (
     Id_Estado INT REFERENCES Cls_Estado(Id_Estado)
 );
 GO
+
+select * from Cls_Estado
+
+select * from Tbl_Usuarios
+select * from Tbl_Prestamos

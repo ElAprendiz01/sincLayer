@@ -1,110 +1,97 @@
-USE SYNCLAYER
+USE SYNCLAYER;
 GO 
 
 CREATE OR ALTER PROCEDURE SpInsertarDireccion(
-	@Ciudad NVARCHAR(20),
-	@Barrio NVARCHAR(40),
-	@Calle NVARCHAR(30),
+    @Ciudad NVARCHAR(20),
+    @Barrio NVARCHAR(40),
+    @Calle NVARCHAR(30),
     @Id_Creador INT,
-	@Id_Persona INT,
-	@Id_Estado INT,
-	@O_Numero INT OUTPUT,
+    @Id_Persona INT,
+    @O_Numero INT OUTPUT,
     @O_Msg VARCHAR(255) OUTPUT
 )
 AS 
 BEGIN 
- SET NOCOUNT ON;
+    SET NOCOUNT ON;
+    
+    -- Declaramos la variable interna ya que no viene como parámetro
+    DECLARE @Id_Estado INT;
 
-	 IF NOT EXISTS (
-		SELECT 1 
-		FROM Cls_Estado 
-		WHERE Id_Estado = @Id_Estado
-		  AND Activo = 1
-	)
-	BEGIN
-		SET @O_Numero = -1;
-		SET @O_Msg = 'El estado no existe o está desactivado.';
-		RETURN;
-	END;
+    -- 1. BUSQUEDA AUTOMÁTICA DEL ID_ESTADO "ACTIVO"
+    SELECT TOP 1 @Id_Estado = Id_Estado 
+    FROM Cls_Estado 
+    WHERE (Estado LIKE 'Activo%' 
+       OR Estado LIKE 'ACTIVO%' 
+       OR Estado LIKE 'Activos%')
+      AND Activo = 1;
 
+    -- Validación: Si no se encuentra un estado activo en el catálogo
+    IF @Id_Estado IS NULL
+    BEGIN
+        SET @O_Numero = -1;
+        SET @O_Msg = 'Error: No existe un estado "Activo" habilitado en el catálogo.';
+        RETURN;
+    END
 
+    -- 2. VALIDACIÓN: Persona obligatoria y existencia
     IF @Id_Persona IS NULL OR @Id_Persona = 0
     BEGIN
         SET @O_Numero = -1;
-        SET @O_Msg = 'El id personaes obligatorio.';
+        SET @O_Msg = 'El id persona es obligatorio.';
         RETURN;
     END;
-	IF NOT EXISTS (SELECT 1 FROM Tbl_Datos_Personales WHERE Id_Persona = @Id_Persona)
-	BEGIN
-		SET @O_Numero = -1;
-		SET @O_Msg = 'El id persona no existe.';
-		RETURN;
-	END;
 
-	-- VALIDACIÓN: No permitir inserción si el estado de la persona es "Eliminado", "Desactivado", este puntoe me parece mas vialeble que de
-	-- que depender de un solo 1 ya que los sistemas podrian variar, de como les comentaba en clases.
-	-- y aqui ya no son bit sino que van con el nombre de eatdo para ams dinamicos vean esta diferncia los demas apartir de esta tabla llevarian esta validacion porque usan tbl 
-
-	IF EXISTS (
-		SELECT 1 
-		FROM Tbl_Datos_Personales p
-		INNER JOIN Cls_Estado e ON p.Id_Estado = e.Id_Estado
-		WHERE p.Id_Persona = @Id_Persona 
-		  AND e.Estado IN ('Eliminado', 'Desactivado', 'Inactivo', 'Suspendido')
-	)
-	BEGIN
-		SET @O_Numero = -1;
-		SET @O_Msg = 'No se puede registrar la dirección: la persona no está vigente o ha sido eliminada.';
-		RETURN;
-	END;
-
-	  IF @Id_Estado IS NULL OR @Id_Estado = 0
+    IF NOT EXISTS (SELECT 1 FROM Tbl_Datos_Personales WHERE Id_Persona = @Id_Persona)
     BEGIN
         SET @O_Numero = -1;
-        SET @O_Msg = 'El id estado obligatorio.';
+        SET @O_Msg = 'La persona especificada no existe.';
         RETURN;
     END;
-	IF NOT EXISTS (SELECT 1 FROM Cls_Estado WHERE Id_Estado = @Id_Estado)
-	BEGIN
-		SET @O_Numero = -1;
-		SET @O_Msg = 'El id  estado no existe.';
-		RETURN;
-	END;
-	IF NOT EXISTS (SELECT 1 
-               FROM Cls_Estado 
-               WHERE Id_Estado = @Id_Estado
-                 AND Activo = 1) 
-BEGIN
-    SET @O_Numero = -1;
-    SET @O_Msg = 'El id estado no existe o está inactivo.';
-    RETURN;
-END;
 
-	BEGIN TRY 
-		BEGIN TRAN 
-		INSERT INTO Tbl_direcciones( 
-		Ciudad,
-		Barrio,
-		Calle ,
-		Id_Creador,
-		Id_Persona,
-		Id_Estado
-		 )
-		values (
-		@Ciudad,
-		@Barrio,
-		@Calle ,
-		@Id_Creador,
-		@Id_Persona,
-		@Id_Estado
-		)
-	commit;
-	set @O_Numero=200;
-	set @O_Msg = 'la direccion se ha insertado correctamente'
-	end try
-	BEGIN CATCH 
-		  IF @@TRANCOUNT > 0 ROLLBACK;
+    -- 3. VALIDACIÓN DINÁMICA: No permitir si la persona está en estados restrictivos
+    IF EXISTS (
+        SELECT 1 
+        FROM Tbl_Datos_Personales p
+        INNER JOIN Cls_Estado e ON p.Id_Estado = e.Id_Estado
+        WHERE p.Id_Persona = @Id_Persona 
+          AND (e.Estado IN ('Eliminado', 'Desactivado', 'Inactivo', 'Suspendido') 
+               OR e.Activo = 0) -- También validamos por el bit por si acaso
+    )
+    BEGIN
+        SET @O_Numero = -1;
+        SET @O_Msg = 'No se puede registrar dirección: la persona no está vigente o ha sido eliminada.';
+        RETURN;
+    END;
 
+    -- 4. PROCESO DE INSERCIÓN
+    BEGIN TRY 
+        BEGIN TRAN; 
+
+        INSERT INTO Tbl_direcciones ( 
+            Ciudad,
+            Barrio,
+            Calle,
+            Id_Creador,
+            Id_Persona,
+            Id_Estado,
+            Fecha_Creacion -- Asumo que tienes este campo, si no, quítalo
+        )
+        VALUES (
+            @Ciudad,
+            @Barrio,
+            @Calle,
+            @Id_Creador,
+            @Id_Persona,
+            @Id_Estado,
+            GETDATE()
+        );
+
+        COMMIT;
+        SET @O_Numero = 200;
+        SET @O_Msg = 'La dirección se ha insertado correctamente.';
+    END TRY
+    BEGIN CATCH 
+        IF @@TRANCOUNT > 0 ROLLBACK;
         SET @O_Numero = ERROR_NUMBER();
         SET @O_Msg = ERROR_MESSAGE();
     END CATCH;
@@ -129,3 +116,6 @@ SELECT @Num AS Numero, @Msg AS Mensaje;
 
 
 	
+
+
+select * from Cls_Estado

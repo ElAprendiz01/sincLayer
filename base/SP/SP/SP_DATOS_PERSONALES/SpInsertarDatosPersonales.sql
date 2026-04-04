@@ -20,6 +20,7 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
+
     IF @Primer_Nombre IS NULL OR LTRIM(RTRIM(@Primer_Nombre)) = ''
     BEGIN
         SET @O_Numero = -1;

@@ -1,7 +1,7 @@
 use SYNCLAYER
 go 
 
-create or alter proc SPFiltrarLibroscategoria
+create or alter proc SPFiltrarLibroscategoria  
 (
 @nombre_categoria Varchar(30)
 
