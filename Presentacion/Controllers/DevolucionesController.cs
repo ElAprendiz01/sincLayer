@@ -41,7 +41,7 @@ namespace Presentacion.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Internal server error" + ex.Message);
+                return BadRequest(new { codigo = 400, msj = ex.Message });
             }
         }
 
@@ -70,7 +70,7 @@ namespace Presentacion.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Error al filtrar devoluciones: " + ex.Message);
+                return BadRequest(new { codigo = 400, msj = ex.Message });
             }
         }
 
@@ -84,11 +84,11 @@ namespace Presentacion.Controllers
 
                 await _service.RegistrarDevolucion(dto);
 
-                return StatusCode(201, "Devolución registrada correctamente");
+                return Ok(new { codigo = 201, msj = "Devolucion Registrada correctamente" });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "internal server error" + ex.Message);
+                return BadRequest(new { codigo = 400, msj = ex.Message });
             }
         }
 
@@ -109,11 +109,11 @@ namespace Presentacion.Controllers
 
                 await _service.ActualizarDevolucion(dto, esAdmin);
 
-                return NoContent();
+                return Ok(new { codigo = 201, msj = "Devolucion Actualizada correctamente" }); ;
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "internal server error" + ex.Message);
+                return BadRequest(new { codigo = 400, msj = ex.Message });
             }
         }
 
@@ -121,7 +121,7 @@ namespace Presentacion.Controllers
         public async Task<IActionResult> EliminarDevolucion(int id, [FromQuery] int idModificador)
         {
             await _service.EliminarDevolucion(id, idModificador);
-            return NoContent();
+            return Ok(new { codigo = 201, msj = "Devolicion eliminada correctamente" });
         }
 
     }

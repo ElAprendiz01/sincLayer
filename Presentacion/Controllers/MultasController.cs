@@ -42,7 +42,7 @@ namespace Presentacion.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Internal server error: " + ex.Message);
+                return BadRequest(new { codigo = 400, msj = ex.Message });
             }
         }
 
@@ -85,11 +85,11 @@ namespace Presentacion.Controllers
 
                 await _service.ActualizarMultaporAbono(dto);
 
-                return StatusCode(200, "Abono registrado correctamente");
+                return Ok(new { codigo = 201, msj = "Multa Actualizada correctamente" });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Error al registrar abono: " + ex.Message);
+                return BadRequest(new { codigo = 400, msj = ex.Message });
             }
         }
 
@@ -110,11 +110,11 @@ namespace Presentacion.Controllers
 
                 await _service.ActualizarMulta(dto, esAdmin);
 
-                return NoContent();
+                return Ok(new { codigo = 201, msj = "Multa Actualizada correctamente" });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Error al actualizar multa: " + ex.Message);
+                return BadRequest(new { codigo = 400, msj = ex.Message });
             }
         }
 
@@ -129,7 +129,7 @@ namespace Presentacion.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Error al eliminar multa: " + ex.Message);
+                return BadRequest(new { codigo = 400, msj = ex.Message });
             }
         }
 

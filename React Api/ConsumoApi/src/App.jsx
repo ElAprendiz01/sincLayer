@@ -13,6 +13,7 @@ import ListarLibros from './pages/Libros/ListarLibros'
 import { ToastProvider } from './components/ToastContext';
 import Prestamos from './pages/Prestamos/ListarPrestamos';
 import Multas from './pages/Multas/GestionMultas';
+import Devoluciones from './pages/Devoluciones/devoluciones';
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/home" element={<Home />} />
             <Route path="/admin" element={<Administracion />} />
+            <Route path="/libros-consulta" element={<ListarLibros soloLectura={true} />} />
             <Route path="/prestamos" element={<Prestamos />} />
             <Route path="/catalogos" element={<ListarCatalogo />} />
             <Route path="/autores" element={<ListarCatalogo />} /> 
@@ -33,6 +35,7 @@ function App() {
             <Route path="/Tipocatalogo" element={<ListarTipoCatalogo />} />
             <Route path="/multa" element={<Multas />} />
             <Route path="/libros" element={<ListarLibros />} />
+            <Route path="/devoluciones" element={<Devoluciones />} />
             <Route path="/estado" element={<ListarEstados />} />
             <Route path="/direcciones" element={<ListarDirecciones />} />
           </Route>

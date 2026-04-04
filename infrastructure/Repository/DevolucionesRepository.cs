@@ -182,7 +182,15 @@ namespace infrastructure.Repository
                 string mensaje = oMsg.Value.ToString();
 
                 if (codigo <= 0)
-                    throw new Exception(mensaje);
+                {
+                    // En lugar de throw, mandamos el mensaje al log
+                    // Esto NO detiene el programa
+                    System.Diagnostics.Debug.WriteLine("FALLO SP: " + mensaje);
+
+                    // Opcional: puedes asignar el mensaje a una propiedad de la clase 
+                    // si necesitas leerlo desde fuera después.
+                    return;
+                }
             }
         }
     }

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
-  Search, Plus, X, Save, ArrowLeft, Book, AlertCircle, Edit, Trash2, User 
+  Search, Plus, X, Save, ArrowLeft, AlertCircle, Edit, Trash2, User 
 } from "lucide-react";
 import { 
   getLibros, 
@@ -9,17 +9,18 @@ import {
   editarLibro, 
   eliminarLibro, 
   filtrarLibrosPorCategoria,
-  filtrarLibrosPorAutor // Asegúrate de que esté exportado en tu service
+  filtrarLibrosPorAutor 
 } from "./../../services/librosService";
 import "../../styles/datospersonales.css";
 import { useToast } from "../../components/ToastContext";
 
-const ListarLibros = () => {
+// Agregamos la prop 'soloLectura' que por defecto es false
+const ListarLibros = ({ soloLectura = false }) => {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const [lista, setLista] = useState([]);
   const [busqueda, setBusqueda] = useState("");
-  const [busquedaAutor, setBusquedaAutor] = useState(""); // Nuevo estado para autor
+  const [busquedaAutor, setBusquedaAutor] = useState(""); 
   const [mostrarModal, setMostrarModal] = useState(false);
   const [cargando, setCargando] = useState(false);
   const [confirmarBorrado, setConfirmarBorrado] = useState({ abierto: false, id: null });
@@ -42,10 +43,8 @@ const ListarLibros = () => {
 
   const [formData, setFormData] = useState(estadoInicial);
 
-  // Lógica unificada de filtrado
   useEffect(() => {
     const filtrar = async () => {
-      // Si ambos están vacíos, cargar todo
       if (busqueda.trim() === "" && busquedaAutor.trim() === "") {
         fetchLibros();
         return;
@@ -55,7 +54,6 @@ const ListarLibros = () => {
       try {
         let res;
         if (busquedaAutor.trim() !== "") {
-          // Prioridad a búsqueda por ID de autor si se escribe algo ahí
           res = await filtrarLibrosPorAutor(busquedaAutor);
         } else {
           res = await filtrarLibrosPorCategoria(busqueda);
@@ -63,7 +61,7 @@ const ListarLibros = () => {
         setLista(res.data || []);
       } catch (error) {
         console.error("Error filtrando:", error);
-        setLista([]); // Limpiar lista en caso de error
+        setLista([]); 
       } finally {
         setCargando(false);
       }
@@ -86,7 +84,6 @@ const ListarLibros = () => {
     } finally { setCargando(false); }
   };
 
-  // ... (handleGuardar, ejecutarEliminacion, prepararEdicion se mantienen igual)
   const handleGuardar = async (e) => {
     e.preventDefault();
     try {
@@ -134,11 +131,11 @@ const ListarLibros = () => {
     <div className="cat-page">
       <div className="cat-header">
         <div className="header-left">
-          <button className="btn-back" onClick={() => navigate("/admin")}><ArrowLeft size={20} /></button>
-          <h1>Biblioteca</h1>
+          {/* Si es solo lectura, el volver regresa a la pantalla anterior (Préstamos) */}
+          <button className="btn-back" onClick={() => navigate(-1)}><ArrowLeft size={20} /></button>
+          <h1>{soloLectura ? "Consulta de Libros" : "Biblioteca"}</h1>
         </div>
 
-        {/* CONTENEDOR DE BUSQUEDA DOBLE */}
         <div className="search-group-container" style={{ display: 'flex', gap: '10px', flex: 1, margin: '0 20px' }}>
           <div className="search-container" style={{ flex: 2 }}>
             <Search className="search-icon-inside" size={18} />
@@ -162,9 +159,12 @@ const ListarLibros = () => {
           </div>
         </div>
 
-        <button className="btn-main" onClick={() => { setFormData(estadoInicial); setMostrarModal(true); }}>
-          <Plus size={18} /> Nuevo Libro
-        </button>
+        {/* SOLO MOSTRAR BOTÓN NUEVO SI NO ES SOLO LECTURA */}
+        {!soloLectura && (
+          <button className="btn-main" onClick={() => { setFormData(estadoInicial); setMostrarModal(true); }}>
+            <Plus size={18} /> Nuevo Libro
+          </button>
+        )}
       </div>
 
       <div className="cat-grid">
@@ -175,7 +175,10 @@ const ListarLibros = () => {
             <div key={l.id_Libro} className="cat-card">
               <div className="card-info">
                 <span className="card-type">ISBN: {l.isbn}</span>
-                <span className="status-pill">{l.estado}</span>
+                <span className={`status-pill ${l.estado?.toLowerCase() === 'activo' ? 'activo' : ''}`}>{l.estado}</span>
+              </div>
+              <div className="card-info" style={{ marginTop: '5px' }}>
+                <span className="card-type" style={{ color: '#3b82f6', fontWeight: 'bold' }}>ID Libro: {l.id_Libro}</span>
               </div>
               <h2 className="card-title">{l.titulo}</h2>
               <div className="audit-box">
@@ -192,14 +195,17 @@ const ListarLibros = () => {
                   <span className="audit-user">{l.editorial}</span>
                 </div>
               </div>
-              <div className="card-actions">
-                <button className="btn-edit" onClick={() => prepararEdicion(l)}><Edit size={16} /> Editar</button>
-                <button className="btn-del" onClick={() => setConfirmarBorrado({ abierto: true, id: l.id_Libro })}><Trash2 size={16} /> Borrar</button>
-              </div>
+
+              {/* SOLO MOSTRAR ACCIONES SI NO ES SOLO LECTURA */}
+              {!soloLectura && (
+                <div className="card-actions">
+                  <button className="btn-edit" onClick={() => prepararEdicion(l)}><Edit size={16} /> Editar</button>
+                  <button className="btn-del" onClick={() => setConfirmarBorrado({ abierto: true, id: l.id_Libro })}><Trash2 size={16} /> Borrar</button>
+                </div>
+              )}
             </div>
           ))
         ) : (
-          /* MENSAJE CUANDO NO HAY RESULTADOS */
           <div className="no-results-container">
             <AlertCircle size={48} color="#666" />
             <p>No se encontraron libros con los criterios seleccionados.</p>
@@ -208,8 +214,8 @@ const ListarLibros = () => {
         )}
       </div>
 
-      {/* ... (Modales de guardar y borrar se mantienen igual) */}
-      {mostrarModal && (
+      {/* MODAL DE EDICIÓN: Solo accesible si no es soloLectura */}
+      {!soloLectura && mostrarModal && (
         <div className="modal-overlay">
           <div className="cat-form-card" style={{ maxWidth: '600px' }}>
             <div className="modal-header">
@@ -267,13 +273,14 @@ const ListarLibros = () => {
         </div>
       )}
 
-      {confirmarBorrado.abierto && (
+      {/* CONFIRMACIÓN DE BORRADO: Solo si no es soloLectura */}
+      {!soloLectura && confirmarBorrado.abierto && (
         <div className="modal-overlay">
           <div className="modal-confirm-card">
             <AlertCircle size={40} color="#f85149" />
             <h3>¿Retirar de catálogo?</h3>
             <div className="btn-confirm-group">
-              <button className="btn-confirm-no" onClick={() => setConfirmarBorrado({abierto:false})}>No</button>
+              <button className="btn-confirm-no" onClick={() => setConfirmarBorrado({abierto:false, id: null})}>No</button>
               <button className="btn-confirm-yes" onClick={ejecutarEliminacion}>Sí, borrar</button>
             </div>
           </div>
