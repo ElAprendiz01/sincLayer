@@ -11,7 +11,7 @@ import ListarContactos from './pages/contactos/ListarContactos'
 import ListarDirecciones from './pages/Direcciones/ListarDirecciones'
 import ListarLibros from './pages/Libros/ListarLibros'
 import { ToastProvider } from './components/ToastContext';
-
+import Prestamos from './pages/Prestamos/ListarPrestamos';
 
 function App() {
   return (
@@ -23,6 +23,7 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/home" element={<Home />} />
             <Route path="/admin" element={<Administracion />} />
+            <Route path="/prestamos" element={<Prestamos />} />
             <Route path="/catalogos" element={<ListarCatalogo />} />
             <Route path="/autores" element={<ListarCatalogo />} /> 
             <Route path="/Contactos" element={<ListarContactos />} /> 

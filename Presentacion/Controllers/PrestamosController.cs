@@ -38,7 +38,7 @@ namespace Presentacion.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Internal serve error" + ex.Message);
+                return BadRequest(new { codigo = 400, msj = ex.Message });
             }
         }
 
@@ -52,11 +52,12 @@ namespace Presentacion.Controllers
                     return BadRequest(new { msj = "El Modelo no es valido" });
                 }
                 await _service.nuevoPrestamos(dto);
-                return StatusCode(201, "prestamos agregado Correctamente");
+
+                return Ok(new { codigo = 201, msj = "prestamos agregados correctamente" });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "internal server error" + ex.Message);
+                return BadRequest(new { codigo = 400, msj = ex.Message });
             }
         }
 
@@ -80,11 +81,12 @@ namespace Presentacion.Controllers
 
 
                 await _service.EditarPrestamos(dto, esAdmin);
-                return NoContent();
+
+                return Ok(new { codigo = 201, msj = "prestamos Actualizado correctamente" });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "internal server error" + ex.Message);
+                return BadRequest(new { codigo = 400, msj = ex.Message });
             }
 
         }
@@ -120,7 +122,7 @@ namespace Presentacion.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Error al filtrar DTP: " + ex.Message);
+                return BadRequest(new { codigo = 400, msj = ex.Message });
             }
         }
     }
