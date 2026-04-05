@@ -124,7 +124,8 @@ namespace infrastructure.Repository
                             Monto_Por_Cuota = dr["Monto_Por_Cuota"] == DBNull.Value ? 0 : Convert.ToDecimal(dr["Monto_Por_Cuota"]),
                             Frecuencia_Pago = dr["Frecuencia_Pago"] == DBNull.Value ? 0 : Convert.ToInt32(dr["Frecuencia_Pago"]),
                             Frecuencia_Descripcion = dr["Frecuencia_Descripcion"] == DBNull.Value ? string.Empty : dr["Frecuencia_Pago"].ToString(),
-                            Fecha_Creacion = dr["Frecuencia_Pago"] == DBNull.Value ? 0 : Convert.ToDateTime(dr["Frecuencia_Pago"])
+                            Fecha_Creacion = dr.IsDBNull(dr.GetOrdinal("Fecha_Creacion")) ? (DateTime?)null : dr.GetDateTime(dr.GetOrdinal("Fecha_Modificacion")),
+                            Id_Creador = dr.GetInt32(dr.GetOrdinal("Id_Creador")),
                         });
                     }
                 }
