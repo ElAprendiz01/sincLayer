@@ -64,6 +64,7 @@ export default function Home() {
             
             
             <li><Link to="/admin" className="nav-btn">Administracion</Link></li> 
+            <li><Link to="/homeC" className="nav-btn">Cliente</Link></li> 
             <li><Link to="/prestamos" className="nav-btn">Mis préstamos</Link></li>
             
           <li>
