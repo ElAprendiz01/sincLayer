@@ -14,7 +14,8 @@ import ListarLibros from "../Libros/ListarLibros";
 import "../../styles/datospersonales.css";
 import { useToast } from "../../components/ToastContext";
 
-const ListarPrestamos = () => {
+// Agregamos la prop esCliente para reutilizar el componente
+const ListarPrestamos = ({ esCliente = false }) => {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const [lista, setLista] = useState([]);
@@ -39,22 +40,27 @@ const ListarPrestamos = () => {
   const [formData, setFormData] = useState(estadoInicial);
 
   useEffect(() => {
-    const filtrar = async () => {
-      if (busquedaId.trim() === "") {
-        fetchPrestamos();
-        return;
-      }
-      setCargando(true);
-      try {
-        const res = await buscarPrestamosPorUsuario(busquedaId);
-        setLista(res.data || []);
-      } catch (error) {
-        setLista([]);
-      } finally { setCargando(false); }
-    };
-    const delay = setTimeout(filtrar, 500);
-    return () => clearTimeout(delay);
-  }, [busquedaId]);
+    // Si es cliente, forzamos la búsqueda por su propio ID
+    if (esCliente) {
+      fetchPrestamosCliente();
+    } else {
+      const filtrar = async () => {
+        if (busquedaId.trim() === "") {
+          fetchPrestamos();
+          return;
+        }
+        setCargando(true);
+        try {
+          const res = await buscarPrestamosPorUsuario(busquedaId);
+          setLista(res.data || []);
+        } catch (error) {
+          setLista([]);
+        } finally { setCargando(false); }
+      };
+      const delay = setTimeout(filtrar, 500);
+      return () => clearTimeout(delay);
+    }
+  }, [busquedaId, esCliente]);
 
   const fetchPrestamos = async () => {
     setCargando(true);
@@ -66,27 +72,34 @@ const ListarPrestamos = () => {
     } finally { setCargando(false); }
   };
 
+  // Función específica para que el cliente solo vea lo suyo
+  const fetchPrestamosCliente = async () => {
+    setCargando(true);
+    try {
+      const res = await buscarPrestamosPorUsuario(userIdLogueado);
+      setLista(res.data || []);
+    } catch (error) {
+      setLista([]);
+    } finally { setCargando(false); }
+  };
+
   const handleGuardar = async (e) => {
     e.preventDefault();
     try {
       if (formData.id_Prestamo) {
-        // ADAPTACIÓN PARA EL REPOSITORIO C#:
-        // Solo enviamos los campos que el SpActualizarPrestamo espera
         const payloadActualizacion = {
           id_Prestamo: formData.id_Prestamo,
           id_Modificador: userIdLogueado,
           id_Estado: formData.id_Estado
         };
-        
         await editarPrestamo(formData.id_Prestamo, payloadActualizacion);
-        showToast("Estado actualizado correctamente", "success");
+        showToast("Estado actualizado", "success");
       } else {
-        // Para nuevos registros enviamos el objeto completo
         await insertarPrestamo(formData);
         showToast("Préstamo registrado", "success");
       }
       setMostrarModal(false);
-      fetchPrestamos();
+      esCliente ? fetchPrestamosCliente() : fetchPrestamos();
     } catch (error) {
       showToast(error.response?.data?.msj || "Error en la operación", "error");
     }
@@ -117,22 +130,25 @@ const ListarPrestamos = () => {
     <div className="cat-page">
       <div className="cat-header">
         <div className="header-left">
-          <button className="btn-back" onClick={() => navigate("/admin")}><ArrowLeft size={20} /></button>
-          <h1>Gestión de Préstamos</h1>
+          <button className="btn-back" onClick={() => navigate(-1)}><ArrowLeft size={20} /></button>
+          <h1>{esCliente ? "Mis Préstamos" : "Gestión de Préstamos"}</h1>
         </div>
 
-        <div className="search-container" style={{ flex: 1, margin: '0 20px' }}>
-          <Search className="search-icon-inside" size={18} />
-          <input 
-            className="search-input" 
-            placeholder="Buscar por ID de Usuario..." 
-            value={busquedaId} 
-            onChange={(e) => setBusquedaId(e.target.value)} 
-          />
-        </div>
+        {/* El buscador solo aparece si NO es cliente (el admin busca a otros) */}
+        {!esCliente && (
+          <div className="search-container" style={{ flex: 1, margin: '0 20px' }}>
+            <Search className="search-icon-inside" size={18} />
+            <input 
+              className="search-input" 
+              placeholder="Buscar por ID de Usuario..." 
+              value={busquedaId} 
+              onChange={(e) => setBusquedaId(e.target.value)} 
+            />
+          </div>
+        )}
 
         <button className="btn-main" onClick={() => { setFormData(estadoInicial); setMostrarModal(true); }}>
-          <Plus size={18} /> Nuevo Préstamo
+          <Plus size={18} /> Solicitar Nuevo
         </button>
       </div>
 
@@ -143,7 +159,7 @@ const ListarPrestamos = () => {
           lista.map((p) => (
             <div key={p.id_Prestamo} className="cat-card">
               <div className="card-info">
-                <span className="card-type">ID: #{p.id_Prestamo}</span>
+                <span className="card-type">Folio: #{p.id_Prestamo}</span>
                 <span className={`status-pill ${p.estado?.toLowerCase()}`}>{p.estado}</span>
               </div>
               <h2 className="card-title">{p.libro || "Libro no especificado"}</h2>
@@ -159,38 +175,34 @@ const ListarPrestamos = () => {
                   <span className="audit-user">{new Date(p.fecha_Vencimiento).toLocaleDateString()}</span>
                 </div>
               </div>
-              <div className="card-actions">
-                <button className="btn-edit" onClick={() => prepararEdicion(p)}><Edit size={16} /> Editar</button>
-                <button className="btn-del" onClick={() => setConfirmarBorrado({ abierto: true, id: p.id_Prestamo })}><Trash2 size={16} /> Borrar</button>
-              </div>
+
+              {/* SOLO MOSTRAR ACCIONES SI NO ES CLIENTE */}
+              {!esCliente && (
+                <div className="card-actions">
+                  <button className="btn-edit" onClick={() => prepararEdicion(p)}><Edit size={16} /> Editar</button>
+                  <button className="btn-del" onClick={() => setConfirmarBorrado({ abierto: true, id: p.id_Prestamo })}><Trash2 size={16} /> Borrar</button>
+                </div>
+              )}
             </div>
           ))
         ) : (
           <div className="no-results-container">
             <AlertCircle size={48} color="#666" />
-            <p>No se encontraron préstamos activos.</p>
+            <p>{esCliente ? "Aún no tienes préstamos registrados." : "No se encontraron préstamos."}</p>
           </div>
         )}
       </div>
 
+      {/* El modal de formulario se mantiene igual para permitir "Nuevo Préstamo" */}
       {mostrarModal && (
         <div className="modal-overlay" style={{ zIndex: 1000 }}>
           <div className="cat-form-card" style={{ maxWidth: '500px', display: 'flex', flexDirection: 'column' }}>
             <div className="modal-header">
-              <h3>{formData.id_Prestamo ? "Actualizar Estado" : "Nuevo Préstamo"}</h3>
+              <h3>{formData.id_Prestamo ? "Detalles del Préstamo" : "Nueva Solicitud"}</h3>
               <X className="close-icon" onClick={() => setMostrarModal(false)} />
             </div>
             
             <form onSubmit={handleGuardar} className="form-main">
-              <div className="audit-box" style={{ marginBottom: '20px', border: '1px solid #3b82f6', background: 'rgba(59,130,246,0.05)' }}>
-                <div className="audit-row">
-                  <User size={16} color="#3b82f6" />
-                  <span style={{ color: '#3b82f6', fontSize: '13px' }}>
-                    Operación por: <strong>ID {userIdLogueado}</strong>
-                  </span>
-                </div>
-              </div>
-
               {!formData.id_Prestamo ? (
                 <>
                   <div className="form-section">
@@ -198,7 +210,7 @@ const ListarPrestamos = () => {
                     <div style={{ display: 'flex', gap: '8px' }}>
                       <input 
                         type="number" 
-                        placeholder="Ej: 101"
+                        placeholder="ID del libro"
                         style={{ flex: 1 }}
                         value={formData.id_Libro} 
                         onChange={(e) => setFormData({...formData, id_Libro: e.target.value})} 
@@ -229,7 +241,7 @@ const ListarPrestamos = () => {
                   <div className="form-section">
                     <label>OBSERVACIONES</label>
                     <textarea 
-                      placeholder="Notas adicionales..."
+                      placeholder="¿Por qué necesitas este libro?"
                       className="full-input"
                       style={{ minHeight: '80px' }}
                       value={formData.observaciones} 
@@ -239,71 +251,36 @@ const ListarPrestamos = () => {
                 </>
               ) : (
                 <div className="form-section">
-                  <label>ESTADO DEL PRÉSTAMO</label>
-                  <select 
-                    className="custom-select" 
-                    value={formData.id_Estado} 
-                    onChange={(e) => setFormData({...formData, id_Estado: parseInt(e.target.value)})}
-                  >
-                    <option value={3}>Activo</option>
-                    <option value={4}>Inactivo</option>
-                    <option value={10}>Eliminado</option>
-                    <option value={11}>Desactivado</option>
-                    <option value={12}>Pagada</option>
-                    <option value={13}>Cancelada</option>
-                    <option value={14}>Parcial</option>
-                    <option value={15}>Mora</option>
-                    <option value={16}>Devuelto</option>
-                    <option value={17}>Dañado</option>
-                  </select>
-                  <p className="helper-text" style={{fontSize: '11px', color: '#666', marginTop: '8px'}}>
-                    * En modo edición solo se permite actualizar el estado administrativo.
-                  </p>
+                  <label>ESTADO ACTUAL</label>
+                  <p className="status-pill active" style={{textAlign: 'center', padding: '10px'}}>{formData.id_Estado === 3 ? "ACTIVO" : "EN PROCESO"}</p>
                 </div>
               )}
 
               <div className="modal-footer">
                 <button type="button" className="btn-cancelar" onClick={() => setMostrarModal(false)}>
-                  Cancelar
+                  Cerrar
                 </button>
-                <button type="submit" className="btn-guardar-pro">
-                  <Save size={18} /> {formData.id_Prestamo ? "Actualizar Estado" : "Confirmar Préstamo"}
-                </button>
+                {!formData.id_Prestamo && (
+                  <button type="submit" className="btn-guardar-pro">
+                    <Save size={18} /> Confirmar Solicitud
+                  </button>
+                )}
               </div>
             </form>
           </div>
         </div>
       )}
 
+      {/* BUSCADOR DE LIBROS (Reutilizado) */}
       {mostrarConsultaLibros && (
         <div className="modal-overlay" style={{ zIndex: 2000 }}>
           <div className="cat-form-card" style={{ maxWidth: '90%', width: '900px', height: '80vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
             <div className="modal-header">
-              <h3>Consulta de Libros Disponible</h3>
-              <button 
-                className="btn-del" 
-                onClick={() => setMostrarConsultaLibros(false)}
-                style={{ padding: '5px 15px', fontSize: '12px' }}
-              >
-                Cerrar Consulta
-              </button>
+              <h3>Selecciona un Libro</h3>
+              <button className="btn-del" onClick={() => setMostrarConsultaLibros(false)}>Cerrar</button>
             </div>
             <div style={{ flex: 1, overflowY: 'auto', padding: '10px' }}>
               <ListarLibros soloLectura={true} />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {confirmarBorrado.abierto && (
-        <div className="modal-overlay">
-          <div className="modal-confirm-card">
-            <AlertCircle size={40} color="#f85149" />
-            <h3>¿Eliminar registro?</h3>
-            <p>Esta acción no se puede deshacer.</p>
-            <div className="btn-confirm-group">
-              <button className="btn-confirm-no" onClick={() => setConfirmarBorrado({abierto:false, id: null})}>No</button>
-              <button className="btn-confirm-yes" onClick={ejecutarEliminacion}>Sí, eliminar</button>
             </div>
           </div>
         </div>
@@ -312,4 +289,4 @@ const ListarPrestamos = () => {
   );
 };
 
-export default ListarPrestamos; 
+export default ListarPrestamos;

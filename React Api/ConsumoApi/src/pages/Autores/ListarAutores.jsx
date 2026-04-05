@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { 
+    Search, ArrowLeft, User, AlertCircle, Save, Edit, Trash2, X 
+} from "lucide-react";
 import {
     getAutores,
     insertarAutor,
@@ -9,15 +12,19 @@ import {
 } from "../../services/autorService.js";
 import "../../styles/autores.css";
 
-export default function ListarAutores() {
+// Agregamos la prop 'soloLectura' para control dual
+export default function ListarAutores({ soloLectura = false }) {
+    const navigate = useNavigate();
     const [autores, setAutores] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [idPersona, setIdPersona] = useState("");
-    const [idAutorEditando, setIdAutorEditando] = useState(null);
     const [busqueda, setBusqueda] = useState("");
     
-    // Estado para alertas
+    // Estados para el formulario (Admin)
+    const [idPersona, setIdPersona] = useState("");
+    const [idAutorEditando, setIdAutorEditando] = useState(null);
     const [alerta, setAlerta] = useState({ visible: false, mensaje: "", tipo: "" });
+
+    const userIdLogueado = parseInt(localStorage.getItem("userId") || "0");
 
     const mostrarMensaje = (mensaje, tipo = "success") => {
         setAlerta({ visible: true, mensaje, tipo });
@@ -30,7 +37,6 @@ export default function ListarAutores() {
         setLoading(true);
         try {
             const res = await getAutores();
-            // Validamos la estructura que manda tu API (data es el array)
             if (res && res.data) setAutores(res.data);
             else setAutores([]);
         } catch (error) {
@@ -40,8 +46,35 @@ export default function ListarAutores() {
         }
     };
 
+    // Lógica de filtrado
+    useEffect(() => {
+        const filtrar = async () => {
+            if (busqueda.trim() === "") {
+                cargarDatos();
+                return;
+            }
+            try {
+                if (!isNaN(busqueda)) {
+                    const res = await filtrarAutorPorPersona(busqueda);
+                    setAutores(res.data || []);
+                } else {
+                    const termino = busqueda.toLowerCase();
+                    setAutores(prev => prev.filter(autor => 
+                        autor.nombre_Persona?.toLowerCase().includes(termino) || 
+                        autor.apellido?.toLowerCase().includes(termino)
+                    ));
+                }
+            } catch (error) {
+                console.error("Error filtrando:", error);
+            }
+        };
+        const timeoutId = setTimeout(filtrar, 500);
+        return () => clearTimeout(timeoutId);
+    }, [busqueda]);
+
     useEffect(() => { cargarDatos(); }, []);
 
+    // Acciones de Escritura (Solo para Admin)
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -51,9 +84,7 @@ export default function ListarAutores() {
             } else {
                 res = await insertarAutor(idPersona);
             }
-
             const data = await res.json();
-
             if (data.o_Numero === 200) {
                 mostrarMensaje(data.o_Msg || "Operación exitosa", "success");
                 cancelarFormulario();
@@ -93,11 +124,10 @@ export default function ListarAutores() {
         setIdPersona("");
     };
 
-    if (loading) return <div className="autores-page-container"><h2>Sincronizando...</h2></div>;
+    if (loading) return <div className="autores-page-container"><div className="no-data">Sincronizando...</div></div>;
 
     return (
         <div className="autores-page-container">
-            {/* ALERTAS */}
             {alerta.visible && (
                 <div className="notification-container">
                     <div className={`custom-alert ${alerta.tipo}`}>
@@ -108,53 +138,67 @@ export default function ListarAutores() {
             )}
 
             <header className="autores-header">
-                <h1>Catálogo de Autores</h1>
-                <Link to="/home" className="btn-back">Volver</Link>
-            </header>
+                <div className="header-left">
+                    <button className="btn-back" onClick={() => navigate(-1)}>
+                        <ArrowLeft size={20} /> Volver
+                    </button>
+                    <h1>{soloLectura ? "Consulta de Autores" : "Gestión de Autores"}</h1>
+                </div>
 
-            {/* FORMULARIO DE REGISTRO/EDICIÓN */}
-            <form className="gestion-form" onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label>ID de la Persona (Datos Personales)</label>
-                    <input
-                        type="number"
-                        value={idPersona}
-                        onChange={(e) => setIdPersona(e.target.value)}
-                        placeholder="Ingrese el ID de persona ej: 14"
-                        required
+                <div className="search-container" style={{ flex: 1, maxWidth: '400px', marginLeft: '20px' }}>
+                    <Search className="search-icon-inside" size={18} />
+                    <input 
+                        className="search-input" 
+                        placeholder="Buscar por nombre o ID..." 
+                        value={busqueda} 
+                        onChange={(e) => setBusqueda(e.target.value)} 
                     />
                 </div>
-                <div className="form-buttons">
-                    <button type="submit" className="btn-action btn-save">
-                        {idAutorEditando ? "💾 Actualizar Autor" : "➕ Registrar Autor"}
-                    </button>
-                    {idAutorEditando && (
-                        <button type="button" className="btn-action btn-cancel" onClick={cancelarFormulario}>
-                            Cancelar
-                        </button>
-                    )}
-                </div>
-            </form>
+            </header>
 
-            {/* TABLA DE RESULTADOS */}
+            {/* FORMULARIO: Solo se muestra si NO es solo lectura */}
+            {!soloLectura && (
+                <form className="gestion-form" onSubmit={handleSubmit}>
+                    <div className="form-group">
+                        <label>ID de la Persona (Datos Personales)</label>
+                        <input
+                            type="number"
+                            value={idPersona}
+                            onChange={(e) => setIdPersona(e.target.value)}
+                            placeholder="Ingrese el ID de persona ej: 14"
+                            required
+                        />
+                    </div>
+                    <div className="form-buttons">
+                        <button type="submit" className="btn-action btn-save">
+                            {idAutorEditando ? <><Save size={16} /> Actualizar</> : <><User size={16} /> Registrar Autor</>}
+                        </button>
+                        {idAutorEditando && (
+                            <button type="button" className="btn-action btn-cancel" onClick={cancelarFormulario}>
+                                <X size={16} /> Cancelar
+                            </button>
+                        )}
+                    </div>
+                </form>
+            )}
+
             <div className="table-wrapper">
                 <table className="autores-table">
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Persona</th>
+                            <th>ID Autor</th>
+                            <th>ID Persona</th>
                             <th>Nombre Completo</th>
                             <th>Estado</th>
-                            <th>Creador</th>
-                            <th>Modificador</th>
-                            <th style={{ textAlign: 'right' }}>Acciones</th>
+                            {!soloLectura && <th>Auditoría</th>}
+                            {!soloLectura && <th style={{ textAlign: 'right' }}>Acciones</th>}
                         </tr>
                     </thead>
                     <tbody>
                         {autores.length > 0 ? (
                             autores.map((autor) => (
                                 <tr key={autor.id_Autor}>
-                                    <td><strong>{autor.id_Autor}</strong></td>
+                                    <td><strong>#{autor.id_Autor}</strong></td>
                                     <td>{autor.id_Persona}</td>
                                     <td>{autor.nombre_Persona} {autor.apellido}</td>
                                     <td>
@@ -162,16 +206,25 @@ export default function ListarAutores() {
                                             {autor.estado}
                                         </span>
                                     </td>
-                                    <td>{autor.id_Creador}</td>
-                                    <td>{autor.id_Modificador || "-"}</td>
-                                    <td className="actions-cell">
-                                        <button className="btn-icon btn-edit" onClick={() => prepararEdicion(autor)}>✏️</button>
-                                        <button className="btn-icon btn-delete" onClick={() => handleEliminar(autor.id_Autor)}>🗑️</button>
-                                    </td>
+                                    {!soloLectura && (
+                                        <td style={{ fontSize: '11px', color: '#666' }}>
+                                            C: {autor.id_Creador} | M: {autor.id_Modificador || "-"}
+                                        </td>
+                                    )}
+                                    {!soloLectura && (
+                                        <td className="actions-cell">
+                                            <button className="btn-icon btn-edit" onClick={() => prepararEdicion(autor)}>
+                                                <Edit size={16} />
+                                            </button>
+                                            <button className="btn-icon btn-delete" onClick={() => handleEliminar(autor.id_Autor)}>
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </td>
+                                    )}
                                 </tr>
                             ))
                         ) : (
-                            <tr><td colSpan="7" style={{ textAlign: 'center' }}>No hay autores disponibles.</td></tr>
+                            <tr><td colSpan={soloLectura ? "4" : "6"} style={{ textAlign: 'center' }}>No hay registros.</td></tr>
                         )}
                     </tbody>
                 </table>
