@@ -8,31 +8,41 @@ CREATE OR ALTER PROC Sp_Filtrar_Acuerdos_Pago(
 BEGIN 	
     SET NOCOUNT ON;
     BEGIN TRY
-        -- Validación: Si no se envían parámetros, lanzamos error
-        IF @Id_Acuerdo IS NULL or @Id_Multa IS NULL
-            THROW 50001, 'Debe proporcionar un ID de Acuerdo o un ID de Multa para filtrar', 1;
+        -- VALIDACIÓN: Solo lanza error si AMBOS son nulos
+        IF @Id_Acuerdo IS NULL AND @Id_Multa IS NULL
+            THROW 50001, 'Debe proporcionar al menos un filtro (identificador de multa o de acuerdo)', 1;
 
-        SELECT
-            a.Id_Acuerdo AS 'Id',
-            a.Id_Multa AS 'Id Multa',
-            a.Monto_Total_Acordado AS 'Total Acordado',
-            a.Cantidad_Cuotas AS 'Cuotas',
-            a.Monto_Por_Cuota AS 'Monto Cuota',
-            cat.Nombre AS 'Frecuencia',
-            a.Fecha_Creacion AS 'Fecha Registro',
-            e.Estado AS 'Estado'
-        FROM Tbl_Acuerdos_Pago AS a
-        INNER JOIN Cls_Catalogo AS cat ON a.Frecuencia_Pago = cat.Id_Catalogo
-        INNER JOIN Cls_Estado AS e ON a.Id_Estado = e.Id_Estado
+        SELECT 
+            A.Id_Acuerdo as Id_Acuerdo, 
+            A.Id_Multa as Id_Multa,
+            A.Monto_Total_Acordado as Monto_Total_Acordado, 
+            A.Cantidad_Cuotas as Cantidad_Cuotas,
+            A.Monto_Por_Cuota as Monto_Por_Cuota,
+            A.Frecuencia_Pago as Frecuencia_Pago,
+            C.Nombre as Frecuencia_Pago_Nombre,
+            A.Fecha_Creacion as Fecha_Creacion,
+            A.Fecha_Modificacion as Fecha_Modificacion,
+            A.Id_Creador as Id_Creador,
+            A.Id_Modificador as Id_Modificador,
+            A.Id_Estado as Id_Estado,
+            E.Estado as Estado
+        FROM Tbl_Acuerdos_Pago A
+        INNER JOIN Cls_Catalogo C ON A.Frecuencia_Pago = C.Id_Catalogo
+        INNER JOIN Cls_Estado E ON A.Id_Estado = E.Id_Estado
         WHERE 
-            (@Id_Acuerdo IS NULL OR a.Id_Acuerdo = @Id_Acuerdo) or
-            (@Id_Multa IS NULL OR a.Id_Multa = @Id_Multa) AND
-            a.Id_Estado = 3
-        ORDER BY a.Id_Acuerdo DESC;
+            (
+                (@Id_Acuerdo IS NOT NULL AND A.Id_Acuerdo = @Id_Acuerdo) OR
+                (@Id_Multa IS NOT NULL AND A.Id_Multa = @Id_Multa)
+            )
+            AND A.Id_Estado = 3
+        ORDER BY A.Id_Acuerdo DESC;
 
     END TRY
     BEGIN CATCH
         ;THROW;
     END CATCH
-END
+END;
 GO
+
+
+exec Sp_Filtrar_Acuerdos_Pago @Id_Acuerdo = 2

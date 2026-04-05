@@ -1,16 +1,15 @@
-﻿using System.Linq;
-using System.Reflection.Metadata.Ecma335;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using application.DTOs;
 using application.Services;
-using Domain;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Presentacion.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class Acuerdo_PagosController : Controller
+    public class Acuerdo_PagosController : ControllerBase
     {
         private readonly Acuerdos_Pago_Services _service;
 
@@ -19,7 +18,7 @@ namespace Presentacion.Controllers
             _service = service;
         }
 
-        [HttpGet("Listars")]
+        [HttpGet("Listar")]
         public async Task<IActionResult> Listar_Acuerdo_Pagos()
         {
             try
@@ -27,26 +26,17 @@ namespace Presentacion.Controllers
                 var lista = await _service.Listar_Acuerdos_Pago();
                 if (lista == null || !lista.Any())
                 {
-                    return NotFound(new
-                    {
-                        codigo = 404,
-                        msj = "No se encontraron acuerdos de pago para la persona especificada."
-                    });
+                    return NotFound(new { codigo = 404, msj = "No se encontraron acuerdos de pago." });
                 }
-                return Ok(new
-                {
-                    codigo = 200,
-                    msj = "Consulta exitosa",
-                    data = lista
-                });
+                return Ok(new { codigo = 200, msj = "Consulta exitosa", data = lista });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, new { codigo = 500, msj = ex.Message });
             }
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("listar_por_id/{id}")]
         public async Task<IActionResult> Listar_Acuerdo_Pagos_Por_Id(int id)
         {
             try
@@ -54,58 +44,69 @@ namespace Presentacion.Controllers
                 var lista = await _service.Obtener_Acuerdo_Pago_Por_Id(id);
                 if (lista == null)
                 {
-                    return NotFound(new
-                    {
-                        codigo = 404,
-                        msj = "No se encontraron acuerdos de pago para la persona especificada."
-                    });
+                    return NotFound(new { codigo = 404, msj = "Acuerdo no encontrado." });
                 }
-                return Ok(new
-                {
-                    codigo = 200,
-                    msj = "Consulta exitosa",
-                    data = lista
-                });
+                return Ok(new { codigo = 200, msj = "Consulta exitosa", data = lista });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, new { codigo = 500, msj = ex.Message });
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> Ingresar_Datos_Acuerdos_Pagos(Acuerdos_Pago_DTOs acuerdos)
+        public async Task<IActionResult> Ingresar_Datos_Acuerdos_Pagos([FromBody] Acuerdos_Pago_DTOs acuerdos)
         {
             try
             {
                 if (!ModelState.IsValid)
                 {
-                    return StatusCode(401,"Datos no validos");
+                    return BadRequest(new { codigo = 400, msj = "Datos no válidos" });
                 }
+
                 await _service.Insertar_acuerdos_pago_async(acuerdos);
-                return StatusCode(200, "Acuerdo Ingresado Correctamente");
+                return Ok(new { codigo = 200, msj = "Acuerdo Ingresado Correctamente" });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                return StatusCode(500, new { codigo = 500, msj = ex.Message });
             }
         }
 
+        // --- MÉTODO CORREGIDO PARA ACTUALIZAR ---
         [HttpPut]
-        public async Task<IActionResult> Editar_Acuerdos_Pagos(Acuerdos_Pago_DTOs acuerdos)
+        public async Task<IActionResult> Editar_Acuerdos_Pagos([FromBody] Acuerdos_Pago_DTOs acuerdos)
         {
             try
             {
-                if (!ModelState.IsValid)
+                // Validación: Se requiere al menos el ID del acuerdo y el ID del que modifica
+                if (acuerdos == null || !acuerdos.Id_Acuerdo.HasValue)
                 {
-                    return StatusCode(401, "Datos no validos");
+                    return BadRequest(new { codigo = 400, msj = "El identificador del acuerdo es obligatorio." });
                 }
+
                 await _service.Editar_acuerdos_pago_async(acuerdos);
-                return StatusCode(200, "Acuerdo Editado correctamente");
+
+                return Ok(new { codigo = 200, msj = "Acuerdo actualizado correctamente" });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ex.Message);
+                // Captura errores de SQL (como los THROW del SP) y los devuelve al cliente
+                return StatusCode(500, new { codigo = 500, msj = ex.Message });
+            }
+        }
+
+        [HttpDelete("{id}/{idModificador}")]
+        public async Task<IActionResult> Eliminar_Acuerdos_Pagos(int id, int idModificador)
+        {
+            try
+            {
+                await _service.Eliminar_Acuerdo_Pago(id, idModificador);
+                return Ok(new { codigo = 200, msj = "Acuerdo eliminado correctamente" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { codigo = 500, msj = ex.Message });
             }
         }
     }

@@ -72,6 +72,8 @@ builder.Services.AddScoped<IUsuarioRepository, UsarioRepositoy>();
 builder.Services.AddScoped<UsuarioServices>();
 builder.Services.AddScoped<ILibrosRepository, LibrosRepository>();
 builder.Services.AddScoped<LibrosService>();
+builder.Services.AddScoped<IAcuerdos_Pago_Repository, Acuerdos_Pagos_Repository>();
+builder.Services.AddScoped<Acuerdos_Pago_Services>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

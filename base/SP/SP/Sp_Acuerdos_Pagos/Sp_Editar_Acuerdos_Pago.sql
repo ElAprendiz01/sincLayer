@@ -19,8 +19,8 @@ BEGIN
             THROW 50001, 'No existe el registro de acuerdo solicitado o está inactivo', 1;
 
         -- Validar que el modificador sea un usuario válido
-        IF NOT EXISTS (SELECT 1 FROM usuarios WHERE id = @Id_Modificador)
-            THROW 50001, 'El identificador del modificador no es válido', 1;
+        IF NOT EXISTS (SELECT 1 FROM Tbl_Usuarios WHERE Id_Usuario = @Id_Modificador)
+    THROW 50001, 'El identificador del modificador no es válido', 1;
 
         BEGIN TRANSACTION trx_editar_acuerdos;
             

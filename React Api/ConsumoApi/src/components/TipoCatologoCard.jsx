@@ -39,10 +39,10 @@ const TipoCatalogoCard = ({ t, onEdit, onDelete, formatFecha, index }) => {
             
             <div className="acciones">
                 <button className="btn-edit" onClick={() => onEdit(t)}>
-                    <Edit3 size={16} /> Editor
+                    <Edit3 size={16} /> Edit
                 </button>
                 <button className="btn-del" onClick={() => onDelete(t.id_Tipo_Catalogo)}>
-                    <Trash2 size={16} /> Borrar
+                    <Trash2 size={16} /> Delete
                 </button>
             </div>
         </div>
