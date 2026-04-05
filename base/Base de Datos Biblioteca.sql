@@ -211,8 +211,6 @@ CREATE TABLE Tbl_Acuerdos_Pago (
 );
 GO
 
-
-
 -- Tabla del dinero real ingresado
 CREATE TABLE Tbl_Pagos (
     Id_Pago INT PRIMARY KEY IDENTITY(1,1),
@@ -229,8 +227,3 @@ CREATE TABLE Tbl_Pagos (
     Id_Estado INT REFERENCES Cls_Estado(Id_Estado)
 );
 GO
-
-select * from Cls_Estado
-
-select * from Tbl_Usuarios
-select * from Tbl_Prestamos
