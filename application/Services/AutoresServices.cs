@@ -17,9 +17,11 @@ namespace application.Services
         {
             _repository = repository;
         }
+
         public async Task<IEnumerable<AutoresDomain>> Listar_autores()
         {
             var listar = await _repository.Listar_AutoresAsync();
+
             return listar.Select(a => new AutoresDomain
             {
                 Id_Autor = a.Id_Autor,
@@ -32,14 +34,15 @@ namespace application.Services
                 Id_Modificador = a.Id_Modificador,
                 Estado = a.Estado
             });
-
-
         }
+
         public async Task<IEnumerable<AutoresDomain>> FiltrarAutoPorIdPersoan(int id_persona)
         {
             if (id_persona <= 0)
                 return Enumerable.Empty<AutoresDomain>();
+
             var listar = await _repository.Listar_autores_por_id_personaAsync(id_persona);
+
             return listar.Select(a => new AutoresDomain
             {
                 Id_Autor = a.Id_Autor,
@@ -60,8 +63,9 @@ namespace application.Services
             {
                 Id_Persona = oautor.Id_Persona,
                 Id_Creador = oautor.Id_Creador,
-                Id_Estado = oautor.Id_Estado,
+                Id_Estado = oautor.Id_Estado
             };
+
             await _repository.NuevoAutoresAsyn(oautordom);
         }
 
@@ -69,9 +73,9 @@ namespace application.Services
         {
             if (!esAdmin)
             {
-                // Usuario normal NO puede forzar recuperación
                 oautor.ForzarRecuperacion = false;
             }
+
             var oautordom = new AutoresDomain
             {
                 Id_Autor = oautor.Id_Autor,
@@ -80,15 +84,13 @@ namespace application.Services
                 Id_Estado = oautor.Id_Estado,
                 ForzarRecuperacion = oautor.ForzarRecuperacion
             };
+
             await _repository.EditarautoresAsync(oautordom);
         }
+
         public async Task EliminarAutor(int id, int idModificador)
         {
-
-
             await _repository.EliminarAutoresAsync(id, idModificador);
-
-
         }
     }
 }

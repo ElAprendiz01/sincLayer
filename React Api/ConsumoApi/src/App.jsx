@@ -16,7 +16,8 @@ import Multas from './pages/Multas/GestionMultas';
 import Devoluciones from './pages/Devoluciones/devoluciones';
 import ListarAurres from './pages/Autores/ListarAutores';
 import Cliente from './pages/HomeCLiente/HomeCliente';
-import AcuerdosModulo from './pages/AcuerdosPago/AcuerdosPago'
+import AcuerdosModulo from './pages/AcuerdosPago/AcuerdosPago';
+import PagosModulo from "./pages/Pagos/PagoModulo";
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
             <Route path="/estado" element={<ListarEstados />} />
             <Route path="/direcciones" element={<ListarDirecciones />} />
             <Route path="/acuerdos" element={<AcuerdosModulo />} />
+            <Route path="/pagos" element={<PagosModulo />} />
           </Route>
         </Routes>
       </BrowserRouter>

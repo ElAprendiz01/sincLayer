@@ -1,0 +1,212 @@
+/* --- Estilos Base del Módulo de Pagos (NexaCore Style) --- */
+
+.nexa-pagos-page {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Layout Principal: 400px Formulario - Resto Tabla */
+.pagos-grid-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.5rem; /* Aumentado para dar más aire */
+    align-items: start;
+}
+
+@media (min-width: 1024px) {
+    .pagos-grid-layout {
+        grid-template-columns: 420px 1fr;
+    }
+}
+
+/* Tarjetas (Contenedores) */
+.nexa-card-wrapper {
+    perspective: 1000px;
+}
+
+.nexa-card {
+    background: rgba(30, 41, 59, 0.4);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 1.5rem;
+    padding: 2.25rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+    transition: border-color 0.3s ease;
+}
+
+.nexa-card:hover {
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+/* Tipografía y Títulos */
+.card-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #f8fafc;
+    letter-spacing: -0.025em;
+    border-left: 4px solid #3b82f6;
+    padding-left: 1rem;
+}
+
+/* Formulario */
+.nexa-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem; /* Espaciado entre grupos de control */
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem; /* Espaciado entre label e input */
+    margin-bottom: 0.5rem;
+}
+
+.nexa-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #94a3b8;
+    letter-spacing: 0.08em;
+    padding-left: 0.25rem;
+}
+
+/* Inputs y Selects */
+.nexa-input, .nexa-select {
+    background: rgba(15, 23, 42, 0.9) !important;
+    border: 1px solid rgba(51, 65, 85, 0.8) !important;
+    border-radius: 0.85rem;
+    padding: 0.85rem 1.1rem;
+    color: #fff !important;
+    font-size: 0.95rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nexa-input:focus {
+    outline: none;
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+    background: rgba(15, 23, 42, 1) !important;
+}
+
+.nexa-input:read-only {
+    opacity: 0.7;
+    cursor: default;
+    background: rgba(30, 41, 59, 0.3) !important;
+    border-style: dashed !important;
+}
+
+/* Botones Selectores (Lupa/Plus) */
+.btn-selector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    color: white;
+    border: none;
+    border-radius: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-selector:hover {
+    transform: scale(1.05) rotate(5deg);
+    filter: brightness(1.2);
+}
+
+/* Botón Submit Dinámico (Crear/Editar) */
+.nexa-btn-submit {
+    background: linear-gradient(135deg, #84cc16 0%, #65a30d 100%);
+    color: #052e16;
+    font-weight: 800;
+    padding: 1.1rem;
+    border: none;
+    border-radius: 1rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-top: 1.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 15px -3px rgba(101, 163, 13, 0.3);
+}
+
+/* Estilo para el botón cuando está en modo Edición */
+.nexa-btn-submit.edit-mode {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: #ffffff;
+    box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
+}
+
+.nexa-btn-submit:hover:not(:disabled) {
+    transform: translateY(-3px);
+    filter: contrast(1.1);
+}
+
+/* Tablas con Efecto Glass */
+.table-responsive {
+    overflow-x: auto;
+    border-radius: 1.25rem;
+    background: rgba(15, 23, 42, 0.3);
+}
+
+.nexa-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 0.5rem; /* Espaciado entre filas */
+}
+
+.nexa-table th {
+    padding: 1.25rem 1rem;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: #475569;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+}
+
+.nexa-tr {
+    background: rgba(30, 41, 59, 0.2);
+    transition: transform 0.2s, background 0.2s;
+}
+
+.nexa-tr:hover {
+    background: rgba(59, 130, 246, 0.08);
+    transform: scale(1.005);
+}
+
+.nexa-table td {
+    padding: 1.25rem 1rem;
+    font-size: 0.9rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+/* Botones de Acción en Tabla */
+.action-btn {
+    padding: 0.6rem;
+    border-radius: 0.75rem;
+    transition: all 0.2s;
+    background: rgba(15, 23, 42, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.action-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+/* Badges */
+.id-badge {
+    background: rgba(59, 130, 246, 0.1);
+    color: #60a5fa;
+    padding: 0.25rem 0.6rem;
+    border-radius: 0.5rem;
+    font-family: monospace;
+    font-weight: bold;
+}
