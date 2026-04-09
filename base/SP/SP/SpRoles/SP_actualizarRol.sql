@@ -94,3 +94,26 @@ BEGIN
     END CATCH
 END
 GO
+
+
+USE SYNCLAYER;
+GO
+
+-- 1. Declarar las variables para recibir los resultados
+DECLARE @SalidaNumero INT;
+DECLARE @SalidaMsg NVARCHAR(255);
+
+-- 2. Ejecutar el procedimiento
+EXEC SpActualizarRol
+    @Id_Rol = 3,                 -- ID del rol que quieres cambiar
+    @Nombre = 'Bibliotecario', -- Nuevo nombre (puedes poner NULL si no quieres cambiarlo)
+    @Id_Modificador = 10,        -- ID del usuario que hace el cambio
+    @Id_Estado = 3,              -- Nuevo ID de estado (opcional)
+    @ForzarRecuperacion = 1,     -- 0 por defecto 25 para salir de onda jajaja 
+    @O_Numero = @SalidaNumero OUTPUT, -- Mapeo de salida
+    @O_Msg = @SalidaMsg OUTPUT;       -- Mapeo de salida
+
+-- 3. Ver los resultados
+SELECT @SalidaNumero AS CodigoRespuesta, @SalidaMsg AS MensajeRespuesta;
+
+select * from Tbl_Roles
