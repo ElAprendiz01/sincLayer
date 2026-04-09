@@ -35,6 +35,8 @@ namespace infrastructure.Repository
            
             cmd.Parameters.Add(new SqlParameter("@Id_Modificador",
                 rol.Id_Modificador ?? (object)DBNull.Value));
+            cmd.Parameters.Add(new SqlParameter("@Id_Estado",
+                rol.Id_Modificador ?? (object)DBNull.Value));
 
             cmd.Parameters.AddWithValue("@ForzarRecuperacion", (object?)rol.ForzarRecuperacion ?? DBNull.Value);
             var oNumero = new SqlParameter("@O_Numero", SqlDbType.Int)
@@ -48,8 +50,7 @@ namespace infrastructure.Repository
 
             await cmd.ExecuteNonQueryAsync();
 
-            if ((int)oNumero.Value <= 0)
-                throw new Exception(oMsg.Value?.ToString());
+           
         }
 
         public async Task CrearRolAsync(RolesDomain rol)
