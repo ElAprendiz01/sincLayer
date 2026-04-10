@@ -15,6 +15,8 @@ namespace application.Interfaces
 
         Task EliminarUsuarioAsync(int? idUsuario, int idModificador);
 
+        Task<IEnumerable<UsuarioDomain>> ListarUsuariosAsync();
+
         Task<UsuarioDomain?> ObtenerUsuarioAsync(string usuario);
     }
 }

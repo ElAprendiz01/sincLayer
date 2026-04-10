@@ -51,6 +51,7 @@ namespace infrastructure.Repository
         }
 
         // CREAR USUARIO
+        // --- MÉTODO PARA AGREGAR (CREAR) USUARIO ---
         public async Task CrearUsuarioAsync(UsuarioDomain usuario)
         {
             using var con = _dbConnectionFactory.CreateConnection();
@@ -60,26 +61,35 @@ namespace infrastructure.Repository
             {
                 cmd.CommandType = CommandType.StoredProcedure;
 
+                // Parámetros de entrada enviados desde el Service/DTO
                 cmd.Parameters.Add(new SqlParameter("@Usuario", usuario.Usuario));
                 cmd.Parameters.Add(new SqlParameter("@PasswordHash", usuario.PasswordHash));
-                cmd.Parameters.Add(new SqlParameter("@Id_Persona", usuario.Id_Persona));
+                cmd.Parameters.Add(new SqlParameter("@Id_Persona", usuario.Id_Persona)); // Vinculación obligatoria
                 cmd.Parameters.Add(new SqlParameter("@Id_Rol", usuario.Id_Rol));
                 cmd.Parameters.Add(new SqlParameter("@Id_Creador", usuario.Id_Creador));
 
+                // Parámetros de salida para capturar la respuesta del SP
                 var oNumero = new SqlParameter("@O_Numero", SqlDbType.Int)
-                { Direction = ParameterDirection.Output };
+                {
+                    Direction = ParameterDirection.Output
+                };
 
-                var oMsg = new SqlParameter("@O_Msg", SqlDbType.VarChar, 255)
-                { Direction = ParameterDirection.Output };
+                var oMsg = new SqlParameter("@O_Msg", SqlDbType.NVarChar, 255)
+                {
+                    Direction = ParameterDirection.Output
+                };
 
                 cmd.Parameters.Add(oNumero);
                 cmd.Parameters.Add(oMsg);
 
+                // Ejecución asíncrona
                 await cmd.ExecuteNonQueryAsync();
 
+                // Validación de la respuesta del procedimiento
                 int codigo = (int)oNumero.Value;
-                string mensaje = oMsg.Value.ToString();
+                string mensaje = oMsg.Value?.ToString() ?? "Error desconocido en el servidor";
 
+                // Si el SP devuelve -1 (u otro código de error), lanzamos la excepción con el mensaje de SQL
                 if (codigo <= 0)
                     throw new Exception(mensaje);
             }
@@ -95,17 +105,17 @@ namespace infrastructure.Repository
             {
                 cmd.CommandType = CommandType.StoredProcedure;
 
+                // Parámetros de entrada
                 cmd.Parameters.Add(new SqlParameter("@Id_Usuario", usuario.Id_Usuario));
                 cmd.Parameters.Add(new SqlParameter("@Id_Rol", (object?)usuario.Id_Rol ?? DBNull.Value));
-                cmd.Parameters.Add(new SqlParameter("@Id_Modificador", usuario.Id_Modificador));
+                cmd.Parameters.Add(new SqlParameter("@Id_Modificador", usuario.Id_Modificador ?? 1)); // 1 como fallback
                 cmd.Parameters.Add(new SqlParameter("@Id_Estado", (object?)usuario.Id_Estado ?? DBNull.Value));
                 cmd.Parameters.Add(new SqlParameter("@ForzarRecuperacion", usuario.ForzarRecuperacion ?? false));
+                cmd.Parameters.AddWithValue("@Contrasena", (object?)usuario.PasswordHash ?? DBNull.Value);
 
-                var oNumero = new SqlParameter("@O_Numero", SqlDbType.Int)
-                { Direction = ParameterDirection.Output };
-
-                var oMsg = new SqlParameter("@O_Msg", SqlDbType.VarChar, 255)
-                { Direction = ParameterDirection.Output };
+                // Parámetros de salida
+                var oNumero = new SqlParameter("@O_Numero", SqlDbType.Int) { Direction = ParameterDirection.Output };
+                var oMsg = new SqlParameter("@O_Msg", SqlDbType.NVarChar, 255) { Direction = ParameterDirection.Output };
 
                 cmd.Parameters.Add(oNumero);
                 cmd.Parameters.Add(oMsg);
@@ -113,7 +123,7 @@ namespace infrastructure.Repository
                 await cmd.ExecuteNonQueryAsync();
 
                 int codigo = (int)oNumero.Value;
-                string mensaje = oMsg.Value.ToString();
+                string mensaje = oMsg.Value?.ToString() ?? "Error desconocido";
 
                 if (codigo <= 0)
                     throw new Exception(mensaje);
@@ -132,7 +142,7 @@ namespace infrastructure.Repository
 
                 cmd.Parameters.Add(new SqlParameter("@Id_Usuario", idUsuario));
                 cmd.Parameters.Add(new SqlParameter("@Id_Modificador", idModificador));
-                cmd.Parameters.Add(new SqlParameter("@Id_Estado", 3)); // Estado Eliminado
+                cmd.Parameters.Add(new SqlParameter("@Id_Estado", 4));
                 cmd.Parameters.Add(new SqlParameter("@ForzarRecuperacion", 0));
 
                 var oNumero = new SqlParameter("@O_Numero", SqlDbType.Int)
@@ -154,6 +164,31 @@ namespace infrastructure.Repository
             }
         }
 
-     
+        public async Task<IEnumerable<UsuarioDomain>> ListarUsuariosAsync()
+        {
+            var lista = new List<UsuarioDomain>();
+            using var con = _dbConnectionFactory.CreateConnection();
+            await con.OpenAsync();
+
+            using (SqlCommand cmd = new SqlCommand("Sp_ListarUsuarios", con))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                using (SqlDataReader dr = await cmd.ExecuteReaderAsync())
+                {
+                    while (await dr.ReadAsync())
+                    {
+                        lista.Add(new UsuarioDomain
+                        {
+                            Id_Usuario = Convert.ToInt32(dr["Id_Usuario"]),
+                            Usuario = dr["Usuario"].ToString(),
+                            Rol = dr["Rol"].ToString(),
+                            Id_Estado = Convert.ToInt32(dr["Id_Estado"])
+                        });
+                    }
+                }
+            }
+            return lista;
+        }
     }
 }

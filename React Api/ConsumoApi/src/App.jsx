@@ -18,6 +18,7 @@ import ListarAurres from './pages/Autores/ListarAutores';
 import Cliente from './pages/HomeCLiente/HomeCliente';
 import AcuerdosModulo from './pages/AcuerdosPago/AcuerdosPago';
 import PagosModulo from "./pages/Pagos/PagoModulo";
+import ListarUsuarios from './pages/usuarios/ListaUsuarios';
 
 function App() {
   return (
@@ -47,6 +48,7 @@ function App() {
             <Route path="/direcciones" element={<ListarDirecciones />} />
             <Route path="/acuerdos" element={<AcuerdosModulo />} />
             <Route path="/pagos" element={<PagosModulo />} />
+            <Route path="/usuarios" element={<ListarUsuarios />} />
           </Route>
         </Routes>
       </BrowserRouter>

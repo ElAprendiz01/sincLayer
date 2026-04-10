@@ -45,12 +45,15 @@ namespace Presentacion.Controllers
         {
             try
             {
+                if (dto == null) return BadRequest("Datos no recibidos.");
+
                 await _service.CrearUsuario(dto);
-                return Ok("Usuario creado correctamente");
+                return Ok(new { message = "Usuario creado exitosamente en SyncLayer" });
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                // Esto captura los errores del SP (ej: "El usuario ya existe")
+                return BadRequest(new { error = ex.Message });
             }
         }
 
@@ -58,14 +61,30 @@ namespace Presentacion.Controllers
         [HttpPut("actualizar")]
         public async Task<IActionResult> ActualizarUsuario([FromBody] UsuarioDTOs dto)
         {
+            // 1. Validación inicial: Que el DTO no llegue nulo
+            if (dto == null)
+            {
+                return BadRequest("Los datos del usuario son requeridos.");
+            }
+
+            // 2. Validación de ID: No se puede actualizar sin saber a quién
+            if (!dto.Id_Usuario.HasValue || dto.Id_Usuario <= 0)
+            {
+                return BadRequest("El ID de usuario no es válido.");
+            }
+
             try
             {
+                // Llamada al servicio que ya configuramos
                 await _service.ActualizarUsuario(dto);
-                return Ok("Usuario actualizado correctamente");
+
+                return Ok(new { message = "Usuario actualizado correctamente" });
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                // Aquí capturamos el "throw new Exception(mensaje)" que viene del Repositorio
+                // y se lo enviamos a React para que sepas qué falló en el SQL.
+                return BadRequest(new { error = ex.Message });
             }
         }
 
@@ -81,6 +100,22 @@ namespace Presentacion.Controllers
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("listar")]
+        public async Task<IActionResult> ListarUsuarios()
+        {
+            // NO agregues [FromBody] ni parámetros aquí
+            try
+            {
+                var lista = await _service.ListarUsuarios();
+                return Ok(new { data = lista });
+            }
+            catch (Exception ex)
+            {
+                // Esto nos dirá en la consola de Chrome cuál es el error real si falla
+                return BadRequest(new { error = ex.Message });
             }
         }
     }

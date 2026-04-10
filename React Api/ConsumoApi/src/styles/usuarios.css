@@ -1,0 +1,83 @@
+/* --- ANIMACIONES Y CONTENEDOR PRINCIPAL --- */
+.nexa-container { 
+    animation: fadeIn 0.5s ease-in-out; 
+}
+
+@keyframes fadeIn { 
+    from { opacity: 0; transform: translateY(10px); } 
+    to { opacity: 1; transform: translateY(0); } 
+}
+
+/* --- TARJETAS CON EFECTO GLASSMORPISM --- */
+.nexa-card {
+    background: rgba(30, 41, 59, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px); /* Compatibilidad Safari */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    overflow: hidden;
+}
+
+/* --- TABLAS ESTILIZADAS --- */
+.nexa-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.nexa-table thead { 
+    background: rgba(15, 23, 42, 0.8); 
+    border-bottom: 2px solid #3b82f6; 
+}
+
+.nexa-table tr { 
+    transition: all 0.3s ease; 
+    border-bottom: 1px solid rgba(51, 65, 85, 0.5); 
+}
+
+.nexa-table tr:hover { 
+    background: rgba(59, 130, 246, 0.08); 
+}
+
+/* --- INPUTS Y BUSCADORES --- */
+.nexa-input {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid #334155;
+    color: #f8fafc;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.nexa-input:focus { 
+    border-color: #3b82f6; 
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.3); 
+    outline: none; 
+}
+
+/* --- BOTONES ACCIÓN (NexaCore Style) --- */
+.nexa-btn-primary {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+    transition: all 0.2s;
+}
+
+.nexa-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5);
+}
+
+/* --- SCROLLBAR PERSONALIZADO --- */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #0f172a;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #475569;
+}

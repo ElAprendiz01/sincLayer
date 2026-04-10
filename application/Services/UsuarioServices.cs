@@ -27,13 +27,21 @@ namespace application.Services
 
         public async Task CrearUsuario(UsuarioDTOs dto)
         {
+            // Validamos que el Id_Persona sea obligatorio para crear
+            if (dto.Id_Persona == null || dto.Id_Persona <= 0)
+                throw new Exception("Es obligatorio vincular el usuario a una Persona (Id_Persona).");
+
+            if (string.IsNullOrWhiteSpace(dto.Contrasena))
+                throw new Exception("La contraseña es obligatoria para nuevos usuarios.");
+
             var usuario = new UsuarioDomain
             {
                 Usuario = dto.Usuario,
+                // Hasheamos la contraseña con BCrypt
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Contrasena),
                 Id_Persona = dto.Id_Persona,
                 Id_Rol = dto.Id_Rol,
-                Id_Creador = dto.Id_Creador
+                Id_Creador = dto.Id_Modificador ?? 1 // Asumimos 1 (Admin) si no viene
             };
 
             await _repository.CrearUsuarioAsync(usuario);
@@ -66,7 +74,12 @@ namespace application.Services
                 Id_Usuario = dto.Id_Usuario,
                 Id_Rol = dto.Id_Rol,
                 Id_Estado = dto.Id_Estado,
-                Id_Modificador = dto.Id_Modificador
+                Id_Modificador = dto.Id_Modificador ?? 1,
+                // CORRECCIÓN: Si hay una nueva contraseña, la hasheamos antes de enviarla
+                PasswordHash = string.IsNullOrWhiteSpace(dto.Contrasena)
+                               ? null
+                               : BCrypt.Net.BCrypt.HashPassword(dto.Contrasena),
+                ForzarRecuperacion = dto.ForzarRecuperacion ?? false
             };
 
             await _repository.ActualizarUsuarioAsync(usuario);
@@ -100,6 +113,20 @@ namespace application.Services
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public async Task<IEnumerable<UsuarioDTOs>> ListarUsuarios()
+        {
+            var usuarios = await _repository.ListarUsuariosAsync();
+
+            // Mapeamos de Domain a DTO
+            return usuarios.Select(u => new UsuarioDTOs
+            {
+                Id_Usuario = u.Id_Usuario,
+                Usuario = u.Usuario,
+                Rol = u.Rol,
+                Id_Estado = u.Id_Estado
+            });
         }
 
     }

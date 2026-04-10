@@ -1,58 +1,18 @@
-use SYNCLAYER
-go
+USE SYNCLAYER;
+GO
 
-
-CREATE OR ALTER PROCEDURE SpActualizarUsuario
-(
+CREATE OR ALTER PROCEDURE SpActualizarUsuario(
     @Id_Usuario INT,
     @Id_Rol INT = NULL,
     @Id_Modificador INT,
     @Id_Estado INT = NULL,
+    @Contrasena NVARCHAR(MAX) = NULL, -- El parámetro puede seguir con 'n' para evitar líos en C#
     @ForzarRecuperacion BIT = 0,
     @O_Numero INT OUTPUT,
     @O_Msg NVARCHAR(255) OUTPUT
-)
-AS
+) AS
 BEGIN
     SET NOCOUNT ON;
-
-    -- Validar existencia
-    IF NOT EXISTS (SELECT 1 FROM Tbl_Usuarios WHERE Id_Usuario = @Id_Usuario)
-    BEGIN
-        SET @O_Numero = -1;
-        SET @O_Msg = 'El usuario no existe.';
-        RETURN;
-    END
-
-    -- Validar estado si se envía
-    IF @Id_Estado IS NOT NULL
-    BEGIN
-        IF NOT EXISTS (
-            SELECT 1 FROM Cls_Estado 
-            WHERE Id_Estado = @Id_Estado AND Activo = 1
-        )
-        BEGIN
-            SET @O_Numero = -1;
-            SET @O_Msg = 'El estado no es válido.';
-            RETURN;
-        END
-    END
-
-    -- Bloquear si está eliminado
-    IF @ForzarRecuperacion = 0
-        AND EXISTS (
-            SELECT 1
-            FROM Tbl_Usuarios u
-            INNER JOIN Cls_Estado e ON u.Id_Estado = e.Id_Estado
-            WHERE u.Id_Usuario = @Id_Usuario
-              AND e.Estado IN ('Eliminado','Inactivo','Desactivado')
-        )
-    BEGIN
-        SET @O_Numero = -1;
-        SET @O_Msg = 'El usuario está inactivo o eliminado.';
-        RETURN;
-    END
-
     BEGIN TRY
         BEGIN TRAN;
 
@@ -60,26 +20,31 @@ BEGIN
         SET
             Id_Rol = COALESCE(@Id_Rol, Id_Rol),
             Id_Estado = COALESCE(@Id_Estado, Id_Estado),
+            
+            -- Corregido: Apuntando a 'Contraseña' con Ñ
+            [Contraseña] = CASE 
+                            WHEN @Contrasena IS NOT NULL AND LTRIM(RTRIM(@Contrasena)) <> '' 
+                            THEN @Contrasena 
+                            ELSE [Contraseña] 
+                         END,
+            
+            -- Esta columna funcionará tras ejecutar el ALTER TABLE de arriba
+            ForzarRecuperacion = @ForzarRecuperacion,
+            
             Fecha_Modificacion = GETDATE(),
             Id_Modificador = @Id_Modificador
         WHERE Id_Usuario = @Id_Usuario;
 
-        COMMIT;
+        COMMIT TRAN;
 
         SET @O_Numero = 200;
-        SET @O_Msg = 'Usuario actualizado correctamente.';
+        SET @O_Msg = 'Infraestructura actualizada: Usuario sincronizado correctamente.';
     END TRY
     BEGIN CATCH
-        IF @@TRANCOUNT > 0 ROLLBACK;
+        IF @@TRANCOUNT > 0 ROLLBACK TRAN;
 
         SET @O_Numero = ERROR_NUMBER();
-        SET @O_Msg = ERROR_MESSAGE();
+        SET @O_Msg = 'Error en base de datos: ' + ERROR_MESSAGE();
     END CATCH
 END
-
-
-
-select * from Tbl_Roles
-select * from Tbl_Datos_Personales
-
-select * from Tbl_Usuarios
+GO
