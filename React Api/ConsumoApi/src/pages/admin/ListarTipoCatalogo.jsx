@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Plus } from "lucide-react";
+import { ArrowLeft, Plus, ShieldAlert } from "lucide-react";
 import { 
     getTiposCatalogo, 
     eliminarTipoCatalogo, 
@@ -12,6 +12,11 @@ import "../../styles/tipocatalogoModerno.css";
 
 const ListarTipoCatalogo = () => {
     const navigate = useNavigate();
+    
+    // --- SEGURIDAD DE ROL ---
+    const userRole = localStorage.getItem("userRole")?.toLowerCase();
+    const isAdmin = userRole === "admin";
+
     const [tipos, setTipos] = useState([]);
     const [cargando, setCargando] = useState(true);
     const [modalAbierto, setModalAbierto] = useState(false);
@@ -36,6 +41,13 @@ const ListarTipoCatalogo = () => {
 
     const handleGuardar = async (e) => {
         e.preventDefault();
+        
+        // Bloqueo de seguridad en la función
+        if (!isAdmin) {
+            alert("No tienes permisos para modificar la estructura del catálogo.");
+            return;
+        }
+
         const loggedUserId = localStorage.getItem("userId");
         const payload = { 
             nombre: nombreTipo, 
@@ -54,10 +66,21 @@ const ListarTipoCatalogo = () => {
             </button>
 
             <div className="header-flex">
-                <h1>Tipos de Catálogo</h1>
-                <button className="btn-principal" onClick={() => {setEditandoId(null); setNombreTipo(""); setModalAbierto(true);}} style={{ background: '#111', color: '#eee', border: '1px solid #222', padding: '10px 20px', borderRadius: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Plus size={20} /> Nuevo Registro
-                </button>
+                <div>
+                    <h1>Tipos de Catálogo</h1>
+                    {!isAdmin && (
+                        <p style={{ color: '#ffa500', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '5px', marginTop: '5px' }}>
+                            <ShieldAlert size={14} /> Modo de solo lectura habilitado
+                        </p>
+                    )}
+                </div>
+
+                {/* BOTÓN PROTEGIDO: Solo el admin lo ve */}
+                {isAdmin && (
+                    <button className="btn-principal" onClick={() => {setEditandoId(null); setNombreTipo(""); setModalAbierto(true);}} style={{ background: '#111', color: '#eee', border: '1px solid #222', padding: '10px 20px', borderRadius: '12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <Plus size={20} /> Nuevo Registro
+                    </button>
+                )}
             </div>
 
             {cargando ? (
@@ -70,14 +93,25 @@ const ListarTipoCatalogo = () => {
                             t={t} 
                             index={index} 
                             formatFecha={formatearFecha}
-                            onEdit={(tipo) => {setEditandoId(tipo.id_Tipo_Catalogo); setNombreTipo(tipo.nombre); setModalAbierto(true);}}
-                            onDelete={async (id) => { if(window.confirm("¿Borrar?")) { await eliminarTipoCatalogo(id); cargar(); } }}
+                            // Pasamos la validación de admin al componente hijo
+                            onEdit={isAdmin ? (tipo) => {
+                                setEditandoId(tipo.id_Tipo_Catalogo); 
+                                setNombreTipo(tipo.nombre); 
+                                setModalAbierto(true);
+                            } : null}
+                            onDelete={isAdmin ? async (id) => { 
+                                if(window.confirm("¿Borrar?")) { 
+                                    await eliminarTipoCatalogo(id); 
+                                    cargar(); 
+                                } 
+                            } : null}
                         />
                     ))}
                 </div>
             )}
 
-            {modalAbierto && (
+            {/* MODAL PROTEGIDO (Por si alguien intenta activarlo por consola) */}
+            {modalAbierto && isAdmin && (
                 <div className="modal-overlay">
                     <div className="modal">
                         <h2>{editandoId ? "Actualizar Registro" : "Nuevo Registro"}</h2>

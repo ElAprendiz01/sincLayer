@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, AlertCircle, Edit, Trash2 } from "lucide-react"; // Añadido AlertCircle
+import { ArrowLeft, AlertCircle, Edit, Trash2, ShieldCheck, ShieldAlert } from "lucide-react";
 import { ContactoService } from "../../services/contactosService";
 import "../../styles/contacto.css";
 import { useToast } from "../../components/ToastContext"; 
@@ -9,12 +9,14 @@ const ListarContactos = () => {
   const navigate = useNavigate();
   const { showToast } = useToast(); 
 
+  // --- SEGURIDAD Y ROLES ---
+  const userRole = localStorage.getItem("userRole")?.toLowerCase();
+  const isAdmin = userRole === "admin";
+
   // --- ESTADOS ---
   const [contactos, setContactos] = useState([]);
   const [mostrarForm, setMostrarForm] = useState(false);
   const [contactoEdit, setContactoEdit] = useState(null);
-  
-  // Estado para el Modal de Confirmación
   const [confirmarBorrado, setConfirmarBorrado] = useState({ abierto: false, id: null });
 
   const userIdLogueado = localStorage.getItem("userId") || 5;
@@ -44,8 +46,9 @@ const ListarContactos = () => {
     }
   };
 
-  // --- MANEJO DE FORMULARIO ---
+  // --- MANEJO DE FORMULARIO (Bloqueado si no es Admin) ---
   const abrirFormulario = (contacto = null) => {
+    if (!isAdmin) return;
     if (contacto) {
       setContactoEdit(contacto);
       setFormData({
@@ -72,9 +75,11 @@ const ListarContactos = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // --- OPERACIONES (CRUD) ---
+  // --- OPERACIONES CRUD (Protegidas) ---
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!isAdmin) return;
+
     try {
       let respuesta;
       if (contactoEdit) {
@@ -92,19 +97,21 @@ const ListarContactos = () => {
   };
 
   const handleEliminar = (id) => {
+    if (!isAdmin) return;
     setConfirmarBorrado({ abierto: true, id });
   };
 
   const ejecutarEliminacion = async () => {
+    if (!isAdmin) return;
     try {
-        const { id } = confirmarBorrado;
-        const respuesta = await ContactoService.eliminar(id, userIdLogueado);
-        showToast(respuesta.msj || "Contacto eliminado", "warning");
-        setConfirmarBorrado({ abierto: false, id: null });
-        await cargarContactos();
+      const { id } = confirmarBorrado;
+      const respuesta = await ContactoService.eliminar(id, userIdLogueado);
+      showToast(respuesta.msj || "Contacto eliminado", "warning");
+      setConfirmarBorrado({ abierto: false, id: null });
+      await cargarContactos();
     } catch (error) {
-        showToast("Error: " + error.message, "error");
-        setConfirmarBorrado({ abierto: false, id: null });
+      showToast("Error: " + error.message, "error");
+      setConfirmarBorrado({ abierto: false, id: null });
     }
   };
 
@@ -117,14 +124,24 @@ const ListarContactos = () => {
       </div>
 
       <header className="contactos-header">
-        <h2>Directorio de Contactos - NexaCore</h2>
-        <button className="btn-nuevo" onClick={() => abrirFormulario()}>
-          + Nuevo Contacto
-        </button>
+        <div>
+          <h2>Directorio de Contactos - NexaCore</h2>
+          <p className={`role-badge ${isAdmin ? 'admin' : 'reader'}`}>
+            {isAdmin ? <ShieldCheck size={14} /> : <ShieldAlert size={14} />}
+            {isAdmin ? "Privilegios de Administrador" : "Modo Lectura"}
+          </p>
+        </div>
+        
+        {/* BOTÓN NUEVO: Solo para Admin */}
+        {isAdmin && (
+          <button className="btn-nuevo" onClick={() => abrirFormulario()}>
+            + Nuevo Contacto
+          </button>
+        )}
       </header>
 
-      {/* FORMULARIO */}
-      {mostrarForm && (
+      {/* FORMULARIO MODAL (Protección doble) */}
+      {mostrarForm && isAdmin && (
         <div className="modal-overlay">
           <form className="contacto-form" onSubmit={handleSubmit}>
             <h3>{contactoEdit ? "Actualizar Contacto" : "Registrar Contacto"}</h3>
@@ -148,8 +165,8 @@ const ListarContactos = () => {
         </div>
       )}
 
-      {/* MODAL DE ELIMINACIÓN (BONITO) */}
-      {confirmarBorrado.abierto && (
+      {/* MODAL DE ELIMINACIÓN */}
+      {confirmarBorrado.abierto && isAdmin && (
         <div className="modal-overlay">
           <div className="modal-confirm-card">
             <div style={{ textAlign: 'center' }}>
@@ -157,7 +174,7 @@ const ListarContactos = () => {
                 <AlertCircle size={32} color="#ef4444" />
               </div>
               <h3 style={{ color: 'white' }}>¿Confirmar eliminación?</h3>
-              <p style={{ color: '#94a3b8' }}>Esta acción no se puede deshacer.</p>
+              <p style={{ color: '#94a3b8' }}>Esta acción no se puede deshacer en el sistema.</p>
             </div>
             <div className="btn-confirm-group" style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
               <button className="btn-confirm-no" onClick={() => setConfirmarBorrado({ abierto: false, id: null })}>Cancelar</button>
@@ -167,7 +184,7 @@ const ListarContactos = () => {
         </div>
       )}
 
-      {/* TABLA */}
+      {/* TABLA DE DATOS */}
       <div className="table-wrapper">
         <table className="tabla-contactos">
           <thead>
@@ -177,7 +194,7 @@ const ListarContactos = () => {
               <th>Tipo</th>
               <th>Valor</th>
               <th>Estado</th>
-              <th>Acciones</th>
+              {isAdmin && <th>Acciones</th>}
             </tr>
           </thead>
           <tbody>
@@ -189,14 +206,18 @@ const ListarContactos = () => {
                   <td>{c.tipo_Contacto_Nombre}</td>
                   <td>{c.contacto}</td>
                   <td><span className={`status-pill ${c.estado?.toLowerCase()}`}>{c.estado}</span></td>
-                  <td>
-                    <button className="btn-accion edit" onClick={() => abrirFormulario(c)}>Editar</button>
-                    <button className="btn-accion delete" onClick={() => handleEliminar(c.id_Contacto)}>Eliminar</button>
-                  </td>
+                  
+                  {/* ACCIONES: Solo para Admin */}
+                  {isAdmin && (
+                    <td>
+                      <button className="btn-accion edit" onClick={() => abrirFormulario(c)}>Editar</button>
+                      <button className="btn-accion delete" onClick={() => handleEliminar(c.id_Contacto)}>Eliminar</button>
+                    </td>
+                  )}
                 </tr>
               ))
             ) : (
-              <tr><td colSpan="6">No hay datos.</td></tr>
+              <tr><td colSpan={isAdmin ? "6" : "5"}>No hay datos registrados.</td></tr>
             )}
           </tbody>
         </table>

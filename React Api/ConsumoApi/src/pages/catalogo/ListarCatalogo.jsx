@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { ShieldCheck, ShieldAlert } from "lucide-react";
 import { 
     getCatalogos, 
     insertarCatalogo, 
@@ -10,27 +11,27 @@ import {
 import "../../styles/catalogo.css"; 
 
 export default function ListarCatalogo() {
+    // --- CONTROL DE ACCESO NEXACORE ---
+    const userRole = localStorage.getItem("userRole")?.toLowerCase();
+    const isAdmin = userRole === "admin";
+
     const [lista, setLista] = useState([]);
     const [loading, setLoading] = useState(true);
     const [busqueda, setBusqueda] = useState(""); 
 
-    // Estados del formulario
     const [nombre, setNombre] = useState("");
     const [idTipo, setIdTipo] = useState("");
     const [editId, setEditId] = useState(null); 
 
-    // Función unificada para cargar o filtrar datos
     const cargarDatos = async (termino = "") => {
         try {
             setLoading(true);
             let res;
             if (termino.trim() === "") {
                 res = await getCatalogos();
-                // Ajuste: Acceder a res.data.data según la estructura de tu handleResponse
                 setLista(res.data.data || res.data || []);
             } else {
                 res = await filtrarCatalogosPorNombre(termino);
-                // Ajuste: Acceder a la data del filtro
                 setLista(res.data.data || res.data || []); 
             }
         } catch (error) {
@@ -41,7 +42,6 @@ export default function ListarCatalogo() {
         }
     };
 
-    // Debounce para búsqueda
     useEffect(() => {
         const timer = setTimeout(() => {
             cargarDatos(busqueda);
@@ -51,15 +51,14 @@ export default function ListarCatalogo() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        try {
-            // Obtenemos el ID del usuario del localStorage o defecto 5
-            const userId = localStorage.getItem("userId") || 5; 
+        if (!isAdmin) return; // Bloqueo funcional
 
+        try {
+            const userId = localStorage.getItem("userId") || 5; 
             const res = editId 
                 ? await actualizarCatalogo(editId, nombre, idTipo, userId)
                 : await insertarCatalogo(nombre, idTipo, userId);
             
-            // Verificamos éxito (200 OK o el código que devuelva tu API)
             if (res.status === 200 || res.data.codigo === 200) {
                 alert(editId ? "¡Registro actualizado correctamente!" : "¡Registro guardado con éxito!");
                 resetForm();
@@ -77,6 +76,7 @@ export default function ListarCatalogo() {
     };
 
     const handleEliminar = async (id) => {
+        if (!isAdmin) return;
         if (window.confirm("¿Estás seguro de que deseas eliminar este registro?")) {
             try {
                 await eliminarCatalogo(id);
@@ -89,6 +89,7 @@ export default function ListarCatalogo() {
     };
 
     const handlePrepararEdicion = (item) => {
+        if (!isAdmin) return;
         setEditId(item.id_Catalogo);
         setNombre(item.nombre);
         setIdTipo(item.id_Tipo_Catalogo);
@@ -100,7 +101,13 @@ export default function ListarCatalogo() {
             <header className="cat-header">
                 <div className="header-left">
                     <Link to="/admin" className="btn-volver">← Volver</Link>
-                    <h1>{editId ? "Modo Edición" : "Gestión de Catálogos"}</h1>
+                    <div>
+                        <h1>{editId ? "Modo Edición" : "Gestión de Catálogos"}</h1>
+                        <p className={`role-indicator ${isAdmin ? 'admin' : 'readonly'}`}>
+                            {isAdmin ? <ShieldCheck size={14} /> : <ShieldAlert size={14} />}
+                            {isAdmin ? "Permisos de Escritura" : "Modo Consulta"}
+                        </p>
+                    </div>
                 </div>
                 
                 <div className="search-container">
@@ -114,43 +121,46 @@ export default function ListarCatalogo() {
                 </div>
             </header>
 
-            <section className="form-section">
-                <form className={`cat-form-card ${editId ? 'editing' : ''}`} onSubmit={handleSubmit}>
-                    <div className="input-group">
-                        <label>Nombre del Catálogo</label>
-                        <input 
-                            value={nombre} 
-                            onChange={e => setNombre(e.target.value)} 
-                            placeholder="Ej: Pasaporte" 
-                            required 
-                        />
-                    </div>
-                    <div className="input-group">
-                        <label>ID Tipo de Catálogo</label>
-                        <input 
-                            type="number" 
-                            value={idTipo} 
-                            onChange={e => setIdTipo(e.target.value)} 
-                            placeholder="Ej: 7" 
-                            required 
-                        />
-                    </div>
-                    <div className="form-actions-row">
-                        <button type="submit" className="btn-main">
-                            {editId ? "Actualizar Registro" : "Guardar Registro"}
-                        </button>
-                        {editId && (
-                            <button type="button" className="btn-cancel" onClick={resetForm}>
-                                Cancelar
+            {/* SECCIÓN FORMULARIO: Solo visible para Admin */}
+            {isAdmin && (
+                <section className="form-section">
+                    <form className={`cat-form-card ${editId ? 'editing' : ''}`} onSubmit={handleSubmit}>
+                        <div className="input-group">
+                            <label>Nombre del Catálogo</label>
+                            <input 
+                                value={nombre} 
+                                onChange={e => setNombre(e.target.value)} 
+                                placeholder="Ej: Pasaporte" 
+                                required 
+                            />
+                        </div>
+                        <div className="input-group">
+                            <label>ID Tipo de Catálogo</label>
+                            <input 
+                                type="number" 
+                                value={idTipo} 
+                                onChange={e => setIdTipo(e.target.value)} 
+                                placeholder="Ej: 7" 
+                                required 
+                            />
+                        </div>
+                        <div className="form-actions-row">
+                            <button type="submit" className="btn-main">
+                                {editId ? "Actualizar Registro" : "Guardar Registro"}
                             </button>
-                        )}
-                    </div>
-                </form>
-            </section>
+                            {editId && (
+                                <button type="button" className="btn-cancel" onClick={resetForm}>
+                                    Cancelar
+                                </button>
+                            )}
+                        </div>
+                    </form>
+                </section>
+            )}
 
             <hr className="divider" />
 
-            {loading && <p className="loading-text">Cargando información...</p>}
+            {loading && <p className="loading-text">Sincronizando con la base de datos...</p>}
             
             <div className="cat-grid">
                 {lista.length > 0 ? (
@@ -162,20 +172,17 @@ export default function ListarCatalogo() {
                             </div>
                             <h3 className="card-title">{item.nombre}</h3>
                             
-                            <div className="card-actions">
-                                <button 
-                                    className="btn-edit" 
-                                    onClick={() => handlePrepararEdicion(item)}
-                                >
-                                    ✏️ Editar
-                                </button>
-                                <button 
-                                    className="btn-del" 
-                                    onClick={() => handleEliminar(item.id_Catalogo)}
-                                >
-                                    🗑️ Borrar
-                                </button>
-                            </div>
+                            {/* BOTONES: Solo si es admin */}
+                            {isAdmin && (
+                                <div className="card-actions">
+                                    <button className="btn-edit" onClick={() => handlePrepararEdicion(item)}>
+                                        ✏️ Editar
+                                    </button>
+                                    <button className="btn-del" onClick={() => handleEliminar(item.id_Catalogo)}>
+                                        🗑️ Borrar
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     ))
                 ) : (

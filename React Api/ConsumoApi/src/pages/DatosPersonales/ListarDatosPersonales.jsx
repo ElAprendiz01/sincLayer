@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Search, Plus, X, Save, ArrowLeft, User, AlertCircle, Edit, Trash2, Calendar, Fingerprint
+  Search, Plus, X, Save, ArrowLeft, User, AlertCircle, Edit, Trash2, ShieldCheck, ShieldAlert
 } from "lucide-react";
 import {
   getPersonas,
@@ -16,13 +16,16 @@ import { useToast } from "../../components/ToastContext";
 const ListarDatosPersonales = () => {
   const navigate = useNavigate();
   const { showToast } = useToast();
+
+  // --- CONTROL DE ACCESO NEXACORE ---
+  const userRole = localStorage.getItem("userRole")?.toLowerCase();
+  const isAdmin = userRole === "admin";
+
   const [lista, setLista] = useState([]);
   const [busqueda, setBusqueda] = useState("");
   const [mostrarModal, setMostrarModal] = useState(false);
   const [mensajeApi, setMensajeApi] = useState("");
   const [cargando, setCargando] = useState(false);
-
-  // --- ESTADO PARA EL MODAL DE BORRADO ---
   const [confirmarBorrado, setConfirmarBorrado] = useState({ abierto: false, id: null });
 
   const userIdLogueado = parseInt(localStorage.getItem("userId") || "0");
@@ -47,10 +50,8 @@ const ListarDatosPersonales = () => {
     try {
       const res = await getPersonas();
       const datos = res.data || (Array.isArray(res) ? res : []);
-      if (res.codigo === 200 || Array.isArray(res)) {
-        setLista(datos);
-        setMensajeApi(datos.length === 0 ? "No hay registros disponibles" : "");
-      }
+      setLista(datos);
+      setMensajeApi(datos.length === 0 ? "No hay registros disponibles" : "");
     } catch (error) {
       showToast("Error de conexión con el servidor", "error");
     } finally {
@@ -76,6 +77,8 @@ const ListarDatosPersonales = () => {
 
   const handleGuardar = async (e) => {
     e.preventDefault();
+    if (!isAdmin) return; // Bloqueo de seguridad
+
     try {
       let res;
       if (formData.id_Persona) {
@@ -99,11 +102,12 @@ const ListarDatosPersonales = () => {
   };
 
   const abrirConfirmacion = (id) => {
+    if (!isAdmin) return;
     setConfirmarBorrado({ abierto: true, id: id });
   };
 
-  // Corregido: El nombre de la función debe coincidir con el del botón
   const ejecutarEliminacion = async () => {
+    if (!isAdmin) return;
     try {
       const res = await eliminarPersona(confirmarBorrado.id, userIdLogueado);
       showToast(res.msj || "Eliminado correctamente", "warning");
@@ -116,6 +120,7 @@ const ListarDatosPersonales = () => {
   };
 
   const prepararEdicion = (persona) => {
+    if (!isAdmin) return;
     setFormData({
       id_Persona: persona.id_Persona,
       primer_Nombre: persona.primer_Nombre || "",
@@ -141,7 +146,13 @@ const ListarDatosPersonales = () => {
           <button className="btn-back" onClick={() => navigate("/admin")}>
             <ArrowLeft size={20} />
           </button>
-          <h1>Gestión de Datos Personales</h1>
+          <div>
+            <h1>Gestión de Datos Personales</h1>
+            <p className={`role-badge ${isAdmin ? 'admin' : 'readonly'}`}>
+              {isAdmin ? <ShieldCheck size={14} /> : <ShieldAlert size={14} />}
+              {isAdmin ? "Acceso Total" : "Modo Consulta"}
+            </p>
+          </div>
         </div>
 
         <div className="search-container">
@@ -154,12 +165,15 @@ const ListarDatosPersonales = () => {
           />
         </div>
 
-        <button
-          className="btn-main"
-          onClick={() => { setFormData(estadoInicial); setMostrarModal(true); }}
-        >
-          <Plus size={18} /> Nuevo Registro
-        </button>
+        {/* Solo el admin puede ver el botón de "Nuevo Registro" */}
+        {isAdmin && (
+          <button
+            className="btn-main"
+            onClick={() => { setFormData(estadoInicial); setMostrarModal(true); }}
+          >
+            <Plus size={18} /> Nuevo Registro
+          </button>
+        )}
       </div>
 
       <div className="cat-grid">
@@ -177,19 +191,22 @@ const ListarDatosPersonales = () => {
                 {`${p.primer_Nombre} ${p.primer_Apellido}`}
               </h2>
 
-              <div className="audit-box" style={{ marginBottom: '15px', background: '#0f172a', padding: '12px', borderRadius: '8px', border: '1px solid #334155' }}>
-                <div style={{ fontSize: '0.7rem', color: '#94a3b8', textTransform: 'uppercase', marginBottom: '4px' }}>Identificación (DNI):</div>
-                <div style={{ color: '#38bdf8', fontWeight: 'bold', fontSize: '1rem' }}>{p.dni}</div>
+              <div className="audit-box">
+                <div className="audit-label">Identificación (DNI):</div>
+                <div className="audit-value">{p.dni}</div>
               </div>
 
-              <div className="card-actions">
-                <button className="btn-edit" onClick={() => prepararEdicion(p)}>
-                  <Edit size={16} /> Editar
-                </button>
-                <button className="btn-del" onClick={() => abrirConfirmacion(p.id_Persona)}>
-                  <Trash2 size={16} /> Borrar
-                </button>
-              </div>
+              {/* Botones de acción: Solo visibles para Admin */}
+              {isAdmin && (
+                <div className="card-actions">
+                  <button className="btn-edit" onClick={() => prepararEdicion(p)}>
+                    <Edit size={16} /> Editar
+                  </button>
+                  <button className="btn-del" onClick={() => abrirConfirmacion(p.id_Persona)}>
+                    <Trash2 size={16} /> Borrar
+                  </button>
+                </div>
+              )}
             </div>
           ))
         ) : (
@@ -200,22 +217,22 @@ const ListarDatosPersonales = () => {
         )}
       </div>
 
-      {/* MODAL DE FORMULARIO */}
-      {mostrarModal && (
+      {/* MODAL DE FORMULARIO (Protección doble) */}
+      {mostrarModal && isAdmin && (
         <div className="modal-overlay">
-          <div className="cat-form-card" style={{ flexDirection: 'column', maxWidth: '550px', alignItems: 'stretch' }}>
-            <div className="modal-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid #334155', paddingBottom: '10px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div className="cat-form-card modal-content-fix">
+            <div className="modal-header">
+              <div className="modal-title-box">
                 <User size={20} color="#38bdf8" />
-                <h3 style={{ color: 'white', margin: 0 }}>{formData.id_Persona ? "Actualizar Datos" : "Nuevo Registro"}</h3>
+                <h3>{formData.id_Persona ? "Actualizar Datos" : "Nuevo Registro"}</h3>
               </div>
-              <X className="close-icon" onClick={() => setMostrarModal(false)} style={{ cursor: 'pointer', color: '#94a3b8' }} />
+              <X className="close-icon" onClick={() => setMostrarModal(false)} />
             </div>
 
-            <form onSubmit={handleGuardar} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+            <form onSubmit={handleGuardar} className="form-layout">
               <div className="input-group">
                 <label>Nombres</label>
-                <div style={{ display: 'flex', gap: '10px' }}>
+                <div className="flex-row">
                   <input type="text" placeholder="Primer Nombre" value={formData.primer_Nombre} onChange={(e) => setFormData({ ...formData, primer_Nombre: e.target.value })} required />
                   <input type="text" placeholder="Segundo Nombre" value={formData.segundo_Nombre} onChange={(e) => setFormData({ ...formData, segundo_Nombre: e.target.value })} />
                 </div>
@@ -223,14 +240,14 @@ const ListarDatosPersonales = () => {
 
               <div className="input-group">
                 <label>Apellidos</label>
-                <div style={{ display: 'flex', gap: '10px' }}>
+                <div className="flex-row">
                   <input type="text" placeholder="Primer Apellido" value={formData.primer_Apellido} onChange={(e) => setFormData({ ...formData, primer_Apellido: e.target.value })} required />
                   <input type="text" placeholder="Segundo Apellido" value={formData.segundo_Apellido} onChange={(e) => setFormData({ ...formData, segundo_Apellido: e.target.value })} />
                 </div>
               </div>
 
-              <div style={{ display: 'flex', gap: '15px' }}>
-                <div className="input-group" style={{ flex: 1 }}>
+              <div className="flex-row">
+                <div className="input-group flex-1">
                   <label>Género</label>
                   <select
                     value={formData.genero}
@@ -242,7 +259,7 @@ const ListarDatosPersonales = () => {
                   </select>
                 </div>
 
-                <div className="input-group" style={{ flex: 1 }}>
+                <div className="input-group flex-1">
                   <label>Tipo de ID</label>
                   <select
                     value={formData.tipo_DNI}
@@ -266,9 +283,9 @@ const ListarDatosPersonales = () => {
                 <input type="text" placeholder="Ingrese número" value={formData.dni} onChange={(e) => setFormData({ ...formData, dni: e.target.value })} required />
               </div>
 
-              <div className="card-actions" style={{ marginTop: '10px' }}>
+              <div className="card-actions-modal">
                 <button type="button" className="btn-cancel" onClick={() => setMostrarModal(false)}>Cancelar</button>
-                <button type="submit" className="btn-main" style={{ flex: 2 }}>
+                <button type="submit" className="btn-main flex-2">
                   <Save size={18} /> {formData.id_Persona ? "Guardar Cambios" : "Registrar"}
                 </button>
               </div>
@@ -278,26 +295,13 @@ const ListarDatosPersonales = () => {
       )}
 
       {/* MODAL DE CONFIRMACIÓN DE ELIMINACIÓN */}
-      {confirmarBorrado.abierto && (
+      {confirmarBorrado.abierto && isAdmin && (
         <div className="modal-overlay">
           <div className="modal-confirm-card">
-            <div style={{ marginBottom: '20px' }}>
-              <div style={{
-                background: 'rgba(239, 68, 68, 0.1)',
-                width: '60px', height: '60px',
-                borderRadius: '50%', display: 'flex',
-                alignItems: 'center', justifyContent: 'center',
-                margin: '0 auto 15px'
-              }}>
-                <AlertCircle size={32} color="#ef4444" />
-              </div>
-              <h3 style={{ color: 'white', fontSize: '1.4rem', margin: '0 0 10px' }}>
-                ¿Confirmar eliminación?
-              </h3>
-              <p style={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: '1.5' }}>
-                Estás a punto de borrar este registro de <strong>NexaCore</strong>.
-                Esta acción no se puede deshacer.
-              </p>
+            <div className="confirm-icon-box">
+              <AlertCircle size={32} color="#ef4444" />
+              <h3>¿Confirmar eliminación?</h3>
+              <p>Estás a punto de borrar este registro. Esta acción es irreversible.</p>
             </div>
 
             <div className="btn-confirm-group">

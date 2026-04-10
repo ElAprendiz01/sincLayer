@@ -8,6 +8,7 @@ import {
   Trash2,
   Edit,
   PlusCircle,
+  ShieldAlert
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { acuerdosService } from "../../services/acuerdospagoService";
@@ -17,9 +18,16 @@ import "../../styles/acuerdopago.css";
 const AcuerdosModulo = () => {
   const navigate = useNavigate();
 
-  // --- INTEGRACIÓN CON LOGIN ---
+  // --- INTEGRACIÓN CON LOGIN Y ROLES ---
   const currentUserId = localStorage.getItem("userId");
   const currentUserName = localStorage.getItem("userName");
+  const userRole = localStorage.getItem("userRole")?.toLowerCase();
+
+  // --- LÓGICA DE PERMISOS ---
+  // El admin tiene control total. El bibliotecario solo puede ver/listar. 
+  // El cliente no debería ni entrar, pero lo bloqueamos por si acaso.
+  const puedeEditar = userRole === "admin";
+  const puedeEliminar = userRole === "admin";
 
   // --- ESTADOS ---
   const [acuerdos, setAcuerdos] = useState([]);
@@ -33,7 +41,7 @@ const AcuerdosModulo = () => {
     monto_Total_Acordado: "",
     cantidad_Cuotas: "",
     monto_Por_Cuota: 0,
-    frecuencia_Pago: 35, // Por defecto Mensual (ID 35 según tu DB)
+    frecuencia_Pago: 35, 
   };
   const [formData, setFormData] = useState(initialFormState);
 
@@ -47,7 +55,6 @@ const AcuerdosModulo = () => {
       } else {
         data = await acuerdosService.obtenerPorId(termino);
       }
-      // Ajuste para manejar respuestas individuales o arreglos
       setAcuerdos(Array.isArray(data) ? data : data ? [data] : []);
     } catch (error) {
       console.error("Error al cargar:", error);
@@ -84,9 +91,15 @@ const AcuerdosModulo = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // --- GUARDAR / EDITAR ---
+  // --- GUARDAR / EDITAR (CON SEGURIDAD) ---
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!puedeEditar) {
+      showNexaAlert.error("No tienes autorización para modificar acuerdos financieros.");
+      return;
+    }
+
     if (isSaving) return;
 
     if (!currentUserId) {
@@ -120,8 +133,13 @@ const AcuerdosModulo = () => {
     }
   };
 
-  // --- ELIMINAR ---
+  // --- ELIMINAR (CON SEGURIDAD) ---
   const handleEliminar = async (id) => {
+    if (!puedeEliminar) {
+      showNexaAlert.error("Acción denegada. Contacta al administrador.");
+      return;
+    }
+
     const confirmado = await showNexaAlert.confirm(
       "¿Confirmas la eliminación de este acuerdo?",
     );
@@ -137,6 +155,7 @@ const AcuerdosModulo = () => {
   };
 
   const prepararEdicion = (item) => {
+    if (!puedeEditar) return;
     setFormData({
       id_Acuerdo: item.id_Acuerdo,
       id_Multa: item.id_Multa || "",
@@ -159,7 +178,7 @@ const AcuerdosModulo = () => {
         <span className="text-sm font-semibold tracking-wide">Panel de Administración</span>
       </motion.button>
 
-      <header className="mb-10">
+      <header className="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <div className="p-3 bg-lime-500/20 rounded-2xl">
             <Handshake className="text-lime-500" size={32} />
@@ -167,18 +186,36 @@ const AcuerdosModulo = () => {
           <div>
             <span className="text-blue-400 font-bold tracking-widest uppercase text-xs">Tesorería & Cobros</span>
             <h1 className="text-3xl font-extrabold mt-1">Acuerdos de Pago</h1>
-            {currentUserName && (
-              <p className="text-xs text-slate-500 mt-1 uppercase">
-                Usuario: <span className="text-lime-400 font-bold">{currentUserName}</span>
-              </p>
-            )}
+          </div>
+        </div>
+
+        {/* Badge de Seguridad del Usuario */}
+        <div className="bg-slate-800/50 p-3 rounded-xl border border-slate-700 flex items-center gap-3">
+          <div className="text-right">
+            <p className="text-[10px] text-slate-500 uppercase font-bold">Operador</p>
+            <p className="text-sm font-bold text-lime-400">{currentUserName || "Invitado"}</p>
+          </div>
+          <div className={`px-2 py-1 rounded text-[10px] font-black uppercase ${puedeEditar ? 'bg-lime-500/20 text-lime-400' : 'bg-amber-500/20 text-amber-400'}`}>
+            {userRole || 'Sin Rol'}
           </div>
         </div>
       </header>
 
       <div className="acuerdos-grid-layout">
+        {/* PANEL DE FORMULARIO: Se bloquea visualmente si no es Admin */}
         <aside className="nexa-card-wrapper">
-          <div className="nexa-card h-full">
+          <div className={`nexa-card h-full relative overflow-hidden ${!puedeEditar ? 'opacity-60 grayscale-[0.5]' : ''}`}>
+            
+            {!puedeEditar && (
+              <div className="absolute inset-0 z-20 bg-slate-900/40 backdrop-blur-[2px] flex items-center justify-center p-6">
+                <div className="bg-[#1e293b] border border-slate-700 p-4 rounded-xl shadow-2xl text-center flex flex-col items-center gap-2">
+                  <ShieldAlert className="text-amber-500" size={24} />
+                  <p className="text-xs font-bold text-slate-300">MODO LECTURA</p>
+                  <p className="text-[10px] text-slate-500">No tienes permisos para crear o editar registros.</p>
+                </div>
+              </div>
+            )}
+
             <div className="card-header mb-6">
               <div className="flex items-center gap-2 text-lime-400 font-bold text-lg mb-2">
                 {formData.id_Acuerdo ? <Edit size={20} /> : <PlusCircle size={20} />}
@@ -196,7 +233,7 @@ const AcuerdosModulo = () => {
                   value={formData.id_Multa}
                   onChange={handleInputChange}
                   required
-                  disabled={!!formData.id_Acuerdo}
+                  disabled={!puedeEditar || !!formData.id_Acuerdo}
                 />
               </div>
 
@@ -211,6 +248,7 @@ const AcuerdosModulo = () => {
                     value={formData.monto_Total_Acordado}
                     onChange={handleInputChange}
                     required
+                    disabled={!puedeEditar}
                   />
                 </div>
                 <div className="form-group flex-1">
@@ -222,6 +260,7 @@ const AcuerdosModulo = () => {
                     value={formData.cantidad_Cuotas}
                     onChange={handleInputChange}
                     required
+                    disabled={!puedeEditar}
                   />
                 </div>
               </div>
@@ -233,6 +272,7 @@ const AcuerdosModulo = () => {
                   className="nexa-select w-full"
                   value={formData.frecuencia_Pago}
                   onChange={handleInputChange}
+                  disabled={!puedeEditar}
                 >
                   <option value="35">Mensual</option>
                   <option value="36">Quincenal</option>
@@ -241,14 +281,18 @@ const AcuerdosModulo = () => {
               </div>
 
               <div className="info-box-nexa my-6 p-4 bg-slate-800/50 rounded-lg border border-slate-700">
-                <span className="block text-xs text-slate-400 uppercase">Valor por cuota:</span>
+                <span className="block text-xs text-slate-400 uppercase font-bold">Valor por cuota:</span>
                 <span className="text-2xl font-black text-lime-400">
                   ${(formData.monto_Por_Cuota || 0).toFixed(2)}
                 </span>
               </div>
 
               <div className="flex flex-col gap-3">
-                <button type="submit" className="nexa-btn-submit" disabled={isSaving}>
+                <button 
+                  type="submit" 
+                  className={`nexa-btn-submit ${!puedeEditar ? 'cursor-not-allowed opacity-50' : ''}`} 
+                  disabled={isSaving || !puedeEditar}
+                >
                   {isSaving ? "PROCESANDO..." : formData.id_Acuerdo ? "GUARDAR CAMBIOS" : "REGISTRAR"}
                 </button>
                 {formData.id_Acuerdo && (
@@ -289,13 +333,13 @@ const AcuerdosModulo = () => {
                     <th>ID</th>
                     <th>MULTA</th>
                     <th>MONTO</th>
-                    <th>TIEMPO DE PAGO</th>
+                    <th>TIEMPO</th>
                     <th className="text-right">ACCIONES</th>
                   </tr>
                 </thead>
                 <tbody>
                   {loading ? (
-                    <tr><td colSpan="5" className="text-center py-8 italic opacity-40">Cargando...</td></tr>
+                    <tr><td colSpan="5" className="text-center py-8 italic opacity-40">Cargando datos...</td></tr>
                   ) : acuerdos.length === 0 ? (
                     <tr><td colSpan="5" className="text-center py-8 opacity-30">No se encontraron registros.</td></tr>
                   ) : (
@@ -304,23 +348,31 @@ const AcuerdosModulo = () => {
                         <td>#{item.id_Acuerdo}</td>
                         <td className="text-slate-400">M-{item.id_Multa}</td>
                         <td className="font-bold text-lime-400">${item.monto_Total_Acordado}</td>
-                        {/* Se usa el alias corregido del SP o la descripción del objeto */}
-                        <td className="text-blue-300 font-medium">
-                          {item.tiempo_de_Pago || item.frecuencia_Descripcion || "No definido"}
+                        <td className="text-blue-300 font-medium text-xs uppercase">
+                          {item.tiempo_de_Pago || item.frecuencia_Descripcion || "Mensual"}
                         </td>
                         <td className="flex justify-end gap-2 py-3">
-                          <button
-                            className="p-2 hover:bg-blue-500/20 text-blue-400 rounded"
-                            onClick={() => prepararEdicion(item)}
-                          >
-                            <Edit size={16} />
-                          </button>
-                          <button
-                            className="p-2 hover:bg-red-500/20 text-red-400 rounded"
-                            onClick={() => handleEliminar(item.id_Acuerdo)}
-                          >
-                            <Trash2 size={16} />
-                          </button>
+                          {puedeEditar && (
+                            <button
+                              className="p-2 hover:bg-blue-500/20 text-blue-400 rounded transition-colors"
+                              onClick={() => prepararEdicion(item)}
+                              title="Editar registro"
+                            >
+                              <Edit size={16} />
+                            </button>
+                          )}
+                          {puedeEliminar && (
+                            <button
+                              className="p-2 hover:bg-red-500/20 text-red-400 rounded transition-colors"
+                              onClick={() => handleEliminar(item.id_Acuerdo)}
+                              title="Eliminar registro"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          )}
+                          {!puedeEditar && !puedeEliminar && (
+                             <span className="text-[9px] text-slate-600 font-bold italic py-2">SOLO LECTURA</span>
+                          )}
                         </td>
                       </tr>
                     ))

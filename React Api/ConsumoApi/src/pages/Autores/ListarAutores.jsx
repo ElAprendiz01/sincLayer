@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
-    Search, ArrowLeft, User, AlertCircle, Save, Edit, Trash2, X 
+    Search, ArrowLeft, User, AlertCircle, Save, Edit, Trash2, X, ShieldCheck, ShieldAlert 
 } from "lucide-react";
 import {
     getAutores,
@@ -12,14 +12,19 @@ import {
 } from "../../services/autorService.js";
 import "../../styles/autores.css";
 
-// Agregamos la prop 'soloLectura' para control dual
-export default function ListarAutores({ soloLectura = false }) {
+export default function ListarAutores() {
     const navigate = useNavigate();
+    
+    // --- LÓGICA DE ROLES (NexaCore Security) ---
+    const userRole = localStorage.getItem("userRole")?.toLowerCase();
+    const isAdmin = userRole === "admin";
+    // Si no es admin, forzamos el modo solo lectura
+    const esSoloLectura = !isAdmin;
+
     const [autores, setAutores] = useState([]);
     const [loading, setLoading] = useState(true);
     const [busqueda, setBusqueda] = useState("");
     
-    // Estados para el formulario (Admin)
     const [idPersona, setIdPersona] = useState("");
     const [idAutorEditando, setIdAutorEditando] = useState(null);
     const [alerta, setAlerta] = useState({ visible: false, mensaje: "", tipo: "" });
@@ -46,7 +51,6 @@ export default function ListarAutores({ soloLectura = false }) {
         }
     };
 
-    // Lógica de filtrado
     useEffect(() => {
         const filtrar = async () => {
             if (busqueda.trim() === "") {
@@ -74,9 +78,10 @@ export default function ListarAutores({ soloLectura = false }) {
 
     useEffect(() => { cargarDatos(); }, []);
 
-    // Acciones de Escritura (Solo para Admin)
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (esSoloLectura) return; // Bloqueo de seguridad funcional
+
         try {
             let res;
             if (idAutorEditando) {
@@ -98,6 +103,7 @@ export default function ListarAutores({ soloLectura = false }) {
     };
 
     const handleEliminar = async (id) => {
+        if (esSoloLectura) return;
         if (!window.confirm("¿Desea eliminar este registro de autor?")) return;
         try {
             const res = await eliminarAutor(id);
@@ -114,6 +120,7 @@ export default function ListarAutores({ soloLectura = false }) {
     };
 
     const prepararEdicion = (autor) => {
+        if (esSoloLectura) return;
         setIdAutorEditando(autor.id_Autor);
         setIdPersona(autor.id_Persona);
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -124,7 +131,7 @@ export default function ListarAutores({ soloLectura = false }) {
         setIdPersona("");
     };
 
-    if (loading) return <div className="autores-page-container"><div className="no-data">Sincronizando...</div></div>;
+    if (loading) return <div className="autores-page-container"><div className="no-data">Sincronizando con NexaCore...</div></div>;
 
     return (
         <div className="autores-page-container">
@@ -142,7 +149,13 @@ export default function ListarAutores({ soloLectura = false }) {
                     <button className="btn-back" onClick={() => navigate(-1)}>
                         <ArrowLeft size={20} /> Volver
                     </button>
-                    <h1>{soloLectura ? "Consulta de Autores" : "Gestión de Autores"}</h1>
+                    <div>
+                        <h1>{esSoloLectura ? "Consulta de Autores" : "Gestión de Autores"}</h1>
+                        <p className={`role-badge ${isAdmin ? 'admin' : 'reader'}`}>
+                            {isAdmin ? <ShieldCheck size={12} /> : <ShieldAlert size={12} />}
+                            {isAdmin ? "Acceso Administrativo" : "Acceso de Consulta"}
+                        </p>
+                    </div>
                 </div>
 
                 <div className="search-container" style={{ flex: 1, maxWidth: '400px', marginLeft: '20px' }}>
@@ -156,8 +169,8 @@ export default function ListarAutores({ soloLectura = false }) {
                 </div>
             </header>
 
-            {/* FORMULARIO: Solo se muestra si NO es solo lectura */}
-            {!soloLectura && (
+            {/* FORMULARIO: Solo se renderiza si es Admin */}
+            {isAdmin && (
                 <form className="gestion-form" onSubmit={handleSubmit}>
                     <div className="form-group">
                         <label>ID de la Persona (Datos Personales)</label>
@@ -190,8 +203,8 @@ export default function ListarAutores({ soloLectura = false }) {
                             <th>ID Persona</th>
                             <th>Nombre Completo</th>
                             <th>Estado</th>
-                            {!soloLectura && <th>Auditoría</th>}
-                            {!soloLectura && <th style={{ textAlign: 'right' }}>Acciones</th>}
+                            {isAdmin && <th>Auditoría</th>}
+                            {isAdmin && <th style={{ textAlign: 'right' }}>Acciones</th>}
                         </tr>
                     </thead>
                     <tbody>
@@ -206,12 +219,12 @@ export default function ListarAutores({ soloLectura = false }) {
                                             {autor.estado}
                                         </span>
                                     </td>
-                                    {!soloLectura && (
+                                    {isAdmin && (
                                         <td style={{ fontSize: '11px', color: '#666' }}>
                                             C: {autor.id_Creador} | M: {autor.id_Modificador || "-"}
                                         </td>
                                     )}
-                                    {!soloLectura && (
+                                    {isAdmin && (
                                         <td className="actions-cell">
                                             <button className="btn-icon btn-edit" onClick={() => prepararEdicion(autor)}>
                                                 <Edit size={16} />
@@ -224,7 +237,7 @@ export default function ListarAutores({ soloLectura = false }) {
                                 </tr>
                             ))
                         ) : (
-                            <tr><td colSpan={soloLectura ? "4" : "6"} style={{ textAlign: 'center' }}>No hay registros.</td></tr>
+                            <tr><td colSpan={isAdmin ? "6" : "4"} style={{ textAlign: 'center' }}>No hay registros.</td></tr>
                         )}
                     </tbody>
                 </table>

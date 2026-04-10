@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
-  Search, DollarSign, X, Save, ArrowLeft, AlertCircle, Edit, Trash2, User, List
+  Search, DollarSign, X, Save, ArrowLeft, AlertCircle, Edit, List, User, CreditCard
 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
-// Importaciones según tu estructura de carpetas
+// Importaciones de servicios
 import { 
   getMultasPendientes, 
   getUsuariosConMultas, 
   abonarMulta, 
-  actualizarMultaGeneral, 
-  eliminarMulta 
+  actualizarMultaGeneral 
 } from "../../services/multasService";
 import "../../styles/datospersonales.css";
 import { useToast } from "../../components/ToastContext";
@@ -42,19 +42,17 @@ const GestionMultas = () => {
         : await getUsuariosConMultas();
       setLista(res.data || []);
     } catch (error) {
-      showToast("Error al cargar datos", "error");
+      showToast("Error al sincronizar cuentas", "error");
     } finally { setCargando(false); }
   };
 
   const handleAbonar = async (e) => {
     e.preventDefault();
     const monto = parseFloat(montoAbono);
-    
-    // Validación segura de saldo para evitar errores de undefined
     const saldoDisponible = modalAbono.multa?.saldoPendiente || 0;
 
     if (isNaN(monto) || monto <= 0 || monto > saldoDisponible) {
-      showToast("Monto de abono no válido o excede el saldo", "error");
+      showToast("Monto fuera de rango o superior al saldo pendiente", "error");
       return;
     }
 
@@ -65,12 +63,12 @@ const GestionMultas = () => {
         Id_Modificador: userIdLogueado
       };
       await abonarMulta(payload);
-      showToast("Abono aplicado con éxito", "success");
+      showToast("Transacción registrada correctamente", "success");
       setModalAbono({ abierto: false, multa: null });
       setMontoAbono("");
       cargarDatos();
     } catch (error) {
-      showToast(error.response?.data?.msj || "Error al abonar", "error");
+      showToast(error.response?.data?.msj || "Error en el procesamiento del pago", "error");
     }
   };
 
@@ -86,166 +84,185 @@ const GestionMultas = () => {
         Id_Modificador: userIdLogueado
       };
       await actualizarMultaGeneral(modalEdicion.multa.id_Multa, payload);
-      showToast("Multa actualizada", "success");
+      showToast("Estado de cuenta actualizado", "success");
       setModalEdicion({ abierto: false, multa: null });
       cargarDatos();
     } catch (error) {
-      showToast(error.response?.data?.msj || "Error en actualización", "error");
+      showToast(error.response?.data?.msj || "Fallo al actualizar estado", "error");
     }
   };
 
   return (
-    <div className="cat-page">
-      <div className="cat-header">
-        <div className="header-left">
-          <button className="btn-back" onClick={() => navigate("/admin")}><ArrowLeft size={20} /></button>
-          <h1>Gestión de Multas</h1>
+    <div className="cat-page bg-[#0f172a] min-h-screen text-slate-100">
+      <div className="cat-header border-b border-slate-800/60 pb-6 mb-8 flex justify-between items-center px-6">
+        <div className="header-left flex items-center gap-4">
+          <button className="btn-back hover:bg-slate-800 p-2 rounded-xl transition-colors" onClick={() => navigate("/admin")}>
+            <ArrowLeft size={20} />
+          </button>
+          <div>
+            <span className="text-[10px] text-amber-500 font-bold uppercase tracking-[0.2em]">Finanzas y Control</span>
+            <h1 className="text-2xl font-black">Gestión de Multas</h1>
+          </div>
         </div>
 
-        <div className="tab-group" style={{ display: 'flex', gap: '10px' }}>
+        <div className="flex bg-slate-900/80 p-1 rounded-2xl border border-slate-800">
           <button 
-            className={`btn-tab ${tabActual === "individuales" ? "active" : ""}`}
+            className={`flex items-center gap-2 px-6 py-2 rounded-xl text-xs font-bold transition-all ${tabActual === "individuales" ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20" : "text-slate-500 hover:text-slate-300"}`}
             onClick={() => setTabActual("individuales")}
           >
-            <List size={18} /> Detalle
+            <List size={16} /> Detalle Individual
           </button>
           <button 
-            className={`btn-tab ${tabActual === "usuarios" ? "active" : ""}`}
+            className={`flex items-center gap-2 px-6 py-2 rounded-xl text-xs font-bold transition-all ${tabActual === "usuarios" ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20" : "text-slate-500 hover:text-slate-300"}`}
             onClick={() => setTabActual("usuarios")}
           >
-            <User size={18} /> Por Usuario
+            <User size={16} /> Consolidado
           </button>
         </div>
       </div>
 
-      <div className="cat-grid">
+      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {cargando ? (
-          <div className="no-data">Cargando información...</div>
+          <div className="col-span-full py-20 text-center font-mono text-xs uppercase tracking-widest animate-pulse text-slate-500">
+            Consultando registros financieros...
+          </div>
         ) : lista.length > 0 ? (
           lista.map((item) => (
-            <div key={tabActual === "individuales" ? `multa-${item.id_Multa}` : `user-${item.id_Usuario}`} className="cat-card">
+            <motion.div 
+              layout
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              key={tabActual === "individuales" ? `multa-${item.id_Multa}` : `user-${item.id_Usuario}`} 
+              className="bg-slate-900/40 border border-slate-800 p-6 rounded-3xl hover:border-amber-500/30 transition-all group relative overflow-hidden"
+            >
               {tabActual === "individuales" ? (
                 <>
-                  <div className="card-info">
-                    <span className="card-type">Multa #{item.id_Multa}</span>
-                    <span className="status-pill warning">{item.estadoRegistro || "Pendiente"}</span>
+                  <div className="flex justify-between items-start mb-4">
+                    <span className="text-[10px] font-mono text-slate-500 uppercase tracking-tighter">Ticket #{item.id_Multa}</span>
+                    <span className="px-3 py-1 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded-full text-[10px] font-black uppercase">
+                        {item.estadoRegistro || "En Mora"}
+                    </span>
                   </div>
-                  <h2 className="card-title">{item.nombre_Cliente || "Sin nombre"}</h2>
-                  <p className="card-subtitle">{item.libro || "Sin título"}</p>
-                  <div className="audit-box">
-                    <div className="audit-row">
-                      <DollarSign size={14} />
-                      <span className="audit-label">Saldo:</span>
-                      <span className="audit-user" style={{color: '#f85149', fontWeight: 'bold'}}>
+                  <h2 className="text-lg font-bold text-white group-hover:text-amber-400 transition-colors">{item.nombre_Cliente}</h2>
+                  <p className="text-slate-500 text-xs mb-6 italic">"{item.libro || "Sin título"}"</p>
+                  
+                  <div className="bg-slate-950/50 rounded-2xl p-4 flex justify-between items-center mb-6 border border-slate-800/50">
+                    <span className="text-xs text-slate-500 font-bold uppercase tracking-widest">Saldo Deudor</span>
+                    <span className="text-xl font-black text-rose-500">
                         ${(item.saldoPendiente || 0).toFixed(2)}
-                      </span>
-                    </div>
+                    </span>
                   </div>
-                  <div className="card-actions">
-                    <button className="btn-edit" onClick={() => setModalAbono({ abierto: true, multa: item })}>
-                      <DollarSign size={16} /> Abonar
+
+                  <div className="flex gap-2">
+                    <button className="flex-1 bg-emerald-600 hover:bg-emerald-500 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2" onClick={() => setModalAbono({ abierto: true, multa: item })}>
+                      <CreditCard size={14} /> Abonar
                     </button>
-                    <button className="btn-main" onClick={() => {
-                        setEditData({ id_Estado: 15, pagada: false });
-                        setModalEdicion({ abierto: true, multa: item });
-                    }}>
-                      <Edit size={16} /> Estado
+                    <button className="px-4 bg-slate-800 hover:bg-slate-700 py-2 rounded-xl text-xs font-bold transition-all" onClick={() => { setEditData({ id_Estado: 15, pagada: false }); setModalEdicion({ abierto: true, multa: item }); }}>
+                      <Edit size={14} />
                     </button>
                   </div>
                 </>
               ) : (
                 <>
-                  <div className="card-info">
-                    <span className="card-type">Usuario ID: {item.id_Usuario}</span>
-                    <span className="status-pill info">{item.cantidadMultasPendientes || 0} Pendientes</span>
-                  </div>
-                  <h2 className="card-title">{item.nombre_Cliente || "Sin nombre"}</h2>
-                  <div className="audit-box">
-                    <div className="audit-row">
-                      <DollarSign size={14} />
-                      <span className="audit-label">Total Deuda:</span>
-                      <span className="audit-user" style={{fontSize: '1.2rem', color: '#f85149'}}>
-                        ${(item.totalPendiente || 0).toFixed(2)}
-                      </span>
+                  <div className="flex justify-between items-center mb-6">
+                    <div className="p-3 bg-blue-500/10 rounded-2xl text-blue-400">
+                        <User size={24} />
                     </div>
+                    <div className="text-right">
+                        <span className="text-[10px] text-slate-500 font-bold uppercase block tracking-widest">Registros</span>
+                        <span className="text-lg font-black text-white">{item.cantidadMultasPendientes || 0}</span>
+                    </div>
+                  </div>
+                  <h2 className="text-xl font-bold text-white mb-6 tracking-tight">{item.nombre_Cliente}</h2>
+                  <div className="border-t border-slate-800 pt-4 flex justify-between items-end">
+                    <span className="text-[10px] text-slate-500 font-bold uppercase">Total Consolidado</span>
+                    <span className="text-2xl font-black text-rose-500 tracking-tighter">${(item.totalPendiente || 0).toFixed(2)}</span>
                   </div>
                 </>
               )}
-            </div>
+            </motion.div>
           ))
         ) : (
-          <div className="no-results-container">
-            <AlertCircle size={48} />
-            <p>No se encontraron multas pendientes.</p>
+          <div className="col-span-full py-20 text-center opacity-40">
+            <AlertCircle className="mx-auto mb-4" size={48} />
+            <p className="uppercase text-xs font-bold tracking-[0.3em]">Estado de cuentas limpio</p>
           </div>
         )}
       </div>
 
       {/* MODAL DE ABONO */}
       {modalAbono.abierto && (
-        <div className="modal-overlay">
-          <div className="cat-form-card" style={{ maxWidth: '400px' }}>
-            <div className="modal-header">
-              <h3>Registrar Abono</h3>
-              <X className="close-icon" onClick={() => setModalAbono({ abierto: false, multa: null })} />
+        <div className="modal-overlay fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-slate-900 border border-slate-700 p-8 rounded-4xl max-w-sm w-full shadow-2xl">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-lg font-black flex items-center gap-2">
+                <DollarSign className="text-emerald-500" /> Registrar Abono
+              </h3>
+              <X className="cursor-pointer text-slate-500 hover:text-white" onClick={() => setModalAbono({ abierto: false, multa: null })} />
             </div>
-            <form onSubmit={handleAbonar} className="form-main">
-              <p>Multa: <strong>{modalAbono.multa?.libro || "N/A"}</strong></p>
-              <p>Saldo Actual: <strong>${(modalAbono.multa?.saldoPendiente || 0).toFixed(2)}</strong></p>
-              <div className="form-section">
-                <label>Monto a Abonar</label>
+            
+            <div className="bg-slate-950 p-4 rounded-2xl mb-6 space-y-1">
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block">Saldo Pendiente</span>
+                <span className="text-2xl font-black text-emerald-400 block">${(modalAbono.multa?.saldoPendiente || 0).toFixed(2)}</span>
+            </div>
+
+            <form onSubmit={handleAbonar} className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Cantidad a recibir</label>
                 <input 
                   type="number" 
                   step="0.01" 
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 outline-none focus:border-emerald-500 text-lg font-bold"
                   value={montoAbono}
                   onChange={(e) => setMontoAbono(e.target.value)}
                   placeholder="0.00"
                   required 
                 />
               </div>
-              <div className="modal-footer">
-                <button type="submit" className="btn-guardar-pro">Confirmar Pago</button>
-              </div>
+              <button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-500 py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-lg shadow-emerald-600/20 transition-all">
+                Confirmar Transacción
+              </button>
             </form>
-          </div>
+          </motion.div>
         </div>
       )}
 
       {/* MODAL EDICIÓN ESTADO */}
       {modalEdicion.abierto && (
-        <div className="modal-overlay">
-          <div className="cat-form-card" style={{ maxWidth: '400px' }}>
-            <div className="modal-header">
-              <h3>Administrar Multa</h3>
-              <X className="close-icon" onClick={() => setModalEdicion({ abierto: false, multa: null })} />
+        <div className="modal-overlay fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-slate-900 border border-slate-700 p-8 rounded-4xl max-w-sm w-full shadow-2xl">
+            <div className="flex justify-between items-center mb-8">
+              <h3 className="text-lg font-black">Admin. Registro</h3>
+              <X className="cursor-pointer text-slate-500 hover:text-white" onClick={() => setModalEdicion({ abierto: false, multa: null })} />
             </div>
-            <form onSubmit={handleActualizarMulta} className="form-main">
-              <div className="form-section">
-                <label>Cambiar Estado</label>
+            <form onSubmit={handleActualizarMulta} className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Estado Administrativo</label>
                 <select 
-                  className="custom-select"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 outline-none focus:border-blue-500"
                   value={editData.id_Estado}
                   onChange={(e) => setEditData({...editData, id_Estado: e.target.value})}
                 >
-                  <option value={15}>Mora (Pendiente)</option>
-                  <option value={12}>Pagada (Manual)</option>
-                  <option value={13}>Cancelada</option>
+                  <option value={15}>Mora (Activa)</option>
+                  <option value={12}>Liquidada (Manual)</option>
+                  <option value={13}>Anulada / Cancelada</option>
                 </select>
               </div>
-              <div className="form-section" style={{display: 'flex', gap: '10px', alignItems: 'center'}}>
+              <div className="flex items-center gap-3 bg-slate-950 p-4 rounded-xl border border-slate-800">
                 <input 
                   type="checkbox" 
                   id="checkPagada"
+                  className="w-5 h-5 rounded-md accent-blue-600"
                   checked={editData.pagada} 
                   onChange={(e) => setEditData({...editData, pagada: e.target.checked})}
                 />
-                <label htmlFor="checkPagada">¿Marcar como pagada totalmente?</label>
+                <label htmlFor="checkPagada" className="text-xs font-bold text-slate-300">Marcar liquidación total</label>
               </div>
-              <div className="modal-footer">
-                <button type="submit" className="btn-guardar-pro">Guardar Cambios</button>
-              </div>
+              <button type="submit" className="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-2xl font-black uppercase text-xs tracking-widest transition-all">
+                Guardar Cambios
+              </button>
             </form>
-          </div>
+          </motion.div>
         </div>
       )}
     </div>
