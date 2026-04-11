@@ -4,7 +4,7 @@
 Esta documentación proporciona un análisis completo de la base de datos de biblioteca "SYNCLAYER", incluyendo la estructura de las tablas y las validaciones implementadas en los 71 Stored Procedures (SP). Se basa en un análisis exhaustivo de todos los archivos SQL en el workspace.
 
 ## Estructura de la Base de Datos
-La base de datos consta de 13 tablas principales con las siguientes estructuras, columnas, tipos de datos, restricciones y relaciones:
+La base de datos consta de 14 tablas principales con las siguientes estructuras, columnas, tipos de datos, restricciones y relaciones:
 
 ### Tablas y Estructuras
 - **Cls_Estado** (Estados): 
