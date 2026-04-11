@@ -16,6 +16,7 @@ const containerVars = {
     transition: { staggerChildren: 0.05 } 
   }
 };
+//--Revisar codigo el sbado
 
 const itemVars = {
   hidden: { y: 20, opacity: 0 },
